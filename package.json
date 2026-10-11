@@ -1,0 +1,26 @@
+{
+  "name": "ishqalqon",
+  "version": "1.0.0",
+  "description": "Telegram vakansiyalarini firibgarlik va kamsitishga tekshiruvchi platforma",
+  "scripts": {
+    "start": "node server.mjs",
+    "bot": "node bot.mjs",
+    "test": "node tests/run.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hikmatillo-dev/HR.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Hikmatillo-dev/HR/issues"
+  },
+  "homepage": "https://github.com/Hikmatillo-dev/HR#readme",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.133.0",
+    "zod": "^4.6.5"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  }
+}

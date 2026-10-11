@@ -4,8 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>IshQalqon</title>
-  <meta name="description" content="Telegram'dagi vakansiyalarni sun'iy intellekt yordamida firibgarlik va kamsitishga tekshiruvchi hamda mehnat bozorini tahlil qiluvchi platforma.">
+  <meta name="description" content="Telegram'dagi vakansiyalarni firibgarlik va kamsitishga tekshiruvchi hamda mehnat bozorini tahlil qiluvchi platforma.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
   <link rel="stylesheet" href="css/style.css">
+  <script>try { const t = localStorage.getItem('iq-theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
 </head>
 <body>
   <header class="topbar">
@@ -14,17 +16,23 @@
       <nav>
         <a href="#tekshir">Tekshirish</a>
         <a href="#tahlil">Bozor tahlili</a>
-        <a href="#vakansiyalar">Vakansiyalar</a>
-        <a href="#haqida">Loyiha haqida</a>
+        <a href="#kasblar">Kasblar</a>
+        <a href="#kanallar">Kanallar</a>
+        <a href="#vakansiyalar">Baza</a>
+        <a href="#ishberuvchi">Ish beruvchilar</a>
+        <a href="#xavfsizlik">Xavfsizlik</a>
+        <a href="#haqida">Loyiha</a>
       </nav>
+      <button class="icon-btn" id="themeBtn" title="Yorug' / qorong'i rejim" aria-label="Rejimni almashtirish">🌓</button>
     </div>
   </header>
 
   <section class="hero">
     <div class="wrap">
       <h1>Ish izlayotganlarni <span>firibgarlik</span> va <span>kamsitish</span>dan himoya qilamiz</h1>
-      <p>O'zbekistonda vakansiyalarning katta qismi Telegram kanallarida e'lon qilinadi. U yerda soxta ish takliflari, oldindan pul so'rash va kamsituvchi talablar ko'p uchraydi, lekin bularni hech kim nazorat qilmaydi. IshQalqon har bir e'lonni tekshiradi va butun bozorning manzarasini ko'rsatadi.</p>
+      <p>O'zbekistonda vakansiyalarning katta qismi Telegram kanallarida e'lon qilinadi. U yerda soxta ish takliflari, oldindan pul so'rash va kamsituvchi talablar ko'p uchraydi, lekin bularni hech kim nazorat qilmaydi. IshQalqon har bir e'lonni tekshiradi va mehnat bozorining real manzarasini ko'rsatadi.</p>
       <div class="hero-stats" id="heroStats"></div>
+      <div class="hero-cta"><a href="#tekshir">E'lonni tekshirish</a><a class="ghost" href="#tahlil">Bozor tahlilini ko'rish</a></div>
     </div>
   </section>
 
@@ -32,41 +40,86 @@
     <!-- 1. Tekshirish -->
     <section id="tekshir" class="card">
       <h2>1. Vakansiyani tekshiring</h2>
-      <p class="muted">Telegram'dagi istalgan vakansiya matnini shu yerga joylang. Tizim xavf darajasini baholaydi va <b>nima uchun</b> shunday baholaganini tushuntiradi.</p>
+      <p class="lead">Istalgan vakansiya matnini joylang: o'zbek (lotin yoki kirill) yoki rus tilida. Tizim xavf darajasi va shaffoflik indeksini hisoblaydi hamda har bir baho uchun <b>sababini</b> ko'rsatadi.</p>
       <div class="checker">
         <div>
-          <textarea id="input" rows="10" placeholder="Masalan: KOREYAGA ISH! Viza 100% kafolat! Hujjat uchun to'lov 500$..."></textarea>
+          <textarea id="input" placeholder="Masalan: KOREYAGA ISH! Viza 100% kafolat! Hujjat uchun to'lov 500$..."></textarea>
           <div class="btns">
             <button class="primary" id="btnCheck">Tekshirish</button>
-            <button data-example="scam">Misol: firibgar</button>
-            <button data-example="disc">Misol: kamsituvchi</button>
-            <button data-example="ok">Misol: halol</button>
-            <button id="btnClear" class="ghost">Tozalash</button>
+            <button data-example="scam" class="small">Misol: firibgar</button>
+            <button data-example="traffic" class="small">Misol: odam savdosi</button>
+            <button data-example="disc" class="small">Misol: kamsituvchi</button>
+            <button data-example="cyrl" class="small">Misol: kirill</button>
+            <button data-example="ok" class="small">Misol: halol</button>
+            <button id="btnClear" class="small ghost">Tozalash</button>
           </div>
         </div>
-        <div id="result" class="result empty">Natija shu yerda chiqadi</div>
+        <div id="result" class="result empty">Natija shu yerda chiqadi.<br>Matn yozilishi bilan tahlil avtomatik yangilanadi.</div>
       </div>
     </section>
 
-    <!-- 2. Dashboard -->
+    <!-- 2. Bozor tahlili -->
     <section id="tahlil" class="card">
-      <h2>2. Mehnat bozori tahlili</h2>
-      <p class="muted" id="dataNote"></p>
+      <div class="card-head">
+        <h2>2. Mehnat bozori tahlili</h2>
+      </div>
+      <div class="source-bar" id="sourceBar">
+        <div class="note" id="dataNote"></div>
+        <input type="file" id="fileInput" accept=".json,.txt,.csv" hidden><button class="small" type="button" id="btnUpload">📂 Telegram eksportini yuklash</button>
+        <button class="small" id="btnSample" hidden>Namunaga qaytish</button>
+        <button class="small" id="btnCsv">⬇️ CSV</button>
+        <button class="small" id="btnPrint">🖨️ Hisobot (PDF)</button>
+      </div>
       <div class="kpis" id="kpis"></div>
       <div class="grid">
-        <div class="chart-box"><h3>Xavf darajalari</h3><canvas id="chLevels"></canvas></div>
-        <div class="chart-box"><h3>Eng ko'p uchraydigan firibgarlik belgilari</h3><canvas id="chSignals"></canvas></div>
-        <div class="chart-box wide"><h3>Hududlar bo'yicha vakansiyalar va xavf</h3><canvas id="chRegions"></canvas></div>
-        <div class="chart-box"><h3>Kamsitish turlari</h3><canvas id="chDisc"></canvas></div>
-        <div class="chart-box"><h3>O'rtacha maosh (mln so'm, ishonchli e'lonlar)</h3><canvas id="chSalary"></canvas></div>
-        <div class="chart-box wide"><h3>Kunlik dinamika (oxirgi 30 kun)</h3><canvas id="chDaily"></canvas></div>
+        <div class="chart-box"><h3>Xavf darajalari</h3><div class="cv"><canvas id="chLevels"></canvas></div></div>
+        <div class="chart-box"><h3>Eng ko'p uchraydigan firibgarlik belgilari</h3><div class="cv"><canvas id="chSignals"></canvas></div></div>
+        <div class="chart-box wide">
+          <h3>Hududlar xaritasi</h3>
+          <div class="map-ctrl" id="mapCtrl">
+            <button class="small on" data-metric="count">E'lonlar soni</button>
+            <button class="small" data-metric="risk">Xavfli e'lonlar ulushi</button>
+            <button class="small" data-metric="disc">Kamsitish ulushi</button>
+            <button class="small" data-metric="salary">O'rtacha maosh</button>
+          </div>
+          <div class="tilemap" id="tilemap"></div>
+          <div class="legend-ramp" id="mapLegend"></div>
+          <p class="hint">Hududni bossangiz, vakansiyalar bazasi shu hudud bo'yicha filtrlanadi.</p>
+        </div>
+        <div class="chart-box wide"><h3>Kunlik dinamika (oxirgi 30 kun)</h3><div class="cv"><canvas id="chDaily"></canvas></div></div>
+        <div class="chart-box"><h3>Kamsitish turlari</h3><div class="cv"><canvas id="chDisc"></canvas></div></div>
+        <div class="chart-box"><h3>Shaffoflik: e'lonlarda nima yetishmaydi</h3><div class="cv"><canvas id="chTransp"></canvas></div></div>
       </div>
       <div class="insights" id="insights"></div>
     </section>
 
-    <!-- 3. Jadval -->
+    <!-- 3. Kasblar va ko'nikmalar -->
+    <section id="kasblar" class="card">
+      <h2>3. Zamonaviy kasblar va ko'nikmalar</h2>
+      <p class="lead">Faqat <b>ishonchli</b> (past xavfli) e'lonlar asosida: qaysi kasbga talab ko'p, qaysi kasb ko'proq to'laydi va ish beruvchilar qaysi ko'nikmalarni so'rayapti.</p>
+      <div class="grid">
+        <div class="chart-box wide"><h3>Kasblar xaritasi: talab va maosh</h3><div class="cv tall"><canvas id="chBubble"></canvas></div><p class="hint">Gorizontal o'q — e'lonlar soni (talab), vertikal o'q — o'rtacha maosh. O'ng yuqori burchak: talab ham, maosh ham yuqori.</p></div>
+        <div class="chart-box"><h3>Eng ko'p so'raladigan ko'nikmalar</h3><div class="cv tall"><canvas id="chSkills"></canvas></div></div>
+        <div class="chart-box"><h3>O'rtacha maosh sohalar bo'yicha (mln so'm)</h3><div class="cv tall"><canvas id="chSalary"></canvas></div></div>
+      </div>
+      <div class="insights" id="skillInsights"></div>
+    </section>
+
+    <!-- 4. Kanallar -->
+    <section id="kanallar" class="card">
+      <h2>4. Telegram kanallar reytingi</h2>
+      <p class="lead">Har bir kanal e'lonlari asosida baholanadi: xavfli e'lonlar ulushi, kamsitish ulushi va o'rtacha shaffoflik. <b>A</b> — ishonchli, <b>F</b> — xavfli kanal.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Baho</th><th>Kanal</th><th class="num">E'lonlar</th><th>Xavfli</th><th class="num">Kamsituvchi</th><th class="num">Shaffoflik</th><th class="num">Takroriy</th></tr></thead>
+          <tbody id="channelRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 5. Baza -->
     <section id="vakansiyalar" class="card">
-      <h2>3. Vakansiyalar bazasi</h2>
+      <h2>5. Vakansiyalar bazasi</h2>
       <div class="filters">
         <input id="fSearch" placeholder="Qidirish: kasb, kanal, so'z...">
         <select id="fLevel">
@@ -76,35 +129,104 @@
           <option value="low">🟢 Past xavf</option>
         </select>
         <select id="fRegion"><option value="">Barcha hududlar</option></select>
-        <label class="chk"><input type="checkbox" id="fDisc"> Faqat kamsituvchi</label>
+        <select id="fCategory"><option value="">Barcha sohalar</option></select>
+        <label class="chk"><input type="checkbox" id="fDisc"> Kamsituvchi</label>
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Sana</th><th>Kanal</th><th>Matn</th><th>Hudud</th><th>Soha</th><th>Xavf</th></tr></thead>
+          <thead><tr><th>Sana</th><th>Kanal</th><th>Matn</th><th>Hudud</th><th>Kasb</th><th class="num">Maosh</th><th>Xavf</th><th class="num">Shaffoflik</th></tr></thead>
           <tbody id="rows"></tbody>
         </table>
       </div>
-      <div class="table-foot"><span id="count"></span><button id="btnMore" class="ghost">Yana ko'rsatish</button></div>
+      <div class="table-foot"><span id="count"></span><button id="btnMore" class="small ghost">Yana ko'rsatish</button></div>
     </section>
 
-    <!-- 4. Loyiha haqida -->
-    <section id="haqida" class="card about">
-      <h2>4. Loyiha haqida</h2>
-      <div class="about-grid">
-        <div><h3>❗ Muammo</h3><p>Ish izlovchilar Telegram'dagi soxta vakansiyalar orqali pul va shaxsiy ma'lumotlarini yo'qotmoqda. Xorijga "kafolatlangan ish" va'dasi bilan aldash keng tarqalgan. E'lonlarda yosh, jins va tashqi ko'rinish bo'yicha kamsitish odatiy holga aylangan. Bu bozorni hech kim tizimli tahlil qilmaydi.</p></div>
-        <div><h3>💡 Yechim</h3><p>IshQalqon e'lonlarni yig'adi, har birini firibgarlik va kamsitish belgilari bo'yicha tekshiradi va xavf darajasini tushuntirish bilan beradi. Shu asosda hududlar, sohalar va maoshlar bo'yicha haqiqiy mehnat bozori xaritasini quradi.</p></div>
-        <div><h3>👥 Kimlar uchun</h3><p><b>Ish izlovchilar</b> e'lonni bepul tekshiradi. <b>Telegram kanallar</b> o'z kanalini tozalaydi. <b>Davlat idoralari</b> (bandlik va migratsiya) firibgar e'lonlar va kamsitish statistikasini oladi. <b>Kompaniyalar</b> "tasdiqlangan ish beruvchi" belgisini oladi.</p></div>
-        <div><h3>🚀 Keyingi bosqich</h3><p>Telegram bot (e'lonni botga yuborib tekshirish), avtomatik kanal monitoringi, til modeli (LLM) asosidagi chuqur tahlil, Migratsiya agentligining litsenziyalar bazasi bilan integratsiya.</p></div>
+    <!-- 6. Ish beruvchilar -->
+    <section id="ishberuvchi" class="card">
+      <h2>6. Ish beruvchilar uchun: halol vakansiya yaratish</h2>
+      <p class="lead">Ma'lumotlarni to'ldiring. Tizim shaffof va kamsitishsiz e'lon matnini tayyorlab beradi va uni darhol tekshiradi. Shaffoflik indeksi yuqori e'lonlar ko'proq va sifatliroq nomzod jalb qiladi.</p>
+      <div class="employer">
+        <form class="form-grid" id="empForm" autocomplete="off">
+          <label class="field"><span>Lavozim *</span><input name="title" value="Frontend dasturchi" required></label>
+          <label class="field"><span>Kompaniya *</span><input name="company" value="«Smart Code» MChJ" required></label>
+          <label class="field"><span>STIR</span><input name="stir" placeholder="9 ta raqam" inputmode="numeric" maxlength="9"></label>
+          <label class="field"><span>Hudud / manzil *</span><input name="address" value="Toshkent, Yunusobod tumani"></label>
+          <label class="field"><span>Maosh dan (mln so'm)</span><input name="smin" type="number" step="0.5" min="0" value="10"></label>
+          <label class="field"><span>Maosh gacha (mln so'm)</span><input name="smax" type="number" step="0.5" min="0" value="16"></label>
+          <label class="field"><span>Ish vaqti</span><input name="schedule" value="Du–Ju, 9:00–18:00"></label>
+          <label class="field"><span>Aloqa *</span><input name="contact" value="+998 71 200 00 00"></label>
+          <label class="field full"><span>Talablar (ko'nikmalar)</span><textarea name="req" style="min-height:70px">React, TypeScript, Git, 1 yillik tajriba</textarea></label>
+          <label class="field full"><span>Biz taklif qilamiz</span><textarea name="offer" style="min-height:60px">Ijtimoiy paket, o'qish va rivojlanish imkoniyati</textarea></label>
+          <label class="chk full"><input type="checkbox" name="official" checked> Rasmiy ishga joylashtirish (mehnat shartnomasi)</label>
+        </form>
+        <div>
+          <div class="score-row" id="empScore"></div>
+          <div class="preview" id="empPreview"></div>
+          <div id="empWarn"></div>
+          <div class="btns"><button class="primary" id="empCopy">📋 Matnni nusxalash</button></div>
+        </div>
       </div>
+    </section>
+
+    <!-- 7. Xavfsizlik -->
+    <section id="xavfsizlik" class="card">
+      <h2>7. Xavfsiz ish izlash qo'llanmasi</h2>
+      <div class="safety">
+        <div>
+          <h3>10 ta oltin qoida</h3>
+          <ol class="rules">
+            <li><b>Ish uchun hech qachon oldindan pul to'lamang.</b> "Hujjat", "forma", "o'qish" yoki "tibbiy ko'rik" puli so'ralishi firibgarlik belgisi.</li>
+            <li><b>Karta raqami va SMS kodni hech kimga bermang.</b> Ish beruvchiga ular kerak emas.</li>
+            <li><b>Pasportingizni hech kimga topshirmang.</b> Uni olib qolish qonunga zid.</li>
+            <li><b>"100% kafolat" degan va'daga ishonmang.</b> Vizani hech kim kafolatlay olmaydi.</li>
+            <li><b>Kompaniyani tekshiring:</b> nomi, STIR, manzili, rasmiy sayti va ijtimoiy tarmoqlardagi izohlar.</li>
+            <li><b>Xorijga faqat rasmiy yo'l bilan boring:</b> davlat dasturlari yoki litsenziyaga ega agentliklar orqali.</li>
+            <li><b>Juda yuqori maoshdan ehtiyot bo'ling,</b> ayniqsa tajriba talab qilinmasa.</li>
+            <li><b>Shoshiltirishga berilmang.</b> Halol ish beruvchi o'ylab ko'rishga vaqt beradi.</li>
+            <li><b>Mehnat shartnomasini o'qib, keyin imzolang.</b> Nusxasini o'zingizda qoldiring.</li>
+            <li><b>Shubhali e'lonni yaqinlaringiz bilan baham ko'ring</b> va kanal administratoriga xabar bering.</li>
+          </ol>
+        </div>
+        <div>
+          <h3>Xorijga ishga ketishdan oldin: tekshiruv ro'yxati</h3>
+          <div class="progress"><i id="todoBar" style="width:0"></i></div>
+          <ul class="todo" id="todo"></ul>
+          <details class="block">
+            <summary>Qayerga murojaat qilish mumkin?</summary>
+            <p class="muted" style="margin-top:8px">Firibgarlik haqida ichki ishlar organlariga ariza bering. Xorijga ishga yuboruvchi agentlik litsenziyasini <b>Tashqi mehnat migratsiyasi agentligi</b>ning, bandlik masalalarini esa <b>Kambag'allikni qisqartirish va bandlik vazirligi</b>ning rasmiy sayti va ishonch telefoni orqali tekshiring. Aloqa ma'lumotlarini faqat rasmiy saytlardan oling.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. Loyiha haqida -->
+    <section id="haqida" class="card">
+      <h2>8. Loyiha haqida</h2>
+      <div class="about-grid">
+        <div><h3>❗ Muammo</h3><p>Ish izlovchilar Telegram'dagi soxta vakansiyalar orqali pul va shaxsiy ma'lumotlarini yo'qotmoqda. Xorijga "kafolatlangan ish" va'dasi bilan aldash, pasportni olib qolish kabi odam savdosi belgilari uchraydi. E'lonlarda yosh, jins va tashqi ko'rinish bo'yicha kamsitish odatiy holga aylangan. Bu bozorni hech kim tizimli tahlil qilmaydi.</p></div>
+        <div><h3>💡 Yechim</h3><p>IshQalqon e'lonlarni yig'adi va har birini 10 dan ortiq firibgarlik belgisi, 5 turdagi kamsitish, ishonch belgilari va 7 mezonli shaffoflik indeksi bo'yicha baholaydi. Har bir baho sababi bilan beriladi. Shu asosda hududlar, kasblar, ko'nikmalar va kanallar bo'yicha mehnat bozori manzarasi quriladi.</p></div>
+        <div><h3>👥 Kimlar uchun</h3><p><b>Ish izlovchilar:</b> sayt va Telegram bot orqali bepul tekshiruv. <b>Kanal egalari:</b> kanalni tozalash va reyting. <b>Davlat idoralari:</b> firibgarlik va kamsitish statistikasi, hisobotlar. <b>Kompaniyalar:</b> halol vakansiya yaratish vositasi va "tasdiqlangan ish beruvchi" belgisi.</p></div>
+        <div><h3>🚀 Rivojlanish rejasi</h3><p>Kanallarni avtomatik kuzatish, yig'ilgan ma'lumotda mashinaviy o'qitish modeli, rasmiy litsenziyalar bazasi bilan integratsiya, rus va qoraqalpoq tilidagi interfeys, mobil ilova.</p></div>
+      </div>
+      <h3 style="margin-top:20px">Qanday ishlaydi</h3>
+      <div class="flow"><span>📥 Telegram kanallar</span><em>→</em><span>🧹 Tozalash va takrorlarni aniqlash</span><em>→</em><span>🔤 Kirill → lotin</span><em>→</em><span>⚖️ Qoidalar tizimi (tushuntiriladigan)</span><em>→</em><span>🤖 AI chuqur tahlil (ixtiyoriy)</span><em>→</em><span>📊 Dashboard, bot, hisobot</span></div>
+      <h3 style="margin-top:20px">Tizim aniqligi</h3>
+      <p class="muted" id="metricsNote"></p>
+      <div class="metrics" id="metrics"></div>
     </section>
   </main>
 
-  <footer class="wrap foot">IshQalqon — prototip. Tahlil qoidalari ochiq va tushuntiriladigan: har bir baho uchun sabab ko'rsatiladi.</footer>
+  <footer class="foot">IshQalqon — prototip. Tahlil qoidalari ochiq: har bir baho uchun sabab ko'rsatiladi. Tizim yakuniy hukm chiqarmaydi, qaror foydalanuvchida qoladi.</footer>
 
   <script src="vendor/chart.umd.js"></script>
   <script src="js/analyzer.js"></script>
   <script src="js/sample-data.js"></script>
   <script src="js/real-data.js"></script>
+  <script src="js/test-set.js"></script>
+  <script src="js/ui-common.js"></script>
+  <script src="js/ui-checker.js"></script>
+  <script src="js/ui-dashboard.js"></script>
+  <script src="js/ui-employer.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

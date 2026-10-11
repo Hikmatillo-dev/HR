@@ -1,0 +1,452 @@
+{
+ "name": "Namuna ish kanali",
+ "type": "public_channel",
+ "id": 1,
+ "messages": [
+  {
+   "id": 1,
+   "type": "service",
+   "date": "2026-09-01T09:00:00",
+   "action": "create_channel",
+   "text": ""
+  },
+  {
+   "id": 2,
+   "type": "message",
+   "date": "2026-10-05T10:00:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "Buxgalter kerak. Samarqand. Talab: 30 yoshgacha, ayollar, turmush qurmagan, 1C bilishi shart. Maosh suhbat asosida. ",
+    {
+     "type": "phone",
+     "text": "+998 99 428 12 99"
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "type": "message",
+   "date": "2026-09-26T10:01:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "«Барака Маркет» МЧЖ Тошкент шаҳридаги дўконига сотувчи керак.\nТалаблар: муомала маданияти, рус тили.\nМаош: 3 млн сўм\nИш вақти: 9:00–18:00\n📞 ",
+    {
+     "type": "phone",
+     "text": "+998 88 934 25 25"
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "type": "message",
+   "date": "2026-09-18T10:02:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "Operator kerak, oyiga 30 mln so'm, tajriba shart emas! Xorazm. Ishga kirish uchun karta raqamingiz va SMS kodni yuboring."
+   ]
+  },
+  {
+   "id": 5,
+   "type": "message",
+   "date": "2026-10-07T10:03:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "P2P arbitraj orqali kuniga 1 000 000 so'mgacha! Telefon orqali ish, tajriba shart emas. Ro'yxatdan o'tish: bit.ly/ish-daromad"
+   ]
+  },
+  {
+   "id": 6,
+   "type": "message",
+   "date": "2026-09-25T10:04:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "Uydan turib telefon orqali kuniga 500 000 so'mdan daromad! Tajriba shart emas.\nRo'yxatdan o'tish uchun to'lov 99 000 so'm. Batafsil lichkada."
+   ]
+  },
+  {
+   "id": 7,
+   "type": "message",
+   "date": "2026-09-25T10:05:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "Sotuvchi kerak! Samarqand. 18–25 yoshgacha qizlar, bo'yi 165 dan baland. Maosh 3.5 mln so'm. Tel: ",
+    {
+     "type": "phone",
+     "text": "+998 99 876 79 30"
+    }
+   ]
+  },
+  {
+   "id": 8,
+   "type": "message",
+   "date": "2026-09-12T10:06:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "Operator kerak, oyiga 30 mln so'm, tajriba shart emas! Samarqand. Ishga kirish uchun karta raqamingiz va SMS kodni yuboring."
+   ]
+  },
+  {
+   "id": 9,
+   "type": "message",
+   "date": "2026-09-21T10:07:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "Кореяга иш! Виза 100% кафолат. Ойига $2500. Тажриба шарт эмас. Ҳужжат учун тўлов 500$. Шошилинг!"
+   ]
+  },
+  {
+   "id": 10,
+   "type": "message",
+   "date": "2026-09-20T10:08:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "Rossiyaga qurilishga ishchilar kerak. Oyiga 150 000 rubl. Yo'l bepul. Pasportlar ish beruvchida turadi. Hujjat uchun to'lov 1 mln so'm."
+   ]
+  },
+  {
+   "id": 11,
+   "type": "message",
+   "date": "2026-10-01T10:09:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "VAKANSIYA: Ingliz tili o'qituvchisi\nKompaniya: «Bilim» o'quv markazi\nManzil: Farg'ona\nTalablar: IELTS 7.0+, pedagogik tajriba\nMaosh: suhbat asosida\nRezyumeni yuboring yoki qo'ng'iroq qiling: ",
+    {
+     "type": "phone",
+     "text": "+998 99 610 85 59"
+    }
+   ]
+  },
+  {
+   "id": 12,
+   "type": "message",
+   "date": "2026-09-29T10:10:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "«Smart Code» MChJ ga Python dasturchi kerak. Toshkent shahri. Faqat yigitlar, 28 yoshgacha. Maosh 16.5 mln so'm. ",
+    {
+     "type": "phone",
+     "text": "+998 88 892 44 36"
+    }
+   ]
+  },
+  {
+   "id": 13,
+   "type": "message",
+   "date": "2026-10-06T10:11:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "📢 «Raqamli Bank» AJ Toshkent viloyatidagi filialiga Data tahlilchi kerak.\n\nTalablar: SQL, Power BI, Excel, ingliz tili.\nMaosh: 11–14.5 mln so'm\nIsh vaqti: 9:00–18:00, rasmiy ishga joylashtirish.\n\n📞 ",
+    {
+     "type": "phone",
+     "text": "+998 99 285 60 41"
+    }
+   ]
+  },
+  {
+   "id": 14,
+   "type": "message",
+   "date": "2026-09-28T10:12:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "📢 «Milliy Taomlar» restorani Xorazmdagi filialiga Oshpaz kerak.\n\nTalablar: milliy taomlar tajribasi.\nMaosh: suhbat asosida\nIsh vaqti: 9:00–18:00, rasmiy ishga joylashtirish.\n\n📞 ",
+    {
+     "type": "phone",
+     "text": "+998 93 360 74 29"
+    }
+   ]
+  },
+  {
+   "id": 15,
+   "type": "message",
+   "date": "2026-09-20T10:13:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "VAKANSIYA: Ofitsiant\nKompaniya: «Choyxona Navro'z»\nSTIR: 303663604\nManzil: Toshkent shahri\nTalablar: xushmuomalalik\nMaosh: suhbat asosida\nRezyumeni yuboring yoki qo'ng'iroq qiling: ",
+    {
+     "type": "phone",
+     "text": "+998 97 250 37 82"
+    }
+   ]
+  },
+  {
+   "id": 16,
+   "type": "message",
+   "date": "2026-09-13T10:14:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "Buxgalter kerak. Surxondaryo. Talab: 30 yoshgacha, ayollar, turmush qurmagan, 1C bilishi shart. Maosh suhbat asosida. ",
+    {
+     "type": "phone",
+     "text": "+998 90 998 21 45"
+    }
+   ]
+  },
+  {
+   "id": 17,
+   "type": "message",
+   "date": "2026-09-17T10:15:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "«Smart Code» MChJ jamoasiga Frontend dasturchi taklif qilinadi.\n📍 Xorazm\n✅ React, TypeScript, Git, 1 yillik tajriba\n💰 Maosh: 12–21.5 mln so'm\n✅ Ijtimoiy paket, o'z vaqtida oylik\nAloqa: ",
+    {
+     "type": "phone",
+     "text": "+998 97 710 93 26"
+    }
+   ]
+  },
+  {
+   "id": 18,
+   "type": "message",
+   "date": "2026-09-24T10:16:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "Срочно! Работа в Польше на складе, зарплата от 1800$. Без опыта. Оплата за оформление документов 250$. Подробности в лс. Набор из г. Buxoro"
+   ]
+  },
+  {
+   "id": 19,
+   "type": "message",
+   "date": "2026-10-02T10:17:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "Срочно! Работа в Польше на складе, зарплата от 1800$. Без опыта. Оплата за оформление документов 250$. Подробности в лс. Набор из г. Farg'ona"
+   ]
+  },
+  {
+   "id": 20,
+   "type": "message",
+   "date": "2026-09-28T10:18:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "Uydan turib telefon orqali kuniga 500 000 so'mdan daromad! Tajriba shart emas.\nRo'yxatdan o'tish uchun to'lov 99 000 so'm. Batafsil lichkada."
+   ]
+  },
+  {
+   "id": 21,
+   "type": "message",
+   "date": "2026-10-06T10:19:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "Кореяга иш! Виза 100% кафолат. Ойига $2500. Тажриба шарт эмас. Ҳужжат учун тўлов 500$. Шошилинг!"
+   ]
+  },
+  {
+   "id": 22,
+   "type": "message",
+   "date": "2026-10-09T10:20:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "Toshkent shahridagi ofisga ofis-menejer kerak.\nTalablar: faqat qizlar, 20–27 yosh, ko'rinishi chiroyli, turmushga chiqmagan.\nMaosh: 4 mln so'm\n📞 ",
+    {
+     "type": "phone",
+     "text": "+998 88 334 85 76"
+    }
+   ]
+  },
+  {
+   "id": 23,
+   "type": "message",
+   "date": "2026-10-05T10:21:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "Uydan turib telefon orqali kuniga 500 000 so'mdan daromad! Tajriba shart emas.\nRo'yxatdan o'tish uchun to'lov 99 000 so'm. Batafsil lichkada."
+   ]
+  },
+  {
+   "id": 24,
+   "type": "message",
+   "date": "2026-10-06T10:22:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "📢 «Audit Pro» MChJ Toshkent shahridagi filialiga Buxgalter kerak.\n\nTalablar: 1C, Excel, soliq hisoboti.\nMaosh: 6.5–9.5 mln so'm\nIsh vaqti: 9:00–18:00, rasmiy ishga joylashtirish.\nSTIR: 368510770\n\n📞 ",
+    {
+     "type": "phone",
+     "text": "+998 33 747 24 49"
+    }
+   ]
+  },
+  {
+   "id": 25,
+   "type": "message",
+   "date": "2026-09-22T10:23:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "Buxgalter kerak. Samarqand. Talab: 30 yoshgacha, ayollar, turmush qurmagan, 1C bilishi shart. Maosh suhbat asosida. ",
+    {
+     "type": "phone",
+     "text": "+998 91 158 13 34"
+    }
+   ]
+  },
+  {
+   "id": 26,
+   "type": "message",
+   "date": "2026-10-08T10:24:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "VAKANSIYA: Sotuvchi-konsultant\nKompaniya: «Yangi Davr» savdo markazi\nSTIR: 375091743\nManzil: Samarqand\nTalablar: muloqot, o'zbek va rus tili\nMaosh: 3.5–4.5 mln so'm\nRezyumeni yuboring yoki qo'ng'iroq qiling: ",
+    {
+     "type": "phone",
+     "text": "+998 88 408 56 88"
+    }
+   ]
+  },
+  {
+   "id": 27,
+   "type": "message",
+   "date": "2026-10-10T10:25:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "Call-markaz operatori kerak! Samarqand.\nMaosh: 4–5.5 mln so'm. Talab: muloqot, o'zbek va rus tili, kompyuter savodxonligi.\nLichkaga yozing."
+   ]
+  },
+  {
+   "id": 28,
+   "type": "message",
+   "date": "2026-09-21T10:26:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "«Aloqa Servis» MChJ jamoasiga Call-markaz operatori taklif qilinadi.\n📍 Toshkent viloyati\n✅ muloqot, o'zbek va rus tili, kompyuter savodxonligi\n💰 Maosh: 4–6 mln so'm\n✅ Ijtimoiy paket, o'z vaqtida oylik\nAloqa: ",
+    {
+     "type": "phone",
+     "text": "+998 93 614 97 35"
+    }
+   ]
+  },
+  {
+   "id": 29,
+   "type": "message",
+   "date": "2026-09-11T10:27:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "💸 Investitsiya loyihasi! 1 mln qo'ying — oyiga 30% daromad. Do'stingizni taklif qiling va bonus oling. Surxondaryo. Lichkaga yozing"
+   ]
+  },
+  {
+   "id": 30,
+   "type": "message",
+   "date": "2026-09-29T10:28:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "Ҳамшира керак, «Нур Мед» клиникаси, Тошкент шаҳри.\nТиббий маълумот, сертификат.\nМаош: 4 млн сўм. ",
+    {
+     "type": "phone",
+     "text": "+998 93 653 39 43"
+    }
+   ]
+  },
+  {
+   "id": 31,
+   "type": "message",
+   "date": "2026-09-16T10:29:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "Uydan turib telefon orqali kuniga 300 000 so'mdan daromad! Tajriba shart emas.\nRo'yxatdan o'tish uchun to'lov 99 000 so'm. Batafsil lichkada."
+   ]
+  },
+  {
+   "id": 32,
+   "type": "message",
+   "date": "2026-09-26T10:30:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "Sotuvchi-konsultant kerak! Andijon.\nMaosh: 3.5–4.5 mln so'm. Talab: muloqot, o'zbek va rus tili.\nLichkaga yozing."
+   ]
+  },
+  {
+   "id": 33,
+   "type": "message",
+   "date": "2026-09-20T10:31:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "📢 «Brend Media» agentligi Toshkent viloyatidagi filialiga SMM mutaxassis kerak.\n\nTalablar: Instagram, target reklama, video montaj.\nMaosh: 6.5–10 mln so'm\nIsh vaqti: 9:00–18:00, rasmiy ishga joylashtirish.\nSTIR: 345103787\n\n📞 ",
+    {
+     "type": "phone",
+     "text": "+998 97 322 13 58"
+    }
+   ]
+  },
+  {
+   "id": 34,
+   "type": "message",
+   "date": "2026-09-14T10:32:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "Kuryer kerak! Toshkent shahri. Kuniga $60. O'qish puli 200 000 so'm (keyin qaytariladi). Faqat bugun!"
+   ]
+  },
+  {
+   "id": 35,
+   "type": "message",
+   "date": "2026-09-12T10:33:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "«Барака Маркет» МЧЖ Тошкент шаҳридаги дўконига сотувчи керак.\nТалаблар: муомала маданияти, рус тили.\nМаош: 5 млн сўм\nИш вақти: 9:00–18:00\n📞 ",
+    {
+     "type": "phone",
+     "text": "+998 94 553 95 20"
+    }
+   ]
+  },
+  {
+   "id": 36,
+   "type": "message",
+   "date": "2026-10-06T10:34:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "🇰🇷 KOREYAGA ISH! Viza 100% kafolat! Oyiga $2500 dan. Tajriba shart emas.\nHujjatlarni rasmiylashtirish uchun to'lov 700$. Joylar cheklangan, shoshiling!\nJizzaxdan qabul. Lichkaga yozing"
+   ]
+  },
+  {
+   "id": 37,
+   "type": "message",
+   "date": "2026-10-02T10:35:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "Uydan turib telefon orqali kuniga 500 000 so'mdan daromad! Tajriba shart emas.\nRo'yxatdan o'tish uchun to'lov 99 000 so'm. Batafsil lichkada."
+   ]
+  },
+  {
+   "id": 38,
+   "type": "message",
+   "date": "2026-09-21T10:36:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "🇰🇷 KOREYAGA ISH! Viza 100% kafolat! Oyiga $2500 dan. Tajriba shart emas.\nHujjatlarni rasmiylashtirish uchun to'lov 500$. Joylar cheklangan, shoshiling!\nJizzaxdan qabul. Lichkaga yozing"
+   ]
+  },
+  {
+   "id": 39,
+   "type": "message",
+   "date": "2026-09-24T10:37:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "Operator kerak, oyiga 25 mln so'm, tajriba shart emas! Toshkent shahri. Ishga kirish uchun karta raqamingiz va SMS kodni yuboring."
+   ]
+  },
+  {
+   "id": 40,
+   "type": "message",
+   "date": "2026-10-01T10:38:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "🇰🇷 KOREYAGA ISH! Viza 100% kafolat! Oyiga $3000 dan. Tajriba shart emas.\nHujjatlarni rasmiylashtirish uchun to'lov 700$. Joylar cheklangan, shoshiling!\nXorazmdan qabul. Lichkaga yozing"
+   ]
+  },
+  {
+   "id": 41,
+   "type": "message",
+   "date": "2026-09-17T10:39:00",
+   "from": "Namuna ish kanali",
+   "text": [
+    "Кореяга иш! Виза 100% кафолат. Ойига $2500. Тажриба шарт эмас. Ҳужжат учун тўлов 500$. Шошилинг!"
+   ]
+  },
+  {
+   "id": 999,
+   "type": "message",
+   "date": "2026-10-10T12:00:00",
+   "text": "Kanalimizga obuna bo‘ling! 👍"
+  }
+ ]
+}
