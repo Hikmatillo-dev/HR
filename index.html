@@ -29,11 +29,27 @@
   </header>
 
   <section class="hero">
-    <div class="wrap">
+    <div class="wrap hero-grid">
+      <div class="hero-main">
       <h1>Ish izlayotganlarni <span>firibgarlik</span> va <span>kamsitish</span>dan himoya qilamiz</h1>
       <p>O'zbekistonda vakansiyalarning katta qismi Telegram kanallarida e'lon qilinadi. U yerda soxta ish takliflari, oldindan pul so'rash va kamsituvchi talablar ko'p uchraydi, lekin bularni hech kim nazorat qilmaydi. IshQalqon har bir e'lonni tekshiradi va mehnat bozorining real manzarasini ko'rsatadi.</p>
       <div class="hero-stats" id="heroStats"></div>
       <div class="hero-cta"><a href="#tekshir">E'lonni tekshirish</a><a class="ghost" href="#tahlil">Bozor tahlilini ko'rish</a></div>
+      </div>
+      <aside class="demo-card" id="heroDemo" aria-labelledby="heroDemoTitle" data-state="idle">
+        <div class="demo-head">
+          <h2 id="heroDemoTitle">Jonli misol: <span class="demo-title"></span></h2>
+          <span class="demo-badge">Demo misol</span>
+        </div>
+        <p class="demo-text" aria-label="Demo e'lon matni (sintetik)"></p>
+        <div class="demo-result"></div>
+        <p class="demo-note" hidden>ℹ️ Bu avtomatik tahlil. Misol sintetik — real e'lon emas. Yakuniy qaror o'zingizda.</p>
+        <div class="demo-foot">
+          <button class="small demo-next" type="button">↻ Boshqasini ko'rish</button>
+          <a class="small-link" href="#tekshir">O'z e'loningizni tekshiring →</a>
+        </div>
+        <span class="sr-only demo-live" aria-live="polite"></span>
+      </aside>
     </div>
   </section>
 
@@ -298,10 +314,12 @@
   <script src="js/results-v3-baseline.js"></script>
   <script src="js/evaluate.js"></script>
   <script src="js/importer.js"></script>
+  <script src="js/demo-examples.js"></script>
   <script src="js/ui-common.js"></script>
   <script src="js/ui-checker.js"></script>
   <script src="js/ui-dashboard.js"></script>
   <script src="js/ui-employer.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/ui-hero-demo.js"></script>
 </body>
 </html>

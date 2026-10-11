@@ -89,6 +89,28 @@ nav a:hover { background: var(--surface-2); color: var(--text); }
 .hero-stats { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
 .hero-stats div { background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); border-radius: 12px; padding: 10px 16px; min-width: 150px; }
 .hero-stats b { display: block; font-size: 1.6rem; }
+.hero-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: 32px; align-items: center; }
+@media (max-width: 960px) { .hero-grid { grid-template-columns: 1fr; gap: 22px; } }
+/* Jonli misol: oq/qora karta hero gradienti ustida — matn rangi sahifa mavzusidan olinadi */
+.demo-card { background: var(--surface); color: var(--text); border-radius: var(--radius); padding: 16px 18px; box-shadow: 0 12px 32px rgb(0 0 0 / .25); min-height: 360px; }
+.demo-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+.demo-head h2 { font-size: 1rem; margin: 0; }
+.demo-card .demo-badge { white-space: nowrap; flex: none; }
+.hero-grid .hero-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 460px; }
+.hero-grid .hero-stats div { min-width: 0; }
+.demo-card .demo-text { background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; margin: 0 0 10px; font-size: .93rem; min-height: 3.2em; max-width: none; opacity: 1; }
+.demo-verdict { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; margin-bottom: 8px; }
+.demo-verdict .lvl { font-size: 1.2rem; font-weight: 700; } /* asosiy tekshiruv bilan bir xil: katta matn (WCAG) */
+.demo-verdict .lvl-disc { font-size: 1rem; color: var(--violet); }
+.demo-reasons li { padding: 6px 10px; margin-bottom: 6px; animation: demo-in .3s ease-out; }
+.demo-reasons q { display: block; font-size: .85rem; color: var(--text-2); }
+.demo-loading { color: var(--text-2); margin: 6px 0; font-size: .9rem; }
+.demo-card .demo-note { color: var(--text-2); font-size: .8rem; margin: 4px 0 8px; max-width: none; opacity: 1; }
+.demo-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.demo-foot .small-link { color: var(--primary-ink, var(--primary)); font-size: .88rem; font-weight: 600; text-decoration: none; }
+.demo-foot .small-link:hover { text-decoration: underline; }
+@keyframes demo-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .demo-reasons li { animation: none; } }
 .hero-cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
 .hero-cta a { background: #fff; color: #12306b; text-decoration: none; font-weight: 600; padding: 10px 16px; border-radius: 10px; }
 .hero-cta a.ghost { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.5); }

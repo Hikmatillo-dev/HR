@@ -57,6 +57,37 @@ await test("Toast xabarlari aria-live=\"polite\" orqali e'lon qilinadi", async (
   await page.close();
 });
 
+await test("Jonli misol: 'Demo misol' belgisi, 8 soniyada tugaydi, sabablar va iqtiboslar, izoh; 'Boshqasini ko'rish' almashtiradi", async () => {
+  const { page, errors } = await open({ demo: false });
+  assert.equal((await page.textContent('#heroDemo .demo-badge')).trim(), 'Demo misol');
+  const t0 = Date.now();
+  await page.waitForSelector('#heroDemo[data-state="done"]', { timeout: 8000 });
+  assert.ok(Date.now() - t0 < 8000);
+  assert.match(await page.textContent('#heroDemo .demo-verdict'), /Firibgarlik xavfi: yuqori/);
+  assert.equal(await page.locator('#heroDemo .demo-reasons li').count(), 3);
+  assert.ok(await page.locator('#heroDemo .demo-text mark').count() >= 3, 'iqtiboslar matnda belgilanmagan');
+  assert.match(await page.textContent('#heroDemo .demo-note'), /Bu avtomatik tahlil/);
+  assert.match(await page.textContent('#heroDemo .demo-live'), /Demo misol/);
+  const titles = [await page.textContent('#heroDemo .demo-title')];
+  for (let i = 0; i < 2; i++) {
+    await page.click('#heroDemo .demo-next');
+    await page.waitForSelector('#heroDemo[data-state="done"]', { timeout: 8000 });
+    titles.push(await page.textContent('#heroDemo .demo-title'));
+  }
+  assert.deepEqual(titles, ["Oldindan to'lov", 'Pasport olib qolish', 'Kamsitish']);
+  assert.match(await page.textContent('#heroDemo .demo-verdict'), /Kamsitish: 3 ta talab/);
+  assert.deepEqual(errors, []);
+  await page.close();
+});
+
+await test("Jonli misol: 'harakatni kamaytirish' yoqilganda natija darhol chiqadi; 390px da gorizontal scroll yo'q", async () => {
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
+  await page.goto(PAGE);
+  await page.waitForSelector('#heroDemo[data-state="done"]', { timeout: 1000 });
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), 390);
+  await page.close();
+});
+
 for (const [width, scheme] of [[390, 'light'], [390, 'dark'], [1280, 'light']]) {
   await test(`Kasblar grafigi ${width}px ${scheme}: yozuvlar ustma-ust tushmaydi, qisqa, jadval bor, gorizontal scroll yo'q`, async () => {
     const { page, errors } = await open({ width, scheme });
@@ -86,11 +117,13 @@ for (const [width, scheme] of [[390, 'light'], [390, 'dark'], [1280, 'light']]) 
 
 const CONTRAST_SELECTORS = ['.lvl-high', '.lvl-medium', '.lvl-low', '.lvl-disc', '#demoBadge', '.tag.high', '.tag.low', '.tag.disc', '.badge-warn',
   '.kpi span', '.data-note', '.muted', '.hint', '.reasons small', 'mark', '.grade', '.tile', '.mode-switch button[aria-pressed="true"]',
-  'nav a', 'button.primary', '.map-ctrl button.on', '.src-text'];
+  'nav a', 'button.primary', '.map-ctrl button.on', '.src-text',
+  '.demo-card .demo-badge', '.demo-card h2', '.demo-text', '.demo-reasons b', '.demo-reasons q', '.demo-note', '.demo-foot .small-link'];
 
 for (const scheme of ['light', 'dark']) {
   await test(`Kontrast WCAG AA (${scheme}): matn ≥ 4.5:1, katta matn ≥ 3:1 — DEMO belgisi va xavf darajalari ham`, async () => {
     const { page } = await open({ scheme });
+    await page.waitForSelector('#heroDemo[data-state="done"]', { timeout: 8000 });
     const fails = [];
     const examples = ['scam', 'disc', 'ok', null];
     for (const ex of examples) {
