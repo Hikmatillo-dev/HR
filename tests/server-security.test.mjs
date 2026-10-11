@@ -30,8 +30,13 @@ const mock = http.createServer(async (req, res) => {
 await new Promise(r => mock.listen(0, '127.0.0.1', r));
 
 const servers = [];
+// Tasodifiy port band bo'lishi mumkin (boshqa test serveri yoki kompyuterdagi dastur) — OS bo'sh portni beradi
+const freePort = () => new Promise((res, rej) => {
+  const s = net.createServer().once('error', rej);
+  s.listen(0, '127.0.0.1', () => { const { port } = s.address(); s.close(() => res(port)); });
+});
 async function startServer(extraEnv = {}) {
-  const port = 4100 + Math.floor(Math.random() * 800);
+  const port = await freePort();
   const dataDir = mkdtempSync(path.join(tmpdir(), 'iq-srv-'));
   const child = spawn(process.execPath, ['server.mjs'], {
     cwd: ROOT,
@@ -138,7 +143,7 @@ try {
   });
 
   await test('Kunlik hisob qayta ishga tushirishda saqlanadi', async () => {
-    limited.child.kill(); await new Promise(r => setTimeout(r, 200));
+    await new Promise(r => { limited.child.once('exit', r); limited.child.kill(); });
     const again = await startServer({ IQ_AI_DAILY_LIMIT: '3', IQ_DATA_DIR: limited.dataDir });
     assert.equal((await ai(again)).status, 429);
   });
