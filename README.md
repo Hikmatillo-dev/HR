@@ -28,7 +28,7 @@ Hakamlar va foydalanuvchilar uchun halol holat (2026-10-11):
 - v3 natijasi boshlang'ich natijadan yomonlashsa.
 
 ### v3 ni to'ldirish tartibi
-1. **Qoralama:** `node tools/redact.mjs --from-export result.json --channel @kanal --limit 50 > v3-qoralama.js`. Telefon, karta, email va @username yashiriladi, tizim bahosi ko'rsatilmaydi.
+1. **Qoralama:** `node tools/redact.mjs --from-export result.json --channel @kanal --limit 50 > v3-qoralama.js`. Telefon (UZ va RU), karta, JSHSHIR, pasport raqami, email, `t.me` va `@username` yashiriladi. STIR o'zgarmaydi, tizim bahosi ko'rsatilmaydi. "Dilnoza opa" kabi ismlar avtomatik yashirilmaydi: qoralamada `⚠️` izohi chiqadi, ularni qo'lda tekshiring.
 2. **Belgilash:** har bir `TODO` ni e'lonni o'qib, **tizimga qaramasdan** to'ldiring (format: `js/test-set-v3.js` boshidagi izoh).
 3. **Qo'shish:** e'lonlarni `js/test-set-v3.js` dagi massivga qo'shing va `npm test` ishga tushiring. Format xatosi yoki yashirilmagan raqam bo'lsa, test aniq xabar beradi.
 4. **Commit:** `git commit -m "test: add v3 real postings"`.
@@ -74,9 +74,9 @@ Bu o'zgarishlar `js/analyzer.js` ga tegadi. v3 boshlang'ich natija o'zgartirilma
 4. Saytda **2. Bozor tahlili → 📂 Telegram eksportini yuklash** tugmasini bosing. Bir nechta `result.json` ni birdaniga tanlash mumkin.
 5. Import hisobotini tekshiring: nechta xabar o'qildi, nechta takror olib tashlandi, nechta e'lon tahlil qilindi.
 
-Fayl **faqat brauzerda** o'qiladi va `localStorage` da saqlanadi, serverga yuborilmaydi. O'chirish uchun "🗑️ Saqlangan ma'lumotni o'chirish" tugmasini bosing. Sinash uchun namunaviy fayl: `namuna/telegram-export-namuna.json`.
+Fayl **faqat brauzerda** o'qiladi va serverga yuborilmaydi. Telefon, karta, JSHSHIR, pasport, email, `t.me` va `@username` tahlil va `localStorage` ga saqlashdan **oldin** yashiriladi. Niqob formatni saqlaydi (`+998 00 000 00 00`), shuning uchun shaffoflik bahosi o'zgarmaydi. O'chirish uchun "🗑️ Saqlangan ma'lumotni o'chirish" tugmasini bosing. Sinash uchun namunaviy fayl: `namuna/telegram-export-namuna.json`.
 
-Ma'lumotni doimiy fayl sifatida saqlash uchun: `python3 tools/telegram_export.py k1/result.json k2/result.json` → `js/real-data.js`.
+Ma'lumotni doimiy fayl sifatida saqlash uchun: `python3 tools/telegram_export.py k1/result.json k2/result.json` → `js/real-data.js`. Skript ham xuddi shu qoidalar bilan yashiradi. Ismlar haqida ogohlantirish beradi: faylni commit qilishdan oldin uni qo'lda tekshiring.
 
 ### 3. AI'ni yoqish
 ```bash
@@ -137,7 +137,8 @@ npm test
 |---|---|
 | `tests/importer.test.mjs` | Telegram JSON, CSV, TXT o'qilishi, takrorlar, buzilgan fayllar (8 test) |
 | `tests/ai.test.mjs` | AI xato holatlari mock API bilan: buzilgan JSON, sxema, refusal, 401, 429, 500+retry, timeout, bo'sh/uzun matn, kalitsiz rejim (11 test) |
-| `tests/redact.test.mjs` | Telefon, karta, email va @username yashirilishi; v3 qoralamasi (5 test) |
+| `tests/redact.test.mjs` | Telefon (UZ, RU), karta, JSHSHIR, pasport, email, `t.me`, `@username` yashirilishi; STIR saqlanishi; validator; analyzer natijasi o'zgarmasligi; import va REPL'da yiqilmaslik; v3 qoralamasi (14 test) |
+| `tests/redact-parity.test.mjs` | `js/pii.js` va `tools/telegram_export.py` bir xil yashirishi (10 holat; Python bo'lmasa o'tkazib yuboriladi) |
 | `tests/baseline.test.mjs` | Boshlang'ich natija skripti: qayta yozish taqiqi, `--force` va git tekshiruvi, arxivlash, `analyzer.js` himoyasi (6 test) |
 | `tests/bot.test.mjs` | Bot: 4 buyruq, HTML escape, bo'laklash va 4096 chegarasi, disclaimer, `/stats` va xeshlangan `user_id`, tokensiz ishga tushish, soxta Telegram server bilan to'liq oqim (14 test) |
 | `tests/config.test.mjs` | Config va `analyzer.js` kurslari bir xilligi, `.env` orqali almashtirish, eskirgan kurs, rasmiy manbalar formati, server orqali uzatish (6 test) |
@@ -152,6 +153,7 @@ Batafsil xatolar ro'yxati: `node tests/run.mjs --verbose`.
 index.html, css/            sahifa va dizayn
 js/analyzer.js              TAHLIL YADROSI: qoidalar, maosh, hudud, kasb, shaffoflik, odam savdosi
 js/importer.js              Telegram JSON / CSV / TXT importi va takrorlarni aniqlash
+js/pii.js                   shaxsiy ma'lumotni topish va yashirish (yagona manba)
 js/evaluate.js              aniqlik metrikalari (brauzer va testlar uchun bitta modul)
 js/test-set.js              qo'lda belgilangan test to'plami + boshlang'ich natija
 js/test-set-v3.js           REAL Telegram e'lonlari (v3), hozircha bo'sh

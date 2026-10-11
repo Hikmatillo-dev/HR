@@ -61,7 +61,7 @@ if (force && exists) {
 }
 
 // ---------- 3. Modullar va v3 to'plami ----------
-for (const f of ['js/analyzer.js', 'js/test-set.js', 'js/test-set-v3.js', 'js/evaluate.js']) await import(pathToFileURL(P(f)).href);
+for (const f of ['js/pii.js', 'js/analyzer.js', 'js/test-set.js', 'js/test-set-v3.js', 'js/evaluate.js']) await import(pathToFileURL(P(f)).href);
 const A = globalThis.IshQalqon, E = globalThis.IQEval;
 const v3 = globalThis.TEST_SET_V3 || [];
 if (!v3.length) fail("js/test-set-v3.js bo'sh: avval real e'lonlarni qo'shing (README → Evaluation).");

@@ -57,22 +57,11 @@
   // ---------- Test e'lonlarini tekshirish (validatsiya) ----------
   const LEVELS = ['low', 'medium', 'high'];
   const CATEGORIES = ['scam', 'trafficking', 'discrimination', 'legit', 'trap', 'ambiguous'];
-  // Yashirilmagan shaxsiy ma'lumot: telefon (+998 yoki 9 xonali mahalliy), 16 xonali karta raqami, email
-  const PII = [
-    ['telefon raqami', /(\+?998[\s-]?)?\(?\d{2}\)?[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}(?!\d)/],
-    ['karta raqami', /\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b/],
-    ['email', /[\w.+-]+@[\w-]+\.[\w.]+/]
-  ];
-
-  // STIR/INN (kompaniyaning ochiq soliq raqami) shaxsiy ma'lumot emas — istisno qilinadi
-  function findPii(text, re) {
-    const g = new RegExp(re.source, 'g');
-    let m;
-    while ((m = g.exec(text))) {
-      if (!/(stir|inn|инн)\s*:?\s*$/i.test(text.slice(Math.max(0, m.index - 12), m.index))) return m[0];
-    }
-    return null;
-  }
+  // Yashirilmagan shaxsiy ma'lumot — qoidalar js/pii.js da (redaction bilan bir xil manba)
+  const PII = () => {
+    if (!global.IQPII) throw new Error('js/pii.js yuklanmagan (evaluate.js dan oldin yuklang)');
+    return global.IQPII;
+  };
 
   function knownFlags(A) {
     return new Set([
@@ -107,12 +96,27 @@
         if (typeof c.source_channel !== 'string' || !c.source_channel.trim()) err("source_channel to'ldirilmagan");
         if (typeof c.reviewer_notes !== 'string') err("reviewer_notes satr bo'lishi kerak (bo'sh bo'lishi mumkin)");
         if (typeof c.text === 'string') {
-          PII.forEach(([name, re]) => { if (findPii(c.text, re)) err(`matnda yashirilmagan ${name} bor — node tools/redact.mjs bilan tozalang`); });
+          const left = PII().findPii(c.text);
+          [...new Set(left.map(f => f.type))].forEach(t => err(`matnda yashirilmagan ${PII().LABELS[t]} bor — node tools/redact.mjs bilan tozalang`));
         }
       }
     });
     return errors;
   }
 
-  global.IQEval = { evaluate, predictedFlags, validateCases, knownFlags, findPii, PII, LEVELS, CATEGORIES };
+  /** To'xtatmaydigan ogohlantirishlar: ism + opa/aka, t.me va @username (ochiq kanal bo'lishi mumkin) */
+  function validationWarnings(cases) {
+    const out = [];
+    for (const c of cases) {
+      if (!c || typeof c.text !== 'string') continue;
+      const names = PII().nameWarnings(c.text);
+      if (names.length) out.push(`${c.id}: ism bo'lishi mumkin (${names.join(', ')}) — qo'lda tekshiring`);
+      if (/(?:t|telegram)\.me\/(?!foydalanuvchi\b)\w|(?<![\w@./])@(?!foydalanuvchi\b)[A-Za-z]\w{3,}/.test(c.text)) {
+        out.push(`${c.id}: t.me yoki @username bor — shaxsiy akkaunt bo'lsa yashiring`);
+      }
+    }
+    return out;
+  }
+
+  global.IQEval = { evaluate, predictedFlags, validateCases, validationWarnings, knownFlags, LEVELS, CATEGORIES };
 })(typeof window !== 'undefined' ? window : globalThis);

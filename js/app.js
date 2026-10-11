@@ -11,11 +11,32 @@
   const STORE_KEY = 'iq-real-data';
   const state = { mode: 'real', real: null }; // real: { items, stats, name, savedAt, source }
 
+  // Shaxsiy ma'lumot (telefon, karta, JSHSHIR, pasport, email, t.me, @username) tahlil va saqlashdan OLDIN yashiriladi
+  function redactItems(items) {
+    const totals = {};
+    const out = items.map(it => {
+      const { text, counts } = window.IQPII.redact(it.text);
+      Object.entries(counts).forEach(([k, n]) => { totals[k] = (totals[k] || 0) + n; });
+      return Object.assign({}, it, { text });
+    });
+    return { items: out, totals };
+  }
+  const redactedSummary = t => Object.entries(t || {}).filter(([, n]) => n).map(([k, n]) => `${n} ${window.IQPII.LABELS[k]}`).join(', ');
+
   function loadSavedReal() {
     const fromFile = window.REAL_VACANCIES || [];
-    if (fromFile.length) return { items: fromFile, stats: null, name: 'js/real-data.js', source: 'file' };
+    if (fromFile.length) return { items: redactItems(fromFile).items, stats: null, name: 'js/real-data.js', source: 'file' };
     const saved = IQ.store.get(STORE_KEY, null);
-    return saved && Array.isArray(saved.items) && saved.items.length ? Object.assign(saved, { source: 'storage' }) : null;
+    if (!(saved && Array.isArray(saved.items) && saved.items.length)) return null;
+    // Eski versiya tozalanmagan matn saqlagan bo'lishi mumkin — yuklashda tozalab, qayta yozamiz
+    const clean = redactItems(saved.items);
+    if (Object.values(clean.totals).some(Boolean)) {
+      saved.items = clean.items;
+      saved.redacted = Object.assign({}, saved.redacted);
+      Object.entries(clean.totals).forEach(([k, n]) => { saved.redacted[k] = (saved.redacted[k] || 0) + n; });
+      IQ.store.set(STORE_KEY, saved);
+    }
+    return Object.assign(saved, { source: 'storage' });
   }
 
   function levelCounts(data) {
@@ -39,6 +60,7 @@
         ${kpi(`${c.high} / ${c.medium} / ${c.low}`, '🔴 xavfli / 🟡 shubhali / 🟢 past xavf')}
         ${kpi(c.disc, '⚖️ Kamsituvchi')}
       </div>
+      ${redactedSummary(real.redacted) ? `<p class="muted" style="margin:8px 0 0;font-size:.82rem">🔒 Shaxsiy ma'lumot yashirildi: ${esc(redactedSummary(real.redacted))}. Brauzerda faqat yashirilgan matn saqlanadi.</p>` : ''}
       <p class="muted" style="margin:8px 0 0;font-size:.82rem">${s.notVacancy} ta xabar vakansiyaga o'xshamagani yoki juda qisqaligi uchun tahlilga kiritilmadi (reklama, salomlashish va h.k.).</p>`;
   }
 
@@ -75,9 +97,11 @@
     if (!files.length) return;
     try {
       const contents = await Promise.all(files.map(async f => ({ name: f.name, content: await f.text() })));
-      const { items, stats } = window.IQImporter.importFiles(contents, A.fingerprint);
-      if (!items.length) throw new Error(`${stats.messages} ta xabar o'qildi, lekin vakansiyaga o'xshash e'lon topilmadi`);
-      const real = { items, stats, name: files.map(f => f.name).join(', '), savedAt: Date.now() };
+      const imported = window.IQImporter.importFiles(contents, A.fingerprint);
+      const { stats } = imported;
+      if (!imported.items.length) throw new Error(`${stats.messages} ta xabar o'qildi, lekin vakansiyaga o'xshash e'lon topilmadi`);
+      const { items, totals } = redactItems(imported.items);
+      const real = { items, stats, redacted: totals, name: files.map(f => f.name).join(', '), savedAt: Date.now() };
       // Faqat shu brauzerda saqlanadi; hajm katta bo'lsa saqlanmaydi, lekin tahlil ishlayveradi
       let saved = false;
       try { localStorage.setItem(STORE_KEY, JSON.stringify(real)); saved = true; } catch (err) { /* hajm yoki xususiy rejim */ }

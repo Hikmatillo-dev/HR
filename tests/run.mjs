@@ -3,13 +3,14 @@
 //   v2 — keyin qo'shilgan qiyin qo'lda yozilgan e'lonlar
 //   v3 — REAL Telegram e'lonlari (js/test-set-v3.js)
 import { existsSync, readFileSync } from 'node:fs';
+import '../js/pii.js';
 import '../js/analyzer.js';
 import '../js/test-set.js';
 import '../js/test-set-v3.js';
 import '../js/evaluate.js';
 
 const A = globalThis.IshQalqon;
-const { evaluate, validateCases } = globalThis.IQEval;
+const { evaluate, validateCases, validationWarnings } = globalThis.IQEval;
 const handmade = globalThis.TEST_SET;
 const v3 = globalThis.TEST_SET_V3 || [];
 const verbose = process.argv.includes('--verbose');
@@ -23,6 +24,8 @@ const formatErrors = [
   ...validateCases(v3, A, { real: true, idPattern: /^v3-\d{3}$/ }),
   ...[...handmade, ...v3].map(c => c.id).filter((id, i, all) => all.indexOf(id) !== i).map(id => `${id}: id to'plamlar orasida takrorlangan`)
 ];
+const warnings = validationWarnings(v3);
+if (warnings.length) console.warn(`⚠️ v3 ogohlantirishlari (${warnings.length}):\n  - ${warnings.join('\n  - ')}\n`);
 if (formatErrors.length) {
   console.error(`Test to'plamida ${formatErrors.length} ta format xatosi:\n  - ${formatErrors.join('\n  - ')}`);
   process.exit(1);

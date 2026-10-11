@@ -2,7 +2,8 @@
 //
 // Qoidalar:
 //   1. Faqat haqiqiy Telegram kanallaridan olingan e'lonlar (source_type: 'real').
-//   2. Telefon, karta raqami va email yashirilgan bo'lishi shart. `npm test` yashirilmagan raqamni topsa xato beradi.
+//   2. Telefon (UZ/RU), karta, JSHSHIR, pasport raqami va email yashirilgan bo'lishi shart — `npm test` qolganini
+//      topsa xato beradi. Ism + opa/aka va @username uchun ogohlantirish chiqadi: qo'lda tekshiring.
 //      Qoralama tayyorlash: node tools/redact.mjs --from-export result.json --channel @kanal --limit 50
 //   3. Belgini (expected_*) inson qo'yadi, tizim natijasiga qarab EMAS.
 //   4. Birinchi to'ldirilgandan keyin: npm run eval:v3-baseline (analyzer.js ga TEGMASDAN).
@@ -22,7 +23,7 @@
 // Namuna (izohdan chiqarmang — bu real e'lon emas):
 //   {
 //     id: 'v3-001',
-//     text: "Koreyaga ishga! Viza 100% kafolat. Hujjat uchun to'lov 500$. Tel: +998 XX XXX XX XX",
+//     text: "Koreyaga ishga! Viza 100% kafolat. Hujjat uchun to'lov 500$. Tel: +998 00 000 00 00",
 //     source_channel: '@ish_kanali',
 //     source_type: 'real',
 //     expected_risk_level: 'high',
