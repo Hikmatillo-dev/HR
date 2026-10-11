@@ -73,9 +73,11 @@
       <div class="btns">
         <button class="small" id="btnShare">📋 Natijani nusxalash</button>
         ${a.level !== 'low' || a.discrimination.length ? '<button class="small" id="btnReport">🚩 Shikoyat matni</button>' : ''}
-        <button class="small" id="btnAi" ${IQ.aiAvailable ? '' : 'hidden'}>🤖 AI chuqur tahlil</button>
+        <button class="small" id="btnAi">🤖 AI chuqur tahlil</button>
       </div>
-      <div id="aiOut"></div>`;
+      <p class="ai-status" id="aiStatus" role="status"></p>
+      <div id="aiOut" aria-live="polite"></div>`;
+    updateAiButton();
   }
 
   function summary() {
@@ -108,25 +110,70 @@
     ].join('\n');
   }
 
+  // ---------- AI chuqur tahlil ----------
+  // IQ.ai = { state: 'checking' | 'on' | 'off', reason, maxChars } — app.js /api/health orqali to'ldiradi
+  function updateAiButton() {
+    const btn = $('#btnAi'), status = $('#aiStatus');
+    if (!btn) return;
+    const ai = IQ.ai || { state: 'checking' };
+    btn.disabled = ai.state !== 'on';
+    status.textContent = ai.state === 'on' ? '' : ai.state === 'checking' ? 'AI holati tekshirilmoqda...' : ai.reason;
+  }
+
+  // AI javobini DOM orqali quramiz: matn faqat textContent bilan qo'yiladi, HTML sifatida talqin qilinmaydi
+  function el(tag, props, ...children) {
+    const node = document.createElement(tag);
+    Object.assign(node, props || {});
+    children.flat().forEach(c => { if (c !== null && c !== undefined && c !== false) node.append(c instanceof Node ? c : String(c)); });
+    return node;
+  }
+  function listSection(title, items, render) {
+    if (!items || !items.length) return null;
+    return el('div', null, el('h5', { className: 'ai-h' }, title), el('ul', null, items.map(i => el('li', null, render(i)))));
+  }
+  const quoted = q => (q ? el('q', { className: 'ai-quote' }, q) : null);
+
+  function renderAi(data) {
+    const LV = { high: '🔴 Yuqori xavf', medium: "🟡 O'rtacha xavf", low: '🟢 Past xavf' };
+    const box = el('div', { className: 'ai-box' },
+      el('h4', null, '🤖 AI xulosasi: ', LV[data.risk_level] || data.risk_level),
+      el('p', null, data.summary),
+      listSection('Xavf sabablari', data.risk_reasons, r => [el('b', null, r.reason), ' ', quoted(r.quote)]),
+      listSection("Odam savdosi belgilari", data.human_trafficking_flags, f => [el('b', null, f.indicator + ': '), f.explanation, ' ', quoted(f.quote)]),
+      listSection('Kamsitish', data.discrimination_flags, f => [el('b', null, f.type + ': '), f.explanation, ' ', quoted(f.quote)]),
+      listSection("Yetishmayotgan ma'lumotlar", data.missing_information, m => m),
+      listSection("Ish beruvchiga beriladigan savollar", data.recommended_questions_for_applicant, q => q),
+      data.improved_non_discriminatory_version
+        ? el('details', { className: 'block' }, el('summary', null, 'Kamsitishsiz, shaffof variant'), el('div', { className: 'src-text' }, data.improved_non_discriminatory_version))
+        : null,
+      el('p', { className: 'muted ai-note' }, "Bu avtomatik tahlil. Yakuniy qaror sizda: kompaniyani mustaqil tekshiring.")
+    );
+    $('#aiOut').replaceChildren(box);
+  }
+
+  function renderAiError(message) {
+    $('#aiOut').replaceChildren(el('div', { className: 'ai-box ai-error' }, el('b', null, 'AI tahlili bajarilmadi: '), message, el('br'), el('span', { className: 'muted' }, "Qoidalar tizimi natijasi yuqorida o'z kuchida.")));
+  }
+
   async function runAi() {
-    const out = $('#aiOut'), btn = $('#btnAi');
+    const btn = $('#btnAi');
+    const max = (IQ.ai && IQ.ai.maxChars) || 6000;
+    if (last.text.trim().length < 20) return renderAiError("Matn juda qisqa (kamida 20 belgi).");
+    if (last.text.length > max) return renderAiError(`Matn juda uzun: ${last.text.length} belgi (ko'pi bilan ${max}). Bitta e'lonni yuboring.`);
     btn.disabled = true; btn.textContent = '🤖 Tahlil qilinmoqda...';
-    out.innerHTML = '';
+    $('#aiOut').replaceChildren();
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 120_000);
     try {
-      const res = await fetch('/api/ai', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: last.text }) });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || res.statusText);
-      const lvl = { high: '🔴 Yuqori xavf', medium: "🟡 O'rtacha xavf", low: '🟢 Past xavf' }[data.risk_level] || data.risk_level;
-      out.innerHTML = `<div class="ai-box">
-        <h4>🤖 AI xulosasi: ${esc(lvl)}</h4>
-        <p>${esc(data.summary)}</p>
-        ${data.red_flags.length ? `<ul>${data.red_flags.map(f => `<li><b>${esc(f.flag)}:</b> ${esc(f.explanation)}</li>`).join('')}</ul>` : ''}
-        <p><b>Maslahat:</b> ${esc(data.advice)}</p>
-        ${data.neutral_rewrite ? `<details class="block"><summary>Kamsitishsiz, shaffof variant</summary><div class="src-text">${esc(data.neutral_rewrite)}</div></details>` : ''}
-      </div>`;
+      const res = await fetch('/api/ai', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: last.text }), signal: ctrl.signal });
+      let data;
+      try { data = await res.json(); } catch (e) { throw new Error(`Server javobi noto'g'ri (HTTP ${res.status}).`); }
+      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+      renderAi(data);
     } catch (e) {
-      out.innerHTML = `<div class="ai-box">AI tahlili ishlamadi: ${esc(e.message)}. Qoidalar tizimi natijasi yuqorida.</div>`;
+      renderAiError(e.name === 'AbortError' ? "Server juda uzoq javob bermadi." : e.message);
     } finally {
+      clearTimeout(timer);
       btn.disabled = false; btn.textContent = '🤖 AI chuqur tahlil';
     }
   }
@@ -144,5 +191,5 @@
     if (e.target.id === 'btnReport') IQ.copy(complaint(), 'Shikoyat matni nusxalandi');
     if (e.target.id === 'btnAi') runAi();
   });
-  IQ.onAiReady = () => { const b = $('#btnAi'); if (b) b.hidden = false; };
+  IQ.onAiStatus = updateAiButton;
 })();

@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node server.mjs",
     "bot": "node bot.mjs",
-    "test": "node tests/importer.test.mjs && node tests/run.mjs"
+    "test": "node tests/importer.test.mjs && node tests/ai.test.mjs && node tests/run.mjs"
   },
   "repository": {
     "type": "git",

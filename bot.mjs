@@ -1,7 +1,7 @@
 // IshQalqon Telegram boti: e'lon matnini (yoki kanaldan forward qilingan xabarni) yuboring — bot tekshiradi.
 // Ishga tushirish: TELEGRAM_BOT_TOKEN=... node bot.mjs   (token @BotFather dan olinadi)
 // AI xulosa uchun qo'shimcha: ANTHROPIC_API_KEY=...
-import { aiEnabled, aiAnalyze } from './lib/ai.mjs';
+import { aiEnabled, aiAnalyze, MAX_CHARS } from './lib/ai.mjs';
 import './js/analyzer.js';
 
 const { analyze, LEVEL_TEXT } = globalThis.IshQalqon;
@@ -47,14 +47,18 @@ async function handle(msg) {
   const a = analyze(text);
   await tg('sendMessage', { chat_id: msg.chat.id, text: report(a), parse_mode: 'HTML', reply_to_message_id: msg.message_id });
 
-  if (aiEnabled) {
+  if (aiEnabled && text.length <= MAX_CHARS) {
     try {
       const ai = await aiAnalyze(text);
-      const extra = [`🤖 <b>AI xulosasi</b>\n${escHtml(ai.summary)}`, `💡 ${escHtml(ai.advice)}`];
-      if (ai.neutral_rewrite) extra.push(`\n<b>Kamsitishsiz variant:</b>\n${escHtml(ai.neutral_rewrite)}`);
-      await tg('sendMessage', { chat_id: msg.chat.id, text: extra.join('\n'), parse_mode: 'HTML' });
+      const extra = [`🤖 <b>AI xulosasi</b>\n${escHtml(ai.summary)}`];
+      if (ai.recommended_questions_for_applicant.length) {
+        extra.push('', "<b>Ish beruvchidan so'rang:</b>", ...ai.recommended_questions_for_applicant.map(q => `• ${escHtml(q)}`));
+      }
+      if (ai.improved_non_discriminatory_version) extra.push('', `<b>Kamsitishsiz variant:</b>\n${escHtml(ai.improved_non_discriminatory_version)}`);
+      extra.push('', "<i>Bu avtomatik tahlil. Yakuniy qaror sizda.</i>");
+      await tg('sendMessage', { chat_id: msg.chat.id, text: extra.join('\n').slice(0, 4000), parse_mode: 'HTML' });
     } catch (e) {
-      console.error('AI:', e.message);
+      console.error('AI:', e.code || '', e.message);
     }
   }
 }

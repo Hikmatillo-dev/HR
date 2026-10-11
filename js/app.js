@@ -168,11 +168,16 @@
   }
   renderMetrics();
 
-  // ---------- AI (faqat server.mjs orqali ishga tushirilganda) ----------
+  // ---------- AI holati: faqat server.mjs orqali va kalit sozlangan bo'lsa ----------
+  IQ.ai = { state: 'checking' };
   if (location.protocol.startsWith('http')) {
-    fetch('/api/health').then(r => (r.ok ? r.json() : null)).then(h => {
-      if (h && h.ai) { IQ.aiAvailable = true; IQ.onAiReady(); }
-    }).catch(() => { /* statik rejim: AI yo'q */ });
+    fetch('/api/health').then(r => (r.ok ? r.json() : Promise.reject(new Error(r.status)))).then(h => {
+      IQ.ai = h.ai ? { state: 'on', maxChars: h.maxChars } : { state: 'off', reason: h.reason || "AI tahlil faollashtirilmagan: ANTHROPIC_API_KEY sozlanmagan." };
+    }).catch(() => {
+      IQ.ai = { state: 'off', reason: "AI tahlil mavjud emas: sayt AI serverisiz ishlayapti (npm start bilan ishga tushiring)." };
+    }).finally(() => IQ.onAiStatus());
+  } else {
+    IQ.ai = { state: 'off', reason: "AI tahlil mavjud emas: sayt fayl sifatida ochilgan. AI uchun `npm start` bilan ishga tushiring va ANTHROPIC_API_KEY ni sozlang." };
   }
 
   // ---------- Boshlang'ich holat: faqat real ma'lumot, bo'lmasa — bo'sh holat ----------
