@@ -73,4 +73,11 @@ test("Kanalga do'st taklif qilish — referal sxema emas; pul evaziga do'st takl
   has("3 ta do'stingizni taklif qiling va har biri uchun bonus oling", 'invest');
 });
 
+test("Xorij: yangi davlatlar topiladi; ko'cha nomi, til, oshxona va qahva nomi — xorij emas", () => {
+  for (const t of ['Bolgariyada ish taklifi', 'Литвада ишлаш', 'Yaponiyada ishlash uchun', 'Xorvatiya: qurilish', "Ko'plab davlatlar bilan hamkorlik", 'Работа в США']) has(t, 'abroad');
+  for (const t of ["Isroilov ko'chasi 5, sotuvchi", 'Знание английского языка, офис-менеджер', 'Повар китайской кухни',
+    'Xitoy oshxonasiga oshpaz', 'Amerikancha kofe tayyorlovchi barista', 'Bae restorani']) hasNot(t, 'abroad');
+  assert.equal(analyze('Bolgariyada avtomexanik').region, 'Xorij');
+});
+
 console.log(`\n${passed} ta qoida testi o'tdi${process.exitCode ? ', xatolar bor' : ''}\n`);

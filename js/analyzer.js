@@ -8,6 +8,16 @@
   const EUR_RATE = 13700; // taxminiy kurs, so'm / €
   const RUB_RATE = 150;   // taxminiy kurs, so'm / rubl
 
+  // Xorijiy davlatlar (lotin + kirill/rus). Kirill o'zbekcha matn transliteratsiya orqali lotin qismiga tushadi.
+  const ABROAD_RE = new RegExp([
+    'koreya|yaponiya|xitoy(da|ga|dan)\\b|polsha|germaniya|chexiya|slovakiya|bolgariya|xorvatiya|serbiya|ruminiya|vengriya|litva|latviya|estoniya',
+    "avstriya|italiya|ispaniya|gretsiya|finlyandiya|angliya|britaniya|\\bamerika(da|ga|dan|ning|lik)?\\b|\\baqsh\\b|kanada|\\bisroil(da|ga|dan|ning)?\\b|dubay|arab\\s+amirlik|\\bqatar|turkiya|rossiya|moskva",
+    "yevropa|xorij|chet\\s+el|(ko'plab|boshqa|xorijiy|turli)\\s+davlat",
+    'корея|корею|япони|китай(?!ск)|китае|польш|германи|чехи|словаки|болгари|хорвати|сербии|румыни|венгри|литв|латви|эстони',
+    'австри|итали|испани|греци|финлянди|англи[яию](?![а-я])|британи|америк[аеиу](?![а-я])|сша(?![а-я])|канад|израил|дуба[йе]|оаэ|катар|турци|москв|петербург',
+    'европ|за\\s+границ|за\\s+рубеж'
+  ].join('|'));
+
   // ---------- Firibgarlik belgilari ----------
   const SCAM_RULES = [
     {
@@ -63,7 +73,7 @@
     {
       id: 'abroad', weight: 10, label: 'Xorijga ish taklifi',
       detail: "Xorijdagi ish takliflarida firibgarlik ko'p uchraydi. Agentlik litsenziyasini Tashqi mehnat migratsiyasi agentligi orqali tekshiring.",
-      re: /koreya|polsha|germaniya|chexiya|dubay|turkiya|rossiya|yevropa|xorij|chet\s+el|moskva|корея|корею|польш|германи|турци|дуба[йе]|москв|петербург|европ|за\s+границ|за\s+рубеж/
+      re: ABROAD_RE
     },
     {
       id: 'urgency', weight: 10, label: 'Shoshiltirish',
@@ -131,7 +141,7 @@
     ['Jizzax', /jizzax|джизак/],
     ['Sirdaryo', /sirdaryo|guliston|сырдар|гулистан/],
     ['Xorazm', /xorazm|urganch|хорезм|ургенч/],
-    ['Xorij', /koreya|polsha|germaniya|chexiya|dubay|turkiya|rossiya|yevropa|xorij|chet\s+el|moskva|корея|корею|польш|германи|турци|дуба[йе]|москв|петербург|европ|за\s+границ/]
+    ['Xorij', ABROAD_RE]
   ];
 
   // ---------- Kasblar (soha bilan) ----------
