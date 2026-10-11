@@ -1,3 +1,59 @@
-// tools/eval-v3-baseline.mjs tomonidan yaratiladi — qo'lda o'zgartirmang.
-// v3 boshlang'ich natija hali yozilmagan.
-window.V3_BASELINE = null;
+// tools/eval-v3-baseline.mjs tomonidan yaratilgan — qo'lda o'zgartirmang.
+window.V3_BASELINE = {
+  "created_at": "2026-10-11T20:36:37.760Z",
+  "n": 34,
+  "git_commit": "ac296f1f52853523916f1846927b5a9a23a90623",
+  "analyzer_sha256": "38ceba487377ec7c2a45d854ff582330558ed9d5832464a645f364b6cc761511",
+  "evaluate_sha256": "369f131cab8a9ce3ed2228a8afdc2d9e43d61e38fc293acd2def9712f657de59",
+  "test_set_v3_sha256": "758f4a6fe878937ce8d4b79abb3aa14b1970215ffa954d8b0af4450298545862",
+  "metrics": {
+    "accuracy": 0.7058823529411765,
+    "risk_recall": 0.16666666666666666,
+    "risk_precision": 1,
+    "false_positive_rate": 0,
+    "discrimination_recall": 0.7058823529411765,
+    "discrimination_precision": 1,
+    "trafficking_recall": null,
+    "trafficking_precision": null,
+    "reason_accuracy": 0.2857142857142857,
+    "exact_level_match": 0.7058823529411765
+  },
+  "counts": {
+    "risky": 12,
+    "safe": 22,
+    "tp": 2,
+    "fp": 0,
+    "fn": 10,
+    "tn": 22,
+    "discriminatory": 17,
+    "trafficking": 0,
+    "expected_flags": 63
+  },
+  "failure_ids": [
+    "v3-001",
+    "v3-002",
+    "v3-003",
+    "v3-004",
+    "v3-005",
+    "v3-006",
+    "v3-007",
+    "v3-008",
+    "v3-009",
+    "v3-010",
+    "v3-011",
+    "v3-012",
+    "v3-013",
+    "v3-014",
+    "v3-015",
+    "v3-016",
+    "v3-017",
+    "v3-027",
+    "v3-028",
+    "v3-029",
+    "v3-030",
+    "v3-031",
+    "v3-032",
+    "v3-033",
+    "v3-034"
+  ]
+};

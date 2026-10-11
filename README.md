@@ -41,7 +41,21 @@ Hakamlar va foydalanuvchilar uchun halol holat (2026-10-11):
 - Qayta o'lchash `npm run eval:v3-baseline -- --force` bilan bajariladi. U faqat butun repozitoriy toza bo'lganda ishlaydi, eski natija esa `tests/results/archive/` ga vaqt belgisi bilan ko'chiriladi.
 
 <!-- v3-baseline:start -->
-**v3 boshlang'ich natija:** hali yozilmagan — real e'lonlar qo'shilgandan keyin `npm run eval:v3-baseline`.
+**v3 boshlang'ich natija** (real e'lonlar, qoidalar o'zgartirilmasdan): 2026-10-11, 34 ta e'lon, commit `ac296f1`
+
+SHA-256: `analyzer.js` `38ceba487377…` · `evaluate.js` `369f131cab8a…` · `test-set-v3.js` `758f4a6fe878…`
+
+| Ko'rsatkich | Natija |
+|---|---|
+| Umumiy aniqlik | 70.6% |
+| Xavfli e'lonlarni topish (recall) | 16.7% (2/12) |
+| "Xavfli" deganida to'g'ri bo'lishi (precision) | 100.0% |
+| Halol e'lonni xavfli deyish (FPR) | 0.0% (0/22) |
+| Kamsitishni topish | 70.6% |
+| Odam savdosini topish | — |
+| Sabablar aniqligi (kutilgan belgilar topildi) | 28.6% |
+
+Xato bo'lgan testlar (25): v3-001, v3-002, v3-003, v3-004, v3-005, v3-006, v3-007, v3-008, v3-009, v3-010, v3-011, v3-012, v3-013, v3-014, v3-015, v3-016, v3-017, v3-027, v3-028, v3-029, v3-030, v3-031, v3-032, v3-033, v3-034. Tahlil: `tests/results/v3-errors.md`.
 <!-- v3-baseline:end -->
 
 ## Kutilayotgan ishlar (v3 baseline yozilgandan keyin)
