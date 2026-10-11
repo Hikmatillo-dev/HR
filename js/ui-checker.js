@@ -38,7 +38,11 @@
 
     const advice = a.level === 'high'
       ? "Bu e'longa pul to'lamang va shaxsiy ma'lumotlaringizni yubormang."
-      : a.level === 'medium' ? "Ehtiyot bo'ling: kompaniya nomi, manzili va litsenziyasini tekshiring." : "Jiddiy xavf belgisi topilmadi.";
+      : a.level === 'medium' ? "Ehtiyot bo'ling: kompaniya nomi, manzili va litsenziyasini tekshiring."
+      : a.discrimination.length ? "Firibgarlik belgisi topilmadi, lekin e'londa qonunga zid kamsituvchi talab bor."
+      : "Jiddiy xavf belgisi topilmadi.";
+    // Ikki alohida o'lchov: firibgarlik xavfi va kamsitish — yashil "past xavf" kamsitishni yashirmasligi uchun
+    const verdict = `${IQ.DOT[a.level]} Firibgarlik xavfi: ${A.LEVEL_TEXT[a.level].replace(/ xavf$/, '').toLowerCase()}`;
     const tScore = a.transparency.score;
     const tColor = tScore >= 70 ? IQ.color('good') : tScore >= 40 ? IQ.color('warning') : IQ.color('critical');
 
@@ -53,7 +57,8 @@
       <div class="verdict">
         <div class="gauges">${gauge(a.score, IQ.levelColor(a.level), 'xavf')}${gauge(tScore, tColor, 'shaffoflik')}</div>
         <div style="flex:1;min-width:200px">
-          <div class="lvl lvl-${a.level}">${IQ.DOT[a.level]} ${A.LEVEL_TEXT[a.level]}</div>
+          <div class="lvl lvl-${a.level}">${verdict}</div>
+          ${a.discrimination.length ? `<div class="lvl lvl-disc">⚖️ Kamsitish: ${a.discrimination.length} ta talab</div>` : ''}
           <div class="sub">${advice}</div>
           <div class="facts">
             <span class="tag">📍 ${esc(a.region)}</span>
