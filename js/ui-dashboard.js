@@ -339,8 +339,14 @@
 
   // ---------- Eksport ----------
   IQ.exportCsv = () => {
+    if (!DATA.length) return;
     const head = ['id', 'sana', 'kanal', 'hudud', 'kasb', 'soha', 'maosh_min', 'maosh_max', 'xavf_ball', 'xavf_daraja', 'shaffoflik', 'kamsitish', 'firibgarlik_belgilari', 'matn'];
-    const cell = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+    // Formula injection himoyasi: = + - @ bilan boshlangan qiymat Excel'da formula bo'lib bajarilmasligi uchun
+    const cell = v => {
+      let t = String(v ?? '');
+      if (/^[=+\-@\t\r]/.test(t)) t = "'" + t;
+      return `"${t.replace(/"/g, '""')}"`;
+    };
     const lines = DATA.map(d => [d.id, d.date, d.channel, d.a.region, d.a.profession, d.a.category, d.a.salary?.min, d.a.salary?.max,
       d.a.score, A.LEVEL_TEXT[d.a.level], d.a.transparency.score, d.a.discrimination.map(x => x.label).join('; '),
       d.a.scam.map(x => x.label).join('; '), d.text].map(cell).join(','));
@@ -364,7 +370,13 @@
     renderRows();
   };
 
+  IQ.clearDashboard = () => {
+    DATA = [];
+    Object.keys(charts).forEach(id => { charts[id].destroy(); delete charts[id]; });
+  };
+
   IQ.redrawCharts = () => {
+    if (!DATA.length) return;
     if (window.Chart) {
       Chart.defaults.font.family = 'system-ui, -apple-system, Segoe UI, Roboto, sans-serif';
       Chart.defaults.color = IQ.color('text-2');

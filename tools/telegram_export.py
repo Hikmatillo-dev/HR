@@ -14,9 +14,11 @@ import re
 import sys
 from pathlib import Path
 
+# js/importer.js dagi filtr bilan bir xil. Keng olingan: firibgar e'lonlar ko'pincha "kerak" demaydi.
 VACANCY_RE = re.compile(
-    r"kerak|vakansiya|ishga\s+taklif|talab|maosh|oylik|ish\s+haqi|"
-    r"вакансия|требуется|зарплата|работа",
+    r"kerak|vakansiya|ish(ga|chi|lar|i)?\b|ish\s+haqi|talab|maosh|oylik|oyiga|kuniga|daromad|viza|xorij|tajriba|smena|"
+    r"вакансия|требуется|зарплат|работ|доход|заработ|опыт|виза|"
+    r"керак|маош|иш(га|чи|лар)?(?!\w)|ойига|даромад|тажриба",
     re.IGNORECASE,
 )
 OUT = Path(__file__).resolve().parent.parent / "js" / "real-data.js"

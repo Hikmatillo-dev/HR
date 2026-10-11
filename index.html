@@ -59,17 +59,36 @@
     </section>
 
     <!-- 2. Bozor tahlili -->
-    <section id="tahlil" class="card">
+    <section id="tahlil" class="card data-section">
       <div class="card-head">
         <h2>2. Mehnat bozori tahlili</h2>
       </div>
       <div class="source-bar" id="sourceBar">
-        <div class="note" id="dataNote"></div>
-        <input type="file" id="fileInput" accept=".json,.txt,.csv" hidden><button class="small" type="button" id="btnUpload">📂 Telegram eksportini yuklash</button>
-        <button class="small" id="btnSample" hidden>Namunaga qaytish</button>
-        <button class="small" id="btnCsv">⬇️ CSV</button>
-        <button class="small" id="btnPrint">🖨️ Hisobot (PDF)</button>
+        <div class="mode-switch" role="group" aria-label="Ma'lumot rejimi">
+          <button class="small" data-mode="real" aria-pressed="true">Real ma'lumot</button>
+          <button class="small" data-mode="demo" aria-pressed="false">Demo</button>
+        </div>
+        <span class="demo-badge" id="demoBadge" hidden>DEMO · sintetik ma'lumot</span>
+        <span class="spacer"></span>
+        <input type="file" id="fileInput" accept=".json,.txt,.csv" multiple hidden>
+        <button class="small" type="button" id="btnUpload">📂 Telegram eksportini yuklash</button>
+        <button class="small" id="btnClearReal" hidden>🗑️ Saqlangan ma'lumotni o'chirish</button>
+        <button class="small needs-data" id="btnCsv">⬇️ CSV</button>
+        <button class="small needs-data" id="btnPrint">🖨️ Hisobot (PDF)</button>
       </div>
+      <p class="data-note" id="dataNote" role="status"></p>
+      <div class="import-report" id="importReport" hidden></div>
+      <div class="empty-state" id="emptyState">
+        <div class="empty-icon" aria-hidden="true">📭</div>
+        <h3>Real ma'lumot yuklanmagan</h3>
+        <p>Tahlil uchun Telegram kanal eksportini yuklang: <b>Telegram Desktop → kanal → ⋮ → Export chat history → JSON</b>. Bir nechta faylni birdaniga tanlash mumkin. Fayl shu brauzerda o'qiladi va serverga yuborilmaydi.</p>
+        <div class="btns" style="justify-content:center">
+          <button class="primary" id="btnUploadEmpty">📂 Eksport faylini tanlash</button>
+          <button id="btnDemoEmpty">Demo ma'lumotni ko'rish</button>
+        </div>
+        <p class="muted" style="margin-top:10px;font-size:.85rem">Sinab ko'rish uchun namunaviy fayl: <code>namuna/telegram-export-namuna.json</code></p>
+      </div>
+      <div class="needs-data">
       <div class="kpis" id="kpis"></div>
       <div class="grid">
         <div class="chart-box"><h3>Xavf darajalari</h3><div class="cv"><canvas id="chLevels"></canvas></div></div>
@@ -91,25 +110,30 @@
         <div class="chart-box"><h3>Shaffoflik: e'lonlarda nima yetishmaydi</h3><div class="cv"><canvas id="chTransp"></canvas></div></div>
       </div>
       <div class="insights" id="insights"></div>
+      </div>
     </section>
 
     <!-- 3. Kasblar va ko'nikmalar -->
-    <section id="kasblar" class="card">
+    <section id="kasblar" class="card data-section">
       <h2>3. Zamonaviy kasblar va ko'nikmalar</h2>
       <p class="lead">Faqat <b>ishonchli</b> (past xavfli) e'lonlar asosida: qaysi kasbga talab ko'p, qaysi kasb ko'proq to'laydi va ish beruvchilar qaysi ko'nikmalarni so'rayapti.</p>
+      <p class="empty-note">Ma'lumot yuklanmagan. 2-bo'limda Telegram eksportini yuklang yoki <b>Demo</b> rejimini yoqing.</p>
+      <div class="needs-data">
       <div class="grid">
         <div class="chart-box wide"><h3>Kasblar xaritasi: talab va maosh</h3><div class="cv tall"><canvas id="chBubble"></canvas></div><p class="hint">Gorizontal o'q — e'lonlar soni (talab), vertikal o'q — o'rtacha maosh. O'ng yuqori burchak: talab ham, maosh ham yuqori.</p></div>
         <div class="chart-box"><h3>Eng ko'p so'raladigan ko'nikmalar</h3><div class="cv tall"><canvas id="chSkills"></canvas></div></div>
         <div class="chart-box"><h3>O'rtacha maosh sohalar bo'yicha (mln so'm)</h3><div class="cv tall"><canvas id="chSalary"></canvas></div></div>
       </div>
       <div class="insights" id="skillInsights"></div>
+      </div>
     </section>
 
     <!-- 4. Kanallar -->
-    <section id="kanallar" class="card">
+    <section id="kanallar" class="card data-section">
       <h2>4. Telegram kanallar reytingi</h2>
       <p class="lead">Har bir kanal e'lonlari asosida baholanadi: xavfli e'lonlar ulushi, kamsitish ulushi va o'rtacha shaffoflik. <b>A</b> — ishonchli, <b>F</b> — xavfli kanal.</p>
-      <div class="table-wrap">
+      <p class="empty-note">Ma'lumot yuklanmagan. 2-bo'limda Telegram eksportini yuklang yoki <b>Demo</b> rejimini yoqing.</p>
+      <div class="table-wrap needs-data">
         <table>
           <thead><tr><th>Baho</th><th>Kanal</th><th class="num">E'lonlar</th><th>Xavfli</th><th class="num">Kamsituvchi</th><th class="num">Shaffoflik</th><th class="num">Takroriy</th></tr></thead>
           <tbody id="channelRows"></tbody>
@@ -118,8 +142,10 @@
     </section>
 
     <!-- 5. Baza -->
-    <section id="vakansiyalar" class="card">
+    <section id="vakansiyalar" class="card data-section">
       <h2>5. Vakansiyalar bazasi</h2>
+      <p class="empty-note">Ma'lumot yuklanmagan. 2-bo'limda Telegram eksportini yuklang yoki <b>Demo</b> rejimini yoqing.</p>
+      <div class="needs-data">
       <div class="filters">
         <input id="fSearch" placeholder="Qidirish: kasb, kanal, so'z...">
         <select id="fLevel">
@@ -139,6 +165,7 @@
         </table>
       </div>
       <div class="table-foot"><span id="count"></span><button id="btnMore" class="small ghost">Yana ko'rsatish</button></div>
+      </div>
     </section>
 
     <!-- 6. Ish beruvchilar -->
@@ -223,6 +250,7 @@
   <script src="js/sample-data.js"></script>
   <script src="js/real-data.js"></script>
   <script src="js/test-set.js"></script>
+  <script src="js/importer.js"></script>
   <script src="js/ui-common.js"></script>
   <script src="js/ui-checker.js"></script>
   <script src="js/ui-dashboard.js"></script>

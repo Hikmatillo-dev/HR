@@ -5,88 +5,101 @@
 
   const withAnalysis = list => list.map((v, i) => Object.assign({ id: v.id ?? i + 1 }, v, { a: A.analyze(v.text) }));
 
-  // ---------- Ma'lumot manbai ----------
-  function useData(list, kind, name) {
-    const bar = $('#sourceBar');
-    bar.classList.toggle('sample', kind === 'sample');
-    $('#btnSample').hidden = kind === 'sample' || !(window.REAL_VACANCIES || []).length && kind === 'real';
-    $('#dataNote').innerHTML = {
-      sample: `⚠️ Hozir <b>namunaviy (sintetik)</b> ma'lumot ko'rsatilmoqda (${list.length} ta e'lon). Haqiqiy tahlil uchun Telegram kanal eksportini (<code>result.json</code>) yuklang.`,
-      real: `✅ Haqiqiy ma'lumot: Telegram kanallaridan yig'ilgan <b>${list.length}</b> ta e'lon.`,
-      upload: `✅ Yuklangan fayl: <b>${esc(name)}</b> — ${list.length} ta e'lon tahlil qilindi.`
-    }[kind];
-    IQ.renderDashboard(withAnalysis(list));
+  // ---------- Ma'lumot rejimlari ----------
+  // real: Telegram eksportidan (fayl yuklash, saqlangan ma'lumot yoki js/real-data.js)
+  // demo: sintetik namuna — faqat "DEMO" belgisi bilan ko'rsatiladi, hech qachon sukut bo'yicha emas
+  const STORE_KEY = 'iq-real-data';
+  const state = { mode: 'real', real: null }; // real: { items, stats, name, savedAt, source }
+
+  function loadSavedReal() {
+    const fromFile = window.REAL_VACANCIES || [];
+    if (fromFile.length) return { items: fromFile, stats: null, name: 'js/real-data.js', source: 'file' };
+    const saved = IQ.store.get(STORE_KEY, null);
+    return saved && Array.isArray(saved.items) && saved.items.length ? Object.assign(saved, { source: 'storage' }) : null;
   }
 
-  const VACANCY_RE = /kerak|vakansiya|ishga\s+taklif|talab|maosh|oylik|ish\s+haqi|вакансия|требуется|зарплата|работа|керак|маош/i;
-
-  function messageText(m) {
-    return (Array.isArray(m.text) ? m.text.map(p => (typeof p === 'string' ? p : p.text || '')).join('') : String(m.text || '')).trim();
+  function levelCounts(data) {
+    const c = { high: 0, medium: 0, low: 0, disc: 0 };
+    data.forEach(d => { c[d.a.level]++; if (d.a.discrimination.length) c.disc++; });
+    return c;
   }
 
-  // Telegram Desktop JSON, CSV (matn ustuni bilan) yoki oddiy matn (bo'sh qator / --- bilan ajratilgan)
-  function parseFile(name, content) {
-    if (/\.json$/i.test(name)) {
-      const data = JSON.parse(content);
-      const chats = data.messages ? [data] : (data.chats?.list || []);
-      const seen = new Set(), out = [];
-      for (const chat of chats) {
-        for (const m of chat.messages || []) {
-          if (m.type !== 'message') continue;
-          const text = messageText(m);
-          const key = A.fingerprint(text);
-          if (text.length < 40 || !VACANCY_RE.test(text) || seen.has(key)) continue;
-          seen.add(key);
-          out.push({ text, date: String(m.date || '').slice(0, 10), channel: chat.name || 'Telegram' });
-        }
-      }
-      return out;
+  function renderImportReport(real, data) {
+    const box = $('#importReport');
+    if (!real || !real.stats) { box.hidden = true; return; }
+    const s = real.stats, c = levelCounts(data);
+    const kpi = (v, l) => `<div class="kpi"><b>${v}</b><span>${l}</span></div>`;
+    box.hidden = false;
+    box.innerHTML = `<b>📥 Import hisoboti</b> · ${esc(real.name)}${real.savedAt ? ` · ${esc(new Date(real.savedAt).toLocaleString('uz-UZ'))}` : ''}
+      <div class="kpis">
+        ${kpi(s.messages, "Fayldagi xabarlar")}
+        ${kpi(s.vacancyLike, "Vakansiyaga o'xshash")}
+        ${kpi(s.duplicates, 'Takroriy (olib tashlandi)')}
+        ${kpi(data.length, "Tahlil qilingan noyob e'lonlar")}
+        ${kpi(`${c.high} / ${c.medium} / ${c.low}`, '🔴 xavfli / 🟡 shubhali / 🟢 past xavf')}
+        ${kpi(c.disc, '⚖️ Kamsituvchi')}
+      </div>
+      <p class="muted" style="margin:8px 0 0;font-size:.82rem">${s.notVacancy} ta xabar vakansiyaga o'xshamagani yoki juda qisqaligi uchun tahlilga kiritilmadi (reklama, salomlashish va h.k.).</p>`;
+  }
+
+  function render() {
+    const demo = state.mode === 'demo';
+    const real = state.real;
+    const empty = !demo && !real;
+    document.body.classList.toggle('demo-mode', demo);
+    document.body.classList.toggle('no-data', empty);
+    IQ.$$('.mode-switch button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === state.mode)));
+    $('#demoBadge').hidden = !demo;
+    $('#btnClearReal').hidden = !(real && real.source === 'storage') || demo;
+
+    if (empty) {
+      $('#dataNote').textContent = '';
+      $('#importReport').hidden = true;
+      $('#heroStats').innerHTML = `<div><b>—</b>Real ma'lumot hali yuklanmagan</div><div><b>${A.SCAM_RULES.length + 1}</b>firibgarlik belgisi tekshiriladi</div><div><b>${A.DISCRIMINATION_RULES.length}</b>kamsitish turi aniqlanadi</div>`;
+      IQ.clearDashboard();
+      return;
     }
-    if (/\.csv$/i.test(name)) {
-      const rows = parseCsv(content);
-      const head = rows.shift().map(h => h.toLowerCase().trim());
-      const ti = head.findIndex(h => /matn|text|текст/.test(h));
-      const di = head.findIndex(h => /sana|date|дата/.test(h));
-      const ci = head.findIndex(h => /kanal|channel|канал/.test(h));
-      if (ti < 0) throw new Error("CSV faylda 'matn' yoki 'text' ustuni topilmadi");
-      return rows.filter(r => r[ti] && r[ti].trim().length > 20)
-        .map(r => ({ text: r[ti], date: di >= 0 ? r[di] : '', channel: ci >= 0 ? r[ci] : name }));
-    }
-    return content.split(/\n\s*(?:-{3,}\s*)?\n/).map(s => s.trim()).filter(s => s.length > 20)
-      .map(text => ({ text, date: '', channel: name }));
+    const list = demo ? window.SAMPLE_VACANCIES : real.items;
+    const data = withAnalysis(list);
+    $('#dataNote').innerHTML = demo
+      ? `⚠️ <b>Demo rejim:</b> ${data.length} ta <b>sintetik</b> e'lon. Bu raqamlar haqiqiy bozorni aks ettirmaydi va faqat interfeysni ko'rsatish uchun.`
+      : `✅ <b>Real ma'lumot:</b> ${esc(real.name)} — ${data.length} ta noyob e'lon. ${real.source === 'storage' ? "Ma'lumot faqat shu brauzerda saqlangan, serverga yuborilmagan." : ''}`;
+    renderImportReport(demo ? null : real, data);
+    IQ.renderDashboard(data);
   }
 
-  function parseCsv(s) {
-    const rows = []; let row = [], cell = '', q = false;
-    for (let i = 0; i < s.length; i++) {
-      const c = s[i];
-      if (q) { if (c === '"') { if (s[i + 1] === '"') { cell += '"'; i++; } else q = false; } else cell += c; }
-      else if (c === '"') q = true;
-      else if (c === ',' || c === ';') { row.push(cell); cell = ''; }
-      else if (c === '\n') { row.push(cell); rows.push(row); row = []; cell = ''; }
-      else if (c !== '\r') cell += c;
-    }
-    if (cell || row.length) { row.push(cell); rows.push(row); }
-    return rows;
-  }
+  function setMode(mode) { state.mode = mode; render(); }
 
-  $('#btnUpload').addEventListener('click', () => $('#fileInput').click());
-  $('#fileInput').addEventListener('change', async e => {
-    const files = Array.from(e.target.files || []);
+  async function handleFiles(fileList) {
+    const files = Array.from(fileList || []);
     if (!files.length) return;
     try {
-      let list = [];
-      for (const f of files) list = list.concat(parseFile(f.name, await f.text()));
-      if (!list.length) throw new Error("Faylda vakansiyaga o'xshash e'lon topilmadi");
-      useData(list, 'upload', files.map(f => f.name).join(', '));
-      $('#btnSample').hidden = false;
-      IQ.toast(`${list.length} ta e'lon yuklandi`);
+      const contents = await Promise.all(files.map(async f => ({ name: f.name, content: await f.text() })));
+      const { items, stats } = window.IQImporter.importFiles(contents, A.fingerprint);
+      if (!items.length) throw new Error(`${stats.messages} ta xabar o'qildi, lekin vakansiyaga o'xshash e'lon topilmadi`);
+      const real = { items, stats, name: files.map(f => f.name).join(', '), savedAt: Date.now() };
+      // Faqat shu brauzerda saqlanadi; hajm katta bo'lsa saqlanmaydi, lekin tahlil ishlayveradi
+      let saved = false;
+      try { localStorage.setItem(STORE_KEY, JSON.stringify(real)); saved = true; } catch (err) { /* hajm yoki xususiy rejim */ }
+      state.real = Object.assign(real, { source: saved ? 'storage' : 'upload' });
+      setMode('real');
+      IQ.toast(`${items.length} ta noyob e'lon tahlil qilindi${saved ? '' : " (brauzerda saqlanmadi: hajm katta)"}`);
+      $('#tahlil').scrollIntoView();
     } catch (err) {
       IQ.toast('Xatolik: ' + err.message);
     }
-    e.target.value = '';
+  }
+
+  $('#btnUpload').addEventListener('click', () => $('#fileInput').click());
+  $('#btnUploadEmpty').addEventListener('click', () => $('#fileInput').click());
+  $('#btnDemoEmpty').addEventListener('click', () => setMode('demo'));
+  $('#fileInput').addEventListener('change', async e => { await handleFiles(e.target.files); e.target.value = ''; });
+  IQ.$$('.mode-switch button').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
+  $('#btnClearReal').addEventListener('click', () => {
+    if (!confirm("Brauzerda saqlangan real ma'lumot o'chirilsinmi?")) return;
+    try { localStorage.removeItem(STORE_KEY); } catch (err) { /* e'tiborsiz */ }
+    state.real = null; setMode('real');
   });
-  $('#btnSample').addEventListener('click', () => useData(window.SAMPLE_VACANCIES, 'sample'));
   $('#btnCsv').addEventListener('click', () => IQ.exportCsv());
   $('#btnPrint').addEventListener('click', () => window.print());
 
@@ -157,7 +170,7 @@
     }).catch(() => { /* statik rejim: AI yo'q */ });
   }
 
-  // ---------- Boshlang'ich ma'lumot ----------
-  const real = window.REAL_VACANCIES || [];
-  useData(real.length ? real : window.SAMPLE_VACANCIES, real.length ? 'real' : 'sample');
+  // ---------- Boshlang'ich holat: faqat real ma'lumot, bo'lmasa — bo'sh holat ----------
+  state.real = loadSavedReal();
+  render();
 })();
