@@ -60,4 +60,17 @@ test("Ish mazmuni yashirilgan: ma'lumot faqat ofisda; daromad bor, lekin ish tur
   hasNot("Omborchi kerak, oylik daromad 4 mln so'm, Toshkent", 'vague');
 });
 
+test("Ish vaqti ('kuniga 10-12 soat') — 'oson pul' emas va maoshni kunlik deb ko'paytirmaydi", () => {
+  hasNot('Omborga ishchi. Ish kuniga 10-12 soat, oylik 700$', 'easy');
+  hasNot('Кунига 3-4 соат ишлайсиз, ойлик 500$', 'easy');
+  assert.equal(analyze('Ish kuniga 10-12 soat, oylik 700$').salary.daily, false);
+  has("Uydan turib kuniga 300 ming so'm daromad", 'easy');
+  assert.equal(analyze("Kunlik 150 000 so'm to'lanadi, yuk tashish").salary.daily, true);
+});
+
+test("Kanalga do'st taklif qilish — referal sxema emas; pul evaziga do'st taklif qilish — referal", () => {
+  hasNot("Ishchilar kerak. Kanalimizga do'stlaringizni taklif qiling", 'invest');
+  has("3 ta do'stingizni taklif qiling va har biri uchun bonus oling", 'invest');
+});
+
 console.log(`\n${passed} ta qoida testi o'tdi${process.exitCode ? ', xatolar bor' : ''}\n`);

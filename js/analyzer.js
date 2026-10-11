@@ -48,12 +48,12 @@
     {
       id: 'invest', weight: 25, label: "Investitsiya, piramida yoki referal sxema",
       detail: "Ish o'rniga pul tikish yoki odam taklif qilish so'ralsa, bu moliyaviy piramida bo'lishi mumkin.",
-      re: /investitsiya|sarmoya|piramida|referal|tarmoq\s+marketing|greenway|gr[ei]e?nve[iy]|faberli[ck]|oriflame|orifleym|amway|herbalife|gerbalayf|siberian\s+wellness|coral\s+club|a'zo\s+bo'lish\s+(tekin|bepul)|\bmlm\b|jamoa\w*\s+quring|сетев\w+\s+маркетинг|do'st\w*ni\s+taklif|kripto|forex|p2p|arbitraj|treyding|bot\s+orqali\s+daromad|инвест|реферал|крипт|форекс|арбитраж|трейдинг/
+      re: /investitsiya|sarmoya|piramida|referal|tarmoq\s+marketing|greenway|gr[ei]e?nve[iy]|faberli[ck]|oriflame|orifleym|amway|herbalife|gerbalayf|siberian\s+wellness|coral\s+club|a'zo\s+bo'lish\s+(tekin|bepul)|\bmlm\b|jamoa\w*\s+quring|сетев\w+\s+маркетинг|(?<!kanal\w*\s)do'st\w*ni\s+taklif|kripto|forex|p2p|arbitraj|treyding|bot\s+orqali\s+daromad|инвест|реферал|крипт|форекс|арбитраж|трейдинг/
     },
     {
       id: 'easy', weight: 20, label: '"Oson pul" va\'dasi',
       detail: "Kam mehnat evaziga katta daromad va'da qilinishi jalb qilish usulidir.",
-      re: /tez\s+pul|oson\s+pul|kuniga\s+\$?\s*\d[\d\s]*\$?|uydan\s+turib[^.\n]*(kuniga|oyiga|daromad)|telefon\s+orqali\s+(ish|daromad)|kunlik\s+(\d[\d\s]*\s*(ming|mln)\s+)?daromad|daromad\w*\s+cheksiz|cheksiz\s+daromad|yechib\s+oldim|telefon\s+(va\s+internet\s+)?bo'lsa\s+(kifoya|yetarli)|onla[yi]+n\s+daromad|online\s+daromad|passiv\s+daromad|л[её]гк\w+\s+(деньг|заработ)|пассивн\w+\s+доход/
+      re: /tez\s+pul|oson\s+pul|kuniga\s+\$?\s*\d[\d\s]*\$?(?![\d\s]*([-–]\s*\d+\s*)?(soat|час))|uydan\s+turib[^.\n]*(kuniga|oyiga|daromad)|telefon\s+orqali\s+(ish|daromad)|kunlik\s+(\d[\d\s]*\s*(ming|mln)\s+)?daromad|daromad\w*\s+cheksiz|cheksiz\s+daromad|yechib\s+oldim|telefon\s+(va\s+internet\s+)?bo'lsa\s+(kifoya|yetarli)|onla[yi]+n\s+daromad|online\s+daromad|passiv\s+daromad|л[её]гк\w+\s+(деньг|заработ)|пассивн\w+\s+доход/
     },
     {
       id: 'link', weight: 15, label: "Shubhali yoki qisqartirilgan havola",
@@ -230,7 +230,7 @@
     while ((m = eur.exec(t))) if (!isFee(m.index)) values.push(toNumber(m[1] || m[2]) * EUR_RATE / 1e6);
     while ((m = rub.exec(t))) if (!isFee(m.index)) values.push(toNumber(m[1]) * RUB_RATE / 1e6);
 
-    const daily = /kuniga|kunlik|в\s+день/.test(t);
+    const daily = /(kuniga|kunlik|в\s+день)[^.\n\d]{0,20}\d[\d\s.,]*\s*(ming|mln|so'm|sum|сум|\$|usd|dollar|руб)/.test(t);
     const clean = values
       .filter(v => isFinite(v))
       .map(v => (daily ? v * 26 : v))
