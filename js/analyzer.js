@@ -91,12 +91,12 @@
     {
       id: 'age', label: 'Yosh cheklovi',
       fix: "Yosh chegarasini olib tashlang. Buning o'rniga kerakli tajriba yoki ko'nikmani yozing.",
-      re: /\d{2}\s*[-–]\s*\d{2}\s*(yosh|лет)(?!li\s+(o'quvchi|bola|talaba|o'smir|guruh))|\d{2}\s*yosh(gacha|dan\s+kichik)|yoshi\s*:?\s*\d{2}\s*[-–]\s*\d{2}|до\s*\d{2}\s*лет|не\s+старше\s+\d{2}|возраст\w*\s*:?\s*(от\s*)?\d{2}\s*[-–]/
+      re: /\d{2}\s*[-–]\s*\d{2}\s*(yosh|лет)(?!li\s+(o'quvchi|bola|talaba|o'smir|guruh))|\d{2}\s*yosh(gacha|dan\s+kichik)|yosh\w*\s*:?\s*\d{2}\s*[-–]\s*\d{2}|\d{2}\s*dan\s*\d{2}\s*yosh|до\s*\d{2}\s*лет|не\s+старше\s+\d{2}|возраст\w*\s*:?\s*(от\s*)?\d{2}\s*[-–]/
     },
     {
       id: 'gender', label: "Jins bo'yicha cheklov",
       fix: "\"Qizlar kerak\" o'rniga \"xodim kerak\" deb yozing. Ishni erkak ham, ayol ham bajara oladi.",
-      re: /faqat\s+(qiz|ayol|erkak|yigit)\w*|(qizlar|yigitlar|erkaklar|ayollar)\s*(kerak|afzal|bo'lishi|[,.]|$)|chiroyli\s+qiz|qiz\s+bola\s+kerak|только\s+(девушк|мужчин|женщин|парн)\w*|требу\w+\s+(девушк|мужчин|женщин|парн)|для\s+девуш|девушк\w*\s+(до|от)\s+\d/
+      re: /fa[qk]at(gina)?\s+(qiz|ayol|erkak|yigit|o'?g'?il\s+bola)\w*|jins\w*\s*:?\s*#?(qiz|ayol|erkak|yigit)|#(qizlar|ayollar|ayoli|erkaklar|yigitlar)\b|(erkak|ayol|qiz|yigit)\w*\s*\(\s*\d{2}\s*[-–]|\d{2}\s*yosh\w*\s+(\S+\s+)?(qiz|ayol|erkak|yigit|o'?g'?il\s+bola)|(qizlar|yigitlar|erkaklar|ayollar)\s*(kerak|afzal|bo'lishi|[,.]|$)|chiroyli\s+qiz|qiz\s+bola\s+kerak|только\s+(девушк|мужчин|женщин|парн)\w*|требу\w+\s+(девушк|мужчин|женщин|парн)|для\s+девуш|девушк\w*\s+(до|от)\s+\d/
     },
     {
       id: 'appearance', label: "Tashqi ko'rinish talabi",
@@ -252,7 +252,7 @@
       .replace(/[^\p{L}\d]+/gu, ' ').trim().slice(0, 200);
   }
 
-  const INCLUSIVE = /(qizlar|ayollar)\s+va\s+(yigitlar|erkaklar)|(yigitlar|erkaklar)\s+va\s+(qizlar|ayollar)|мужчин\w*\s+и\s+женщин|женщин\w*\s+и\s+мужчин/u;
+  const INCLUSIVE = /([qk]izlar|ayollar)\s*(va|,)\s+(yigitlar|erkaklar|bollar|o'g'il\s+bolalar)|(yigitlar|erkaklar)\s+va\s+(qizlar|ayollar)|мужчин\w*\s+и\s+женщин|женщин\w*\s+и\s+мужчин/u;
   const CRITICAL = ['prepay', 'personal', 'passport', 'debt'];
   const CRITICAL_FLOOR = 55;
   // Inkor: "depozit yo'q", "garov talab qilinmaydi", "без залога", "hech qanday to'lov olinmaydi"
