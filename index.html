@@ -239,7 +239,7 @@
       <h2>8. Loyiha haqida</h2>
       <div class="about-grid">
         <div><h3>❗ Muammo</h3><p>Ish izlovchilar Telegram'dagi soxta vakansiyalar orqali pul va shaxsiy ma'lumotlarini yo'qotmoqda. Xorijga "kafolatlangan ish" va'dasi bilan aldash, pasportni olib qolish kabi odam savdosi belgilari uchraydi. E'lonlarda yosh, jins va tashqi ko'rinish bo'yicha kamsitish odatiy holga aylangan. Bu bozorni hech kim tizimli tahlil qilmaydi.</p></div>
-        <div><h3>💡 Yechim</h3><p>IshQalqon e'lonlarni yig'adi va har birini 10 dan ortiq firibgarlik belgisi, 5 turdagi kamsitish, ishonch belgilari va 7 mezonli shaffoflik indeksi bo'yicha baholaydi. Har bir baho sababi bilan beriladi. Shu asosda hududlar, kasblar, ko'nikmalar va kanallar bo'yicha mehnat bozori manzarasi quriladi.</p></div>
+        <div><h3>💡 Yechim</h3><p>IshQalqon e'lonlarni yig'adi va har birini 15 dan ortiq firibgarlik va odam savdosi belgisi, 5 turdagi kamsitish, ishonch belgilari va 7 mezonli shaffoflik indeksi bo'yicha baholaydi. Har bir baho sababi bilan beriladi. Shu asosda hududlar, kasblar, ko'nikmalar va kanallar bo'yicha mehnat bozori manzarasi quriladi.</p></div>
         <div><h3>👥 Kimlar uchun</h3><p><b>Ish izlovchilar:</b> sayt va Telegram bot orqali bepul tekshiruv. <b>Kanal egalari:</b> kanalni tozalash va reyting. <b>Davlat idoralari:</b> firibgarlik va kamsitish statistikasi, hisobotlar. <b>Kompaniyalar:</b> halol vakansiya yaratish vositasi va "tasdiqlangan ish beruvchi" belgisi.</p></div>
         <div><h3>🚀 Rivojlanish rejasi</h3><p>Kanallarni avtomatik kuzatish, yig'ilgan ma'lumotda mashinaviy o'qitish modeli, rasmiy litsenziyalar bazasi bilan integratsiya, rus va qoraqalpoq tilidagi interfeys, mobil ilova.</p></div>
       </div>
@@ -262,7 +262,15 @@
         <li>v1 va v2 e'lonlarini loyiha muallifi yozgan. Ular tizimni sinash uchun foydali, lekin real bozorni aks ettirmaydi.</li>
         <li>Eng ishonchli ko'rsatkich — <b>boshlang'ich natija</b>: qoidalar e'lonlarni ko'rmasdan oldin o'lchangan. Tuzatishdan keyingi natija har doim optimistik.</li>
         <li>v3 real e'lonlarida telefon, karta va email yashirilgan; shaffoflik indeksi v3 da o'lchanmaydi.</li>
+        <li>v3 dagi "hozirgi" natija ham optimistik: qoidalar shu 34 ta e'londagi xatolar asosida tuzatilgan. Mustaqil tekshiruv uchun hali ko'rilmagan real e'lonlar kerak.</li>
         <li>Tizim yakuniy hukm chiqarmaydi: xavf darajasi va sabablarini ko'rsatadi, qaror foydalanuvchida qoladi.</li>
+      </ul>
+      <h3 style="margin-top:20px">🔒 Ma'lumotlaringiz qayerga ketadi</h3>
+      <ul class="privacy">
+        <li><b>E'lonni tekshirish</b> va <b>Telegram eksportini yuklash</b> to'liq brauzeringizda bajariladi: matn hech qayerga yuborilmaydi.</li>
+        <li>Yuklangan eksportdagi telefon, karta, pasport, JSHSHIR, email va @username tahlildan <b>oldin</b> yashiriladi. Brauzerda faqat yashirilgan matn saqlanadi va uni "🗑️ Saqlangan ma'lumotni o'chirish" tugmasi bilan o'chirish mumkin.</li>
+        <li><b>🤖 AI chuqur tahlil</b> tugmasini bossangizgina e'lon matni loyiha serveri orqali Anthropic (Claude) API'ga yuboriladi. Serverda matn saqlanmaydi va loglarga yozilmaydi.</li>
+        <li><b>Telegram bot</b> statistikasida foydalanuvchi ID'si o'rniga faqat tuzli SHA-256 xesh saqlanadi, e'lon matni saqlanmaydi.</li>
       </ul>
       <details class="block"><summary>Metrikalar nimani anglatadi?</summary>
         <ul class="muted" style="margin:8px 0 0;padding-left:20px;font-size:.9rem">
