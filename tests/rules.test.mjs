@@ -140,4 +140,57 @@ test("Ko'nikmalar: 'леса монтаж' — video montaj emas; Instagram havo
   assert.ok(skills('SMM mutaxassis, Instagram sahifalarini yuritish').includes('SMM'));
 });
 
+// Turli yozilishdagi 31 ta sun'iy e'lon: xavfli/xavfsiz to'g'ri ajratilishi kerak (v3 matnlari emas)
+const VARIED = [
+  
+["high","Ishga kirish uchun 200 ming so'm to'lab, kursni o'tasiz, keyin ishga olinasiz"],
+  ["high","Работа в Польше! Оформление документов 500$, виза гарантирована"],
+  ["high","Click orqali 100 000 so'm tashlang, keyin manzilni aytamiz"],
+  ["high","Kartangizga pul tushadi, faqat kartadagi kodni ayting"],
+  ["high","Корейская виза за 2 недели, гарантия 100%, предоплата 50%"],
+  ["high","Германияга иш, паспортингиз биз билан қолади, ойлик 2000 евро"],
+  ["medium","Telegram kanalga reaksiya bosish uchun pul to'laymiz, kuniga 200 ming"],
+  ["medium","Uyda o'tirib qo'shimcha daromad! Faqat telefon kerak. Batafsil lichkada"],
+  ["medium","Kripto savdo bo'yicha ish, oyiga 3000$ dan, tajriba shart emas"],
+  ["medium","Срочно! Требуются девушки 18-25 лет в Турцию, работа в отеле, проезд оплачивается"],
+  ["low","Требуется бухгалтер в ООО «Агро», опыт от 3 лет, зарплата 8 млн сум, Ташкент"],
+  ["low","Mehnat shartnomasi asosida haydovchi kerak. B,C toifa. Oylik 6 mln. Manzil: Andijon"],
+  ["low","Dasturchi (Python). Vazifalar: API yozish. Talablar: 2 yil tajriba. Oylik 1500-2500$. Gibrid"],
+  ["low","O'qituvchi kerak, matematika, maktab №12, Namangan, oylik 4.5 mln"],
+  ["low","Ofis uchun farrosh kerak, 5/2, oylik 3 mln, Toshkent, Yunusobod"],
+  ["low","Rossiyaga rasmiy ish: litsenziyali agentlik, hech qanday to'lov olinmaydi, shartnoma, oylik 1800$"],
+  ["low","Koreyaga EPS-TOPIK dasturi orqali ishga boring, ro'yxatdan o'tish bepul, Migratsiya agentligi"],
+  ["low","Kuryer kerak, Yandex, o'z velosipedingiz bo'lsa yaxshi, daromad kunlik to'lanadi"],
+  ["low","Sotuv menejeri, oylik 3 mln + bonus, KPI asosida, tajriba afzal"],
+  ["low","IT kurs: 3 oyda frontend o'rganing, kurs narxi 1.5 mln"],
+  ["low","Bank operatori kerak. Mijozlarga karta ochish, SMS xabarnoma ulash. Oylik 5 mln"],
+  ["low","Hostes (restoran), Toshkent, oylik 4 mln, 2/2 grafik"],
+  ["low","Yosh oilalar uchun uy-joy krediti bo'yicha konsultant kerak, oylik 6 mln"],
+  ["low","Qurilishga ishchilar kerak, kuniga 250 ming, har kuni to'lanadi, Samarqand"],
+  ["low","Yo'l uchun 200 ming so'm to'lab beramiz, haydovchi kerak, oylik 5 mln"],
+  ["low","Maoshni Click orqali o'tkazib beramiz, sotuvchi, oylik 4 mln"],
+  ["low","Pasport nusxasi kadrlar bo'limida saqlanadi, hamshira, oylik 4 mln"],
+  ["low","SMM menejer: Instagram obuna bo'lishlar sonini oshirish, kontent reja, oylik 6 mln"],
+  ["low","Kassir. Oylik 3 mln so'm, har oy to'lanadi. Tel orqali bog'laning"],
+  ["low","Dubayga mehmonxona administratori, erkak va ayollar, ingliz tili, oylik 1500$, agentlik litsenziyasi bor"],
+  ["low","Ayollar sartaroshxonasiga usta kerak, 25-45 yosh, Toshkent"],
+];
+
+test(`Umumlashtirish: ${VARIED.length} ta turli e'londa xavfli va xavfsiz to'g'ri ajratiladi (oddiy firibgarlik, rus/kirill, halol e'lonlar)`, () => {
+  const wrong = VARIED.filter(([level, text]) => (analyze(text).level === 'low') !== (level === 'low'))
+    .map(([level, text]) => `kutilgan ${level}, olingan ${analyze(text).level}: ${text}`);
+  assert.deepEqual(wrong, []);
+});
+
+test("Topshiriq firibgarligi, 'kodni ayting', 'pasportingiz biz bilan qoladi', xorijga yosh qizlar", () => {
+  has("Telegram kanalga reaksiya bosish uchun pul to'laymiz", 'task');
+  has('Faqat kartadagi kodni ayting', 'personal');
+  has('Германияга иш, паспортингиз биз билан қолади', 'passport');
+  hasNot("Pasport nusxasi kadrlar bo'limida saqlanadi", 'passport');
+  has('Требуются девушки 18-25 лет в Турцию, работа в отеле', 'lure');
+  hasNot("Yo'l uchun 200 ming so'm to'lab beramiz, haydovchi kerak", 'prepay');
+  hasNot("Maoshni Click orqali o'tkazib beramiz", 'prepay');
+  hasNot('Dubayga administrator, erkak va ayollar', 'disc:gender');
+});
+
 console.log(`\n${passed} ta qoida testi o'tdi${process.exitCode ? ', xatolar bor' : ''}\n`);

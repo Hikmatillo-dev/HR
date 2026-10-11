@@ -23,12 +23,12 @@
     {
       id: 'prepay', weight: 40, label: "Oldindan pul so'ralmoqda", negatable: true,
       detail: "Halol ish beruvchi ishga olish uchun pul so'ramaydi. Bu firibgarlikning eng kuchli belgisi.",
-      re: /oldindan\s+(to'lov|pul)|\d[\d\s.,]*\s*(\$|so'm|sum|сум|usd|dollar|ming|mln|евро|eur)\s*(\S+\s+)?oldindan|oldindan\s+\d[\d\s.,]*\s*(\$|so'm|sum|usd|dollar|ming|mln)|to'lov\s+qilish(ingiz)?\s+kerak|pul\s+(to'lab|tashlab|o'tkazib)|ro'yxatdan\s+o'tish\s+(uchun\s+)?(to'lov|pul)|rasmiylashtirish\s+uchun\s+(to'lov|pul)|([hx]ujjat\w*|forma|kiyim|tibbiy\s+ko'rik|test|imtihon|trening|o'qish|kurs)\s+(uchun\s+)?(to'lov|puli?)\b|o'qish\s+puli|xizmat\s+(haqi|narxi)\W{0,8}\d[\d\s.,]*\s*(so'm|sum|сум|сўм|\$|usd|dollar|ming|mln|eur|yevro)|стоимост\w*\s+услуг|услуг\w*\s+стоит|depozit|garov\s+puli|o'z\s+hisobingizdan|predoplata|предоплат|оплат\w*\s+за\s+(оформлени|обучени|регистрац|документ|форм|медосмотр|патент)|за\s+свой\s+сч[её]т|регистрац\w*\s+платн|платн\w*\s+регистрац|взнос|залог/
+      re: /oldindan\s+(to'lov|pul)|\d[\d\s.,]*\s*(\$|so'm|sum|сум|usd|dollar|ming|mln|евро|eur|руб)\s*(\S+\s+){0,2}(to'lab(?!\s+(beramiz|beradi|beriladi|boramiz))|to'lang|to'laysiz|tashlang|tashlab(?!\s+(beramiz|beradi))|o'tkazing|o'tkazib\s+(qo'ying|bering))|(to'lang|tashlang|o'tkazing)\s+(\S+\s+){0,2}\d|(click|payme|uzum\s+bank|paynet)\s+orqali\s+\d[\d\s.,]*\s*(\$|so'm|sum|сум|usd|dollar|ming|mln|евро|eur|руб)|(оформлени\w*|регистрац\w*|обучени\w*)\s+(\S+\s+)?\d[\d\s]*\s*(\$|сум|руб|usd|евро)|(переведите|скиньте|оплатите)\s|\d[\d\s.,]*\s*(\$|so'm|sum|сум|usd|dollar|ming|mln|евро|eur)\s*(\S+\s+)?oldindan|oldindan\s+\d[\d\s.,]*\s*(\$|so'm|sum|usd|dollar|ming|mln)|to'lov\s+qilish(ingiz)?\s+kerak|pul\s+(to'lab|tashlab|o'tkazib)|ro'yxatdan\s+o'tish\s+(uchun\s+)?(to'lov|pul)|rasmiylashtirish\s+uchun\s+(to'lov|pul)|([hx]ujjat\w*|forma|kiyim|tibbiy\s+ko'rik|test|imtihon|trening|o'qish|kurs)\s+(uchun\s+)?(to'lov|puli?)\b|o'qish\s+puli|xizmat\s+(haqi|narxi)\W{0,8}\d[\d\s.,]*\s*(so'm|sum|сум|сўм|\$|usd|dollar|ming|mln|eur|yevro)|стоимост\w*\s+услуг|услуг\w*\s+стоит|depozit|garov\s+puli|o'z\s+hisobingizdan|predoplata|предоплат|оплат\w*\s+за\s+(оформлени|обучени|регистрац|документ|форм|медосмотр|патент)|за\s+свой\s+сч[её]т|регистрац\w*\s+платн|платн\w*\s+регистрац|взнос|залог/
     },
     {
       id: 'personal', weight: 30, label: "Karta raqami yoki SMS kod so'ralmoqda",
       detail: "Karta raqami yoki SMS kodni hech kimga bermang: ular bilan kartangizdagi pul yechib olinadi. Maosh to'lash uchun SMS kod, PIN-kod yoki karta muddati hech qachon kerak bo'lmaydi.",
-      re: /karta\s*(raqam|ma'lumot)|sms\s*kod|номер\s+карт|код\s+из\s+смс/
+      re: /karta\s*(raqam|ma'lumot)|sms\s*kod|kartadagi\s+kod|(cvv|cvc|pin)\s*-?\s*kod|kod\w*ni\s+(ayting|yuboring|bering|tashlang)|сообщите\s+код|код\s+с\s+карты|номер\s+карт|код\s+из\s+смс/
     },
     {
       // Pasport nusxasi o'zi firibgarlik emas (ko'p ish beruvchi so'raydi), lekin uni Telegramda notanish odamga
@@ -40,7 +40,7 @@
     {
       id: 'passport', weight: 35, label: "Pasportni topshirish talab qilinmoqda",
       detail: "Ish beruvchi pasportingizni olib qolishi qonunga zid va odam savdosining asosiy belgilaridan biri.",
-      re: /pasport\w*\s+(garov|qoldir|ish\s+beruvchida|bizda\s+(turadi|saqlanadi|qoladi))|pasport\w*\s+(\S+\s+){0,2}(topshir|yig'ib\s+olin|olib\s+qolin)|паспорт\w*\s+(оставл|оставит|оставь|в\s+залог|сда|отда|храни\w+\s+у\s+работодател)|(оставить|сдать)\s+паспорт/
+      re: /pasport(?!\w*\s+nusxa)\w*\s+(\S+\s+){0,3}(qoladi|saqlanadi|turadi)\b|pasport\w*\s+(garov|qoldir|ish\s+beruvchida|bizda\s+(turadi|saqlanadi|qoladi))|pasport\w*\s+(\S+\s+){0,2}(topshir|yig'ib\s+olin|olib\s+qolin)|паспорт\w*\s+(оставл|оставит|оставь|в\s+залог|сда|отда|храни\w+\s+у\s+работодател)|(оставить|сдать)\s+паспорт/
     },
     {
       id: 'debt', weight: 35, label: "Qarz evaziga ishlash (qarz qulligi)",
@@ -60,7 +60,7 @@
     {
       id: 'visa', weight: 25, label: "Viza yoki ish \"100% kafolatlangan\"",
       detail: "Hech kim vizani kafolatlay olmaydi. Xorijga ishga faqat litsenziyaga ega agentliklar yoki davlat dasturlari orqali boriladi.",
-      re: /viza\w*\s*(100\s*%|kafolat|tayyor)|kafolatlangan\s+(viza|ish)|100\s*%\s*(kafolat|гарант)|гарантир\w*\s+(виз|трудоустр)/
+      re: /viza\w*\s*(100\s*%|kafolat|tayyor)|kafolatlangan\s+(viza|ish)|100\s*%\s*(kafolat|гарант)|гарантир\w*\s+(виз|трудоустр)|виз\w*\s+(\S+\s+)?гарантир/
     },
     {
       id: 'invest', weight: 25, label: "Investitsiya, piramida yoki referal sxema",
@@ -70,7 +70,12 @@
     {
       id: 'easy', weight: 20, label: '"Oson pul" va\'dasi',
       detail: "Kam mehnat evaziga katta daromad va'da qilinishi jalb qilish usulidir.",
-      re: /tez\s+pul|oson\s+pul|kuniga\s+\$?\s*\d[\d\s]*\$?(?![\d\s]*([-–]\s*\d+\s*)?(soat|час))|uydan\s+turib[^.\n]*(kuniga|oyiga|daromad)|telefon\s+orqali\s+(ish|daromad)|kunlik\s+(\d[\d\s]*\s*(ming|mln)\s+)?daromad|daromad\w*\s+cheksiz|cheksiz\s+daromad|yechib\s+oldim|telefon\s+(va\s+internet\s+)?bo'lsa\s+(kifoya|yetarli)|onla[yi]+n\s+daromad|online\s+daromad|passiv\s+daromad|л[её]гк\w+\s+(деньг|заработ)|пассивн\w+\s+доход|\d[\d\s]*\s*(сум|руб|\$|usd)\s+в\s+день|в\s+день\s+от\s+\d/
+      re: /tez\s+pul|oson\s+pul|kuniga\s+\$?\s*\d[\d\s]*\$?(?![\d\s]*([-–]\s*\d+\s*)?(soat|час))|uydan\s+turib[^.\n]*(kuniga|oyiga|daromad)|uyda\s+o'tirib|faqat\s+telefon\s+(kerak|bo'lsa)|работа\s+с\s+телефона|telefon\s+orqali\s+(ish|daromad)|kunlik\s+(\d[\d\s]*\s*(ming|mln)\s+)?daromad|daromad\w*\s+cheksiz|cheksiz\s+daromad|yechib\s+oldim|telefon\s+(va\s+internet\s+)?bo'lsa\s+(kifoya|yetarli)|onla[yi]+n\s+daromad|online\s+daromad|passiv\s+daromad|л[её]гк\w+\s+(деньг|заработ)|пассивн\w+\s+доход|\d[\d\s]*\s*(сум|руб|\$|usd)\s+в\s+день|в\s+день\s+от\s+\d/
+    },
+    {
+      id: 'task', weight: 25, label: "Layk, obuna yoki izoh uchun pul (\"topshiriq\" firibgarligi)",
+      detail: "Layk bosish, obuna bo'lish yoki izoh yozish uchun pul to'lash va'dasi — ma'lum firibgarlik: avval kichik summa beriladi, keyin \"katta topshiriq\" uchun depozit so'raladi.",
+      re: /(layk|like|reaksiya|reaktsiya|obuna|izoh|sharh|otziv)\w*\s+(\S+\s+)?(bosish|qo'yish|bo'lish|yozish|qoldirish)\w*\s+uchun|за\s+(лайк|подписк|отзыв|реакци)\w*\s+(плат|получ)|(ставить|ставь)\s+лайк/
     },
     {
       id: 'link', weight: 15, label: "Shubhali yoki qisqartirilgan havola",
@@ -282,7 +287,7 @@
       .replace(/[^\p{L}\d]+/gu, ' ').trim().slice(0, 200);
   }
 
-  const INCLUSIVE = /([qk]izlar|ayollar)\s*(va|,)\s+(yigitlar|erkaklar|bollar|o'g'il\s+bolalar)|(yigitlar|erkaklar)\s+va\s+(qizlar|ayollar)|мужчин\w*\s+и\s+женщин|женщин\w*\s+и\s+мужчин/u;
+  const INCLUSIVE = /([qk]izlar|ayollar)\s*(va|,)\s+(yigitlar|erkaklar|bollar|o'g'il\s+bolalar)|(erkak|yigit)\w*\s*(va|,)\s+(ayol|qiz)\w*|(ayol|qiz)\w*\s*(va|,)\s+(erkak|yigit)\w*|(yigitlar|erkaklar)\s+va\s+(qizlar|ayollar)|мужчин\w*\s+и\s+женщин|женщин\w*\s+и\s+мужчин/u;
   const CRITICAL = ['prepay', 'personal', 'passport', 'debt'];
   const CRITICAL_FLOOR = 55;
   // Inkor: "depozit yo'q", "garov talab qilinmaydi", "без залога", "hech qanday to'lov olinmaydi"
@@ -356,10 +361,12 @@
     }
 
     // Xorijga ish + tashqi ko'rinish talabi (ko'pincha yosh ayollar) — odam savdosida ma'lum jalb qilish usuli
-    if (scam.some(r => r.id === 'abroad') && discrimination.some(d => d.id === 'appearance')) {
-      scam.push({ id: 'lure', weight: 30, label: "Xorijga tashqi ko'rinishi bo'yicha xodim chaqirilmoqda",
+    const youngWomen = discrimination.some(d => d.id === 'gender' && /qiz|ayol|девушк|женщин|ofitsiantk|официантк|продавщ|секретарш/.test(d.match)) &&
+      discrimination.some(d => d.id === 'age');
+    if (scam.some(r => r.id === 'abroad') && (discrimination.some(d => d.id === 'appearance') || youngWomen)) {
+      scam.push({ id: 'lure', weight: 30, label: "Xorijga yosh ayollar yoki \"chiroyli\" xodim chaqirilmoqda",
         detail: "Xorijga \"chiroyli\", \"yosh qizlar\" chaqirilishi odam savdosida ko'p uchraydigan jalb qilish usuli. Ish beruvchi va agentlik litsenziyasini albatta tekshiring.",
-        match: discrimination.find(d => d.id === 'appearance').match });
+        match: (discrimination.find(d => d.id === 'appearance') || discrimination.find(d => d.id === 'gender')).match });
     }
 
     const skills = SKILLS.filter(s => s[2].test(t)).map(s => ({ name: s[0], digital: s[1] }));
