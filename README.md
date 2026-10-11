@@ -2,6 +2,27 @@
 
 Telegram'dagi ish e'lonlarini **firibgarlik**, **odam savdosi belgilari** va **kamsitish** bo'yicha tekshiruvchi hamda mehnat bozorini tahlil qiluvchi platforma.
 
+**🌐 Onlayn versiya:** https://hikmatillo-dev.github.io/HR/ — e'lon tekshiruvi va bozor tahlili to'liq brauzerda ishlaydi. AI chuqur tahlil va Telegram bot uchun loyihani o'z kompyuteringizda ishga tushiring (pastda).
+
+| | |
+|---|---|
+| **Muammo** | O'zbekistonda ish e'lonlarining katta qismi Telegram kanallarida. U yerda oldindan pul so'rash, "kafolatlangan viza", pasportni olib qolish va yosh/jins bo'yicha kamsitish odatiy hol, lekin ularni hech kim tizimli tekshirmaydi. |
+| **Yechim** | E'lon matnini 15 dan ortiq firibgarlik va odam savdosi belgisi, 5 turdagi kamsitish va 7 mezonli shaffoflik indeksi bo'yicha baholaydi. Har bir baho **sababi** va maslahati bilan beriladi. O'zbek (lotin, kirill) va rus tilida ishlaydi. |
+| **Real ma'lumot** | 5 ta Telegram kanalidan 34 ta e'lon qo'lda belgilandi. Ularning **50%** ida yosh yoki jins cheklovi bor. Qoidalar o'zgartirilmasdan olingan natija: aniqlik 70.6%, xavfli e'lonni topish 16.7%. Tuzatilgandan keyin: 91.2% / 75.0%, halol e'lonni xavfli deyish 0%. |
+| **Qo'shimcha** | Telegram eksportini yuklab, kanal bo'yicha bozor tahlili (hududlar, kasblar, ko'nikmalar, kanallar reytingi); Claude AI orqali chuqur tahlil va kamsitishsiz e'lon matni; Telegram bot; shaxsiy ma'lumotni avtomatik yashirish. |
+
+<p>
+  <img src="docs/screenshots/2-tekshiruv.png" alt="Kirillcha firibgar e'lon tekshiruvi: firibgarlik xavfi yuqori, odam savdosi belgisi, 2 ta kamsitish" width="640">
+  <img src="docs/screenshots/4-telefon.png" alt="Telefonda: firibgarlik xavfi past, lekin 3 ta kamsituvchi talab" width="220">
+</p>
+
+<details><summary>Boshqa skrinshotlar</summary>
+
+![Bosh sahifa](docs/screenshots/1-bosh-sahifa.png)
+![Bozor tahlili: 34 ta real e'lon](docs/screenshots/3-bozor-tahlili.png)
+![Tizim aniqligi: boshlang'ich va hozirgi natija](docs/screenshots/5-aniqlik.png)
+</details>
+
 ## Current limitations (hozirgi cheklovlar)
 
 Hakamlar va foydalanuvchilar uchun halol holat (2026-10-11):
@@ -64,7 +85,7 @@ Xato bo'lgan testlar (25): v3-001, v3-002, v3-003, v3-004, v3-005, v3-006, v3-00
 
 Bu o'zgarishlar `js/analyzer.js` ga tegadi. v3 boshlang'ich natija o'zgartirilmagan qoidalar bilan olinishi uchun ular keyinga qoldirilgan.
 1. **`js/analyzer.js` ni `config/currency.js` ga ulash.** O'zgarmaslar o'rniga `IQCurrency.rates` ishlatiladi. Shundan keyin `.env` dagi `IQ_RATE_*` maosh hisobiga ham ta'sir qiladi. Hozircha `tests/config.test.mjs` ikkala joydagi qiymat bir xilligini tekshiradi, server esa `.env` da kurs berilganda ogohlantiradi.
-2. **"Xorijga ish" qoidasidagi agentlik nomini yangilash.** Nom `config/official-sources.js` dan olinadi, bu ish manba tasdiqlangandan keyin bajariladi.
+2. **Agentlik nomini rasmiy manbadan tasdiqlash.** "Xorijga ish" maslahati endi "Migratsiya agentligi (avvalgi nomi — Tashqi mehnat migratsiyasi agentligi)" deydi. `config/official-sources.js` dagi manbalar tasdiqlangach, `verified: true` qilinadi.
 
 ## Imkoniyatlar
 
