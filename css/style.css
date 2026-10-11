@@ -334,3 +334,11 @@ button.tile:hover { filter: brightness(.95); }
 button.primary, .mode-switch button[aria-pressed="true"], .map-ctrl button.on { background: var(--primary-strong); border-color: var(--primary-strong); }
 .privacy { margin: 6px 0 14px; padding-left: 20px; color: var(--text-2); font-size: .92rem; }
 .privacy li { margin: 4px 0; }
+/* Kasblar: ishonchli e'lonlar kam bo'lsa grafik o'rniga tushuntirish */
+.careers-thin { text-align: center; border: 2px dashed var(--border); border-radius: 14px; padding: 28px 18px; margin: 4px 0 14px; }
+#kasblar .careers-thin h3 { margin: 6px 0 8px; font-size: 1.2rem; color: var(--text); }
+.careers-thin p { max-width: 620px; margin: 6px auto; color: var(--text-2); }
+.careers-thin p b { color: var(--text); }
+.careers-thin button { margin-top: 10px; }
+.careers-thin-icon { font-size: 2rem; }
+#kasblar.careers-is-thin .careers-charts { display: none; }

@@ -142,6 +142,7 @@
     state.real = null; setMode('real');
   });
   $('#btnSampleUpload').addEventListener('click', () => $('#fileInput').click());
+  $('#btnCareersUpload').addEventListener('click', () => $('#fileInput').click());
   $('#btnCsv').addEventListener('click', () => IQ.exportCsv());
   $('#btnPrint').addEventListener('click', () => window.print());
 

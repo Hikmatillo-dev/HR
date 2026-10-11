@@ -88,6 +88,60 @@ await test("Jonli misol: 'harakatni kamaytirish' yoqilganda natija darhol chiqad
   await page.close();
 });
 
+// Kichik Telegram eksporti: 5 ta halol (past xavfli) e'lon — "Kasblar" uchun 30 tadan kam
+const SMALL_EXPORT = JSON.stringify({
+  name: 'Kichik kanal', type: 'public_channel', messages: [
+    "Sotuvchi kerak. Do'konga, Toshkent, Chilonzor. Oylik 4 mln so'm, 5/2, 9:00-18:00.",
+    "Haydovchi kerak, B toifa. Oylik 6 mln so'm, Samarqand, mehnat shartnomasi asosida.",
+    "Hisobchi kerak, 1C bilishi shart. Oylik 7 mln so'm, Andijon, ish vaqti 9:00-18:00.",
+    "Oshpaz kerak, restoranga. Oylik 5 mln so'm, Buxoro, 2/2 grafik, tushlik bepul.",
+    "Farrosh kerak, ofisga. Oylik 3 mln so'm, Namangan, 5/2, rasmiy ishga joylashtirish."
+  ].map((text, i) => ({ id: i + 1, type: 'message', date: `2026-10-0${i + 1}T10:00:00`, text }))
+});
+
+await test("Kasblar: kichik eksport (5 ta ishonchli e'lon) — grafik o'rniga 'Ma'lumot yetarli emas', N va M aniq, yuklash tugmasi ishlaydi", async () => {
+  const { page, errors } = await open({ demo: false });
+  await page.setInputFiles('#fileInput', { name: 'kichik.json', mimeType: 'application/json', buffer: Buffer.from(SMALL_EXPORT) });
+  await page.waitForTimeout(600);
+  assert.equal(await page.isVisible('#careersThin'), true);
+  assert.equal(await page.isVisible('#chBubble'), false, 'grafik chizilmasligi kerak');
+  assert.equal(await page.isVisible('#chSkills'), false);
+  assert.match(await page.textContent('#careersThin'), /Ma'lumot yetarli emas/);
+  assert.equal(await page.textContent('#careersThinCount'), "Hozirgi namunada 5 ta noyob e'lon bor, ulardan 5 tasi ishonchli.");
+  assert.match(await page.textContent('#careersThin'), /Kasblar va ko'nikmalar tahlili ishonchli/);
+  assert.equal(await page.evaluate(() => Chart.getChart('chBubble')), undefined, 'Chart obyekti qolmasligi kerak');
+  const chooser = page.waitForEvent('filechooser', { timeout: 2000 });
+  await page.click('#btnCareersUpload');
+  await chooser;
+  assert.deepEqual(errors, []);
+  await page.close();
+});
+
+await test("Kasblar: real namuna (34 ta, ishonchlilari 30 dan kam) — yetarli emas; demo rejimda — grafik va jadval", async () => {
+  const { page } = await open({ demo: false });
+  await page.waitForTimeout(300);
+  assert.equal(await page.isVisible('#careersThin'), true);
+  assert.match(await page.textContent('#careersThinCount'), /^Hozirgi namunada 34 ta noyob e'lon bor, ulardan \d+ tasi ishonchli\.$/);
+  await page.click('[data-mode="demo"]'); await page.waitForTimeout(500);
+  assert.equal(await page.isVisible('#careersThin'), false);
+  assert.equal(await page.isVisible('#chBubble'), true);
+  assert.ok(await page.evaluate(() => Boolean(Chart.getChart('chBubble'))));
+  assert.ok(await page.locator('#bubbleTable tr').count() > 0, "jadval ko'rinishi to'ldirilmagan");
+  await page.close();
+});
+
+for (const scheme of ['light', 'dark']) {
+  await test(`Kasblar 'yetarli emas' holati 390px ${scheme}: gorizontal scroll yo'q, tugma ekranga sig'adi`, async () => {
+    const { page } = await open({ demo: false, width: 390, scheme });
+    await page.waitForTimeout(300);
+    assert.equal(await page.isVisible('#careersThin'), true);
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), 390);
+    const box = await page.locator('#btnCareersUpload').boundingBox();
+    assert.ok(box.x >= 0 && box.x + box.width <= 390, 'tugma ekrandan chiqib ketgan');
+    await page.close();
+  });
+}
+
 for (const [width, scheme] of [[390, 'light'], [390, 'dark'], [1280, 'light']]) {
   await test(`Kasblar grafigi ${width}px ${scheme}: yozuvlar ustma-ust tushmaydi, qisqa, jadval bor, gorizontal scroll yo'q`, async () => {
     const { page, errors } = await open({ width, scheme });
@@ -118,6 +172,7 @@ for (const [width, scheme] of [[390, 'light'], [390, 'dark'], [1280, 'light']]) 
 const CONTRAST_SELECTORS = ['.lvl-high', '.lvl-medium', '.lvl-low', '.lvl-disc', '#demoBadge', '.tag.high', '.tag.low', '.tag.disc', '.badge-warn',
   '.kpi span', '.data-note', '.muted', '.hint', '.reasons small', 'mark', '.grade', '.tile', '.mode-switch button[aria-pressed="true"]',
   'nav a', 'button.primary', '.map-ctrl button.on', '.src-text',
+  '.careers-thin h3', '.careers-thin p', '.careers-thin p b', '#btnCareersUpload',
   '.demo-card .demo-badge', '.demo-card h2', '.demo-text', '.demo-reasons b', '.demo-reasons q', '.demo-note', '.demo-foot .small-link'];
 
 for (const scheme of ['light', 'dark']) {
@@ -125,9 +180,11 @@ for (const scheme of ['light', 'dark']) {
     const { page } = await open({ scheme });
     await page.waitForSelector('#heroDemo[data-state="done"]', { timeout: 8000 });
     const fails = [];
-    const examples = ['scam', 'disc', 'ok', null];
+    // 'real' — real namuna: "Kasblar" bo'limida "ma'lumot yetarli emas" holati ko'rinadi
+    const examples = ['scam', 'disc', 'ok', null, 'real'];
     for (const ex of examples) {
-      if (ex) await page.click(`[data-example="${ex}"]`);
+      if (ex === 'real') await page.click('[data-mode="real"]');
+      else if (ex) await page.click(`[data-example="${ex}"]`);
       else { await page.fill('#input', "Ish bor! Kuniga 100$ to'lanadi. Faqat bugun ro'yxatdan o'ting: cutt.ly/rabota-uz"); await page.click('#btnCheck'); }
       await page.waitForTimeout(250);
       fails.push(...await page.evaluate(sel => {

@@ -137,6 +137,15 @@
       <p class="lead">Faqat <b>ishonchli</b> (past xavfli) e'lonlar asosida: qaysi kasbga talab ko'p, qaysi kasb ko'proq to'laydi va ish beruvchilar qaysi ko'nikmalarni so'rayapti.</p>
       <p class="empty-note">Ma'lumot yuklanmagan. 2-bo'limda Telegram eksportini yuklang yoki <b>Demo</b> rejimini yoqing.</p>
       <div class="needs-data">
+      <div class="careers-thin" id="careersThin" role="status" hidden>
+        <div class="careers-thin-icon" aria-hidden="true">📊</div>
+        <h3>Ma'lumot yetarli emas</h3>
+        <p><b id="careersThinCount"></b></p>
+        <p>Kasblar va ko'nikmalar tahlili ishonchli (past xavfli) e'lonlarga asoslanadi. Ishonchli xulosa uchun kamida <span id="careersThinMin">30</span> ta ishonchli e'lon kerak.</p>
+        <p>Telegram eksport yuklang — kasblar va ko'nikmalar tahlili avtomatik yangilanadi.</p>
+        <button class="primary" type="button" id="btnCareersUpload">📂 O'z kanalingiz eksportini yuklang</button>
+      </div>
+      <div class="careers-charts">
       <div class="grid">
         <div class="chart-box wide"><h3>Kasblar xaritasi: talab va maosh</h3><div class="cv tall"><canvas id="chBubble" role="img" aria-label="Kasblar bo'yicha talab va o'rtacha maosh grafigi. Jadval ko'rinishi grafik ostida."></canvas></div><p class="hint">Gorizontal o'q — e'lonlar soni (talab), vertikal o'q — o'rtacha maosh. O'ng yuqori burchak: talab ham, maosh ham yuqori. Nomi yozilmagan pufakchani bosing yoki jadvalga qarang.</p>
           <details class="block"><summary>Jadval ko'rinishida</summary>
@@ -146,6 +155,7 @@
         <div class="chart-box"><h3>O'rtacha maosh sohalar bo'yicha (mln so'm)</h3><div class="cv tall"><canvas id="chSalary"></canvas></div></div>
       </div>
       <div class="insights" id="skillInsights"></div>
+      </div>
       <p class="hint rate-note" id="rateNote"></p>
       </div>
     </section>

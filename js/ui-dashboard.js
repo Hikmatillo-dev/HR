@@ -20,6 +20,8 @@
   const sortedEntries = obj => Object.entries(obj).sort((x, y) => y[1] - x[1]);
   const midSalary = d => (d.a.salary.min + d.a.salary.max) / 2;
   const reliable = list => list.filter(d => d.a.level === 'low');
+  // "Kasblar" bo'limi ishonchli e'lonlardan quriladi: ular shundan kam bo'lsa, grafik o'rniga tushuntirish chiqadi
+  const CAREERS_MIN = 30;
 
   function chart(id, config) {
     if (charts[id]) charts[id].destroy();
@@ -246,6 +248,17 @@
 
   function renderProfessions() {
     const ok = reliable(DATA);
+    const thin = ok.length < CAREERS_MIN;
+    $('#careersThin').hidden = !thin;
+    $('#kasblar').classList.toggle('careers-is-thin', thin);
+    if (thin) {
+      $('#careersThinCount').textContent = `Hozirgi namunada ${DATA.length} ta noyob e'lon bor, ulardan ${ok.length} tasi ishonchli.`;
+      $('#careersThinMin').textContent = CAREERS_MIN;
+      ['chBubble', 'chSkills', 'chSalary'].forEach(id => { if (charts[id]) { charts[id].destroy(); delete charts[id]; } });
+      $('#bubbleTable').innerHTML = '';
+      $('#skillInsights').innerHTML = '';
+      return;
+    }
     const groups = by(ok.filter(d => d.a.profession !== 'Boshqa'), d => d.a.profession);
     const points = Object.entries(groups).map(([name, list]) => {
       const paid = list.filter(d => d.a.salary);
