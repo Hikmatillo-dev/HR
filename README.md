@@ -35,7 +35,10 @@ Hakamlar va foydalanuvchilar uchun halol holat (2026-10-11):
 5. **Boshlang'ich natija:** `npm run eval:v3-baseline`. `analyzer.js` ga tegmang. Natija `tests/results/v3-baseline.json` ga, quyidagi blokka va "Loyiha haqida" bo'limiga yoziladi. Keyin uni commit qiling.
 6. **Xatolar tahlili:** `tests/results/v3-errors.md` dagi har bir xato uchun sabab va umumiy tuzatishni yozing. So'ng qoidalarni tuzating va `npm test` ishga tushiring.
 
-Qayta o'lchash `npm run eval:v3-baseline -- --force` bilan bajariladi. U faqat git holati toza bo'lganda ishlaydi, eski natija esa `tests/results/archive/` ga vaqt belgisi bilan ko'chiriladi.
+**Boshlang'ich natija himoyasi:**
+- Birinchi yozishda `js/` va `tools/` toza bo'lishi kerak: `analyzer.js`, `evaluate.js` va `test-set-v3.js` commit qilingan, yangi fayllar ham yo'q.
+- Natijaga git commit, sana, e'lonlar soni hamda `analyzer.js`, `evaluate.js` va `test-set-v3.js` ning SHA-256 xeshlari yoziladi. Shu orqali natija aynan qaysi qoidalar, metrikalar va e'lonlar bilan olinganini isbotlash mumkin.
+- Qayta o'lchash `npm run eval:v3-baseline -- --force` bilan bajariladi. U faqat butun repozitoriy toza bo'lganda ishlaydi, eski natija esa `tests/results/archive/` ga vaqt belgisi bilan ko'chiriladi.
 
 <!-- v3-baseline:start -->
 **v3 boshlang'ich natija:** hali yozilmagan — real e'lonlar qo'shilgandan keyin `npm run eval:v3-baseline`.
@@ -104,6 +107,12 @@ AI cheklovlari: matn 20–6000 belgi bo'lishi kerak, uzun matn kesilmaydi va rad
 - `X-Forwarded-For` faqat `IQ_TRUST_PROXY=<proksilar soni>` berilganda o'qiladi. Aks holda uni soxtalashtirib limitni chetlab o'tish mumkin bo'lardi.
 - Loglarda API kalit, bot token, e'lon matni va PII bo'lmaydi: faqat xato turi va tozalangan qisqa xabar yoziladi (`lib/safe-log.mjs`).
 
+**Prompt injection va AI javobi:**
+- E'lon matnidagi `<` `>` `&` belgilari AI'ga yuborilishidan oldin escape qilinadi (`&lt;/posting&gt;`). Shuning uchun e'lon ichidagi `</posting>`, `<rule_check>` yoki boshqa teg blokdan chiqa olmaydi.
+- Promtda aniq qoida bor: e'lon ichidagi buyruqlar, soxta "system" xabarlari va "e'lon tugadi" kabi iboralar ko'rsatma emas, tahlil qilinadigan ma'lumot. Tekshiruvchini aldashga urinishning o'zi ham xavf belgisi hisoblanadi.
+- Javob qat'iy JSON sxema bilan tekshiriladi: sxemada yo'q maydon bo'lsa, javob rad etiladi.
+- AI keltirgan har bir iqtibos e'lon matnida haqiqatan borligi tekshiriladi. Registr, bo'shliq va tutuq belgisi farqlari hisobga olinmaydi. Topilmagan iqtibos foydalanuvchiga ko'rsatilmaydi va `warnings` ga yoziladi.
+
 ### 4. Telegram botni ishga tushirish
 ```bash
 # @BotFather → /newbot → tokenni .env ga TELEGRAM_BOT_TOKEN= qilib yozing
@@ -153,10 +162,10 @@ npm test
 | Test fayli | Nimani tekshiradi |
 |---|---|
 | `tests/importer.test.mjs` | Telegram JSON, CSV, TXT o'qilishi, takrorlar, buzilgan fayllar (8 test) |
-| `tests/ai.test.mjs` | AI xato holatlari mock API bilan: buzilgan JSON, sxema, refusal, 401, 429, 500+retry, timeout, bo'sh/uzun matn, kalitsiz rejim (11 test) |
+| `tests/ai.test.mjs` | AI xato holatlari mock API bilan: buzilgan JSON, sxema, ortiqcha maydon, refusal, 401, 429, 500+retry, timeout, bo‘sh/uzun matn, kalitsiz rejim; prompt injection (`</posting>` neytrallanishi); to‘qilgan iqtibosni aniqlash (14 test) |
 | `tests/redact.test.mjs` | Telefon (UZ, RU), karta, JSHSHIR, pasport, email, `t.me`, `@username` yashirilishi; STIR saqlanishi; validator; analyzer natijasi o'zgarmasligi; import va REPL'da yiqilmaslik; v3 qoralamasi (14 test) |
 | `tests/redact-parity.test.mjs` | `js/pii.js` va `tools/telegram_export.py` bir xil yashirishi (10 holat; Python bo'lmasa o'tkazib yuboriladi) |
-| `tests/baseline.test.mjs` | Boshlang'ich natija skripti: qayta yozish taqiqi, `--force` va git tekshiruvi, arxivlash, `analyzer.js` himoyasi (6 test) |
+| `tests/baseline.test.mjs` | Boshlang'ich natija skripti: qayta yozish taqiqi, `--force` va git tekshiruvi, arxivlash; commit qilinmagan `analyzer.js`, `evaluate.js`, `test-set-v3.js` va yangi fayllar; uchala SHA-256 xesh va `evaluate.js` o'zgarganda yangi xesh (11 test) |
 | `tests/bot.test.mjs` | Bot: 4 buyruq, HTML escape, bo'laklash va 4096 chegarasi, disclaimer, `/stats` va xeshlangan `user_id`; AI faqat `/check`, foydalanuvchi va kunlik AI limiti; guruh qoidalari; xavfsiz log; tokensiz va 401 holatlari; soxta Telegram server bilan to'liq oqim (21 test) |
 | `tests/config.test.mjs` | Config va `analyzer.js` kurslari bir xilligi, `.env` orqali almashtirish, eskirgan kurs, rasmiy manbalar formati, server orqali uzatish (6 test) |
 | `tests/ui.e2e.mjs` (`npm run test:ui`) | Brauzerda (Playwright): xaritani klaviatura bilan boshqarish, `aria-live`, 390px va 1280px ekranda kasb nomlari ustma-ust tushmasligi, gorizontal scroll yo'qligi, yorug' va qorong'i rejimda WCAG AA kontrast (7 test). Playwright o'rnatilmagan bo'lsa o'tkazib yuboriladi |

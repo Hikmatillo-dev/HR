@@ -5,8 +5,11 @@
 //   npm run eval:v3-baseline -- --force — qayta yozish: faqat git holati toza bo'lsa;
 //                                         eski natija tests/results/archive/ ga vaqt belgisi bilan ko'chiriladi
 //
-// Qoidalar: js/analyzer.js da commit qilinmagan o'zgarish bo'lsa skript ishlamaydi — natija qaysi
-// qoidalar versiyasiga tegishli ekani (git commit + analyzer.js SHA-256) faylga yoziladi.
+// Himoyalar:
+//   - js/analyzer.js da commit qilinmagan o'zgarish bo'lsa — ishlamaydi (har doim)
+//   - birinchi yozishda js/ va tools/ toza bo'lishi shart (evaluate.js, test-set-v3.js ham commit qilingan)
+//   - --force: butun repozitoriy toza bo'lishi shart, eski natija archive/ ga ko'chiriladi
+// Faylga yoziladi: git commit, sana, e'lonlar soni, analyzer.js / evaluate.js / test-set-v3.js SHA-256.
 //
 // Yoziladigan fayllar:
 //   tests/results/v3-baseline.json   — metrikalar va xato bo'lgan testlar (asosiy natija)
@@ -28,6 +31,7 @@ const FILES = {
   archive: P('tests/results/archive'),
   readme: P('README.md'),
   analyzer: P('js/analyzer.js'),
+  evaluate: P('js/evaluate.js'),
   v3: P('js/test-set-v3.js')
 };
 const force = process.argv.includes('--force');
@@ -39,10 +43,12 @@ const sha256 = file => createHash('sha256').update(readFileSync(file)).digest('h
 
 // ---------- 1. Git holati ----------
 let commit, status;
-try { commit = git('rev-parse', 'HEAD').trim(); status = git('status', '--porcelain'); }
+try { commit = git('rev-parse', 'HEAD').trim(); status = git('status', '--porcelain', '--untracked-files=all'); }
 catch (e) { fail("git repozitoriy topilmadi: natija qaysi commit'ga tegishli ekanini yozib bo'lmaydi"); }
 const dirty = status.split('\n').filter(Boolean);
-if (dirty.some(l => l.slice(3).trim() === 'js/analyzer.js')) {
+// "XY yo'l" yoki qayta nomlashda "XY eski -> yangi"
+const dirtyPaths = dirty.map(l => l.slice(3).split(' -> ').pop().replace(/^"|"$/g, ''));
+if (dirtyPaths.includes('js/analyzer.js')) {
   fail("js/analyzer.js da commit qilinmagan o'zgarish bor. Boshlang'ich natija o'zgartirilmagan qoidalar bilan olinishi kerak — avval commit qiling yoki o'zgarishni bekor qiling.");
 }
 
@@ -58,6 +64,14 @@ if (force && exists) {
   copyFileSync(FILES.baseline, path.join(FILES.archive, `v3-baseline-${stamp}.json`));
   if (existsSync(FILES.errors)) copyFileSync(FILES.errors, path.join(FILES.archive, `v3-errors-${stamp}.md`));
   console.log(`Eski natija arxivlandi: tests/results/archive/v3-baseline-${stamp}.json`);
+} else {
+  // Birinchi yozish: qoidalar (js/), metrikalar (js/evaluate.js), real e'lonlar (js/test-set-v3.js) va vositalar
+  // (tools/) commit qilingan bo'lishi shart — natija aynan qaysi kodga tegishli ekani git va xeshlar bilan isbotlanadi
+  const uncommitted = dirtyPaths.filter(p => p.startsWith('js/') || p.startsWith('tools/'));
+  if (uncommitted.length) {
+    const key = ['js/evaluate.js', 'js/test-set-v3.js'].filter(f => uncommitted.includes(f));
+    fail(`${key.length ? key.join(' va ') + ' commit qilinmagan. ' : ''}Boshlang'ich natija faqat js/ va tools/ toza bo'lganda yoziladi. Commit qilinmagan yoki yangi fayllar:\n  ${uncommitted.join('\n  ')}\n  Avval: git add ... && git commit`);
+  }
 }
 
 // ---------- 3. Modullar va v3 to'plami ----------
@@ -105,6 +119,7 @@ const baseline = {
   git_commit: commit,
   git_dirty_files: dirty.map(l => l.slice(3)),
   analyzer_sha256: sha256(FILES.analyzer),
+  evaluate_sha256: sha256(FILES.evaluate),
   test_set_v3_sha256: sha256(FILES.v3),
   metrics, counts, failures
 };
@@ -113,7 +128,11 @@ const baseline = {
 mkdirSync(path.dirname(FILES.baseline), { recursive: true });
 writeFileSync(FILES.baseline, JSON.stringify(baseline, null, 2) + '\n');
 
-const forBrowser = { created_at: baseline.created_at, n: baseline.n, git_commit: commit, metrics, counts, failure_ids: failures.map(f => f.id) };
+const forBrowser = {
+  created_at: baseline.created_at, n: baseline.n, git_commit: commit,
+  analyzer_sha256: baseline.analyzer_sha256, evaluate_sha256: baseline.evaluate_sha256, test_set_v3_sha256: baseline.test_set_v3_sha256,
+  metrics, counts, failure_ids: failures.map(f => f.id)
+};
 writeFileSync(FILES.browser, `// tools/eval-v3-baseline.mjs tomonidan yaratilgan — qo'lda o'zgartirmang.\nwindow.V3_BASELINE = ${JSON.stringify(forBrowser, null, 2)};\n`);
 
 const pct = x => (x === null || x === undefined ? '—' : `${(x * 100).toFixed(1)}%`);
@@ -144,7 +163,9 @@ if (!existsSync(FILES.errors) || force) {
 
 const block = [
   '<!-- v3-baseline:start -->',
-  `**v3 boshlang'ich natija** (real e'lonlar, qoidalar o'zgartirilmasdan): ${baseline.created_at.slice(0, 10)}, ${r.n} ta e'lon, commit \`${commit.slice(0, 7)}\`, \`analyzer.js\` SHA-256 \`${baseline.analyzer_sha256.slice(0, 12)}…\``,
+  `**v3 boshlang'ich natija** (real e'lonlar, qoidalar o'zgartirilmasdan): ${baseline.created_at.slice(0, 10)}, ${r.n} ta e'lon, commit \`${commit.slice(0, 7)}\``,
+  '',
+  `SHA-256: \`analyzer.js\` \`${baseline.analyzer_sha256.slice(0, 12)}…\` · \`evaluate.js\` \`${baseline.evaluate_sha256.slice(0, 12)}…\` · \`test-set-v3.js\` \`${baseline.test_set_v3_sha256.slice(0, 12)}…\``,
   '',
   "| Ko'rsatkich | Natija |",
   '|---|---|',

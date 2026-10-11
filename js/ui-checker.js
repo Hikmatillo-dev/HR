@@ -148,6 +148,7 @@
       data.improved_non_discriminatory_version
         ? el('details', { className: 'block' }, el('summary', null, 'Kamsitishsiz, shaffof variant'), el('div', { className: 'src-text' }, data.improved_non_discriminatory_version))
         : null,
+      (data.warnings && data.warnings.length) ? el('p', { className: 'muted ai-note' }, `⚠️ ${data.warnings.length} ta AI iqtibosi e'lon matnida topilmadi, shuning uchun ko'rsatilmadi.`) : null,
       el('p', { className: 'muted ai-note' }, "Bu avtomatik tahlil. Yakuniy qaror sizda: kompaniyani mustaqil tekshiring.")
     );
     $('#aiOut').replaceChildren(box);
