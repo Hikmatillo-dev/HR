@@ -26,9 +26,16 @@
       re: /oldindan\s+(to'lov|pul)|\d[\d\s.,]*\s*(\$|so'm|sum|сум|usd|dollar|ming|mln|евро|eur)\s*(\S+\s+)?oldindan|oldindan\s+\d[\d\s.,]*\s*(\$|so'm|sum|usd|dollar|ming|mln)|to'lov\s+qilish(ingiz)?\s+kerak|pul\s+(to'lab|tashlab|o'tkazib)|ro'yxatdan\s+o'tish\s+(uchun\s+)?(to'lov|pul)|rasmiylashtirish\s+uchun\s+(to'lov|pul)|([hx]ujjat\w*|forma|kiyim|tibbiy\s+ko'rik|test|imtihon|trening|o'qish|kurs)\s+(uchun\s+)?(to'lov|puli?)\b|o'qish\s+puli|xizmat\s+(haqi|narxi)\W{0,8}\d[\d\s.,]*\s*(so'm|sum|сум|сўм|\$|usd|dollar|ming|mln|eur|yevro)|стоимост\w*\s+услуг|услуг\w*\s+стоит|depozit|garov\s+puli|o'z\s+hisobingizdan|predoplata|предоплат|оплат\w*\s+за\s+(оформлени|обучени|регистрац|документ|форм|медосмотр|патент)|за\s+свой\s+сч[её]т|регистрац\w*\s+платн|платн\w*\s+регистрац|взнос|залог/
     },
     {
-      id: 'personal', weight: 30, label: "Karta yoki shaxsiy ma'lumot so'ralmoqda",
-      detail: "Karta raqami, SMS kod yoki pasport rasmini notanish odamga yuborish pulingiz va shaxsingiz o'g'irlanishiga olib keladi.",
-      re: /karta\s*(raqam|ma'lumot)|sms\s*kod|номер\s+карт|код\s+из\s+смс|pasport\s+(nusxa|rasm|ma'lumot)\w*\s+(yuboring|tashlang)|паспорт\w*\s+(фото|скан)/
+      id: 'personal', weight: 30, label: "Karta raqami yoki SMS kod so'ralmoqda",
+      detail: "Karta raqami yoki SMS kodni hech kimga bermang: ular bilan kartangizdagi pul yechib olinadi. Maosh to'lash uchun SMS kod, PIN-kod yoki karta muddati hech qachon kerak bo'lmaydi.",
+      re: /karta\s*(raqam|ma'lumot)|sms\s*kod|номер\s+карт|код\s+из\s+смс/
+    },
+    {
+      // Pasport nusxasi o'zi firibgarlik emas (ko'p ish beruvchi so'raydi), lekin uni Telegramda notanish odamga
+      // yuborish xavfli — shuning uchun alohida, kritik bo'lmagan belgi (o'rtacha xavf)
+      id: 'idcopy', weight: 30, label: "Pasport nusxasi yoki rasmi yuborish so'ralmoqda",
+      detail: "Pasport nusxasini notanish odamga Telegramda yubormang: u bilan sizning nomingizga kredit yoki SIM-karta rasmiylashtirish mumkin. Uni ish beruvchini tekshirgach, shaxsan yoki rasmiy ariza orqali bering.",
+      re: /pasport\w*\s+(nusxa|rasm|surat|ma'lumot|skan)\w*\s+(\S+\s+){0,3}(yuboring|tashlang|jo'nating|yuborasiz)|(yuboring|tashlang|jo'nating)\s+(\S+\s+){0,2}pasport|паспорт\w*\s+(фото|скан|копи)|(фото|скан|копи)\w*\s+паспорт/
     },
     {
       id: 'passport', weight: 35, label: "Pasportni topshirish talab qilinmoqda",

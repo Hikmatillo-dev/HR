@@ -117,4 +117,12 @@ test("Raqamlar oralig'i yosh emas: maosh, ish vaqti, smena, sana; 'chiroyli ofis
   hasNot('Ofitsiant kerak, Toshkent', 'disc:gender');
 });
 
+test("C2: pasport nusxasini yuborish so'ralsa — o'rtacha xavf (kritik emas); karta/SMS kod — yuqori; shaxsan topshirish — xavf emas", () => {
+  const t = 'Kassir kerak. Ariza uchun pasport nusxasini yuboring. Maosh 4 mln, Toshkent, Chilonzor';
+  has(t, 'idcopy'); hasNot(t, 'personal'); assert.equal(analyze(t).level, 'medium');
+  assert.equal(analyze('Karta raqamingizni va SMS kodni yuboring').level, 'high');
+  assert.equal(analyze('Для регистрации пришлите фото паспорта и номер карты').level, 'high');
+  hasNot("Hujjatlar: pasport nusxasi, diplom — kadrlar bo'limiga shaxsan olib keling", 'idcopy');
+});
+
 console.log(`\n${passed} ta qoida testi o'tdi${process.exitCode ? ', xatolar bor' : ''}\n`);
