@@ -140,31 +140,50 @@
   });
   renderTodo();
 
-  // ---------- Aniqlik (test to'plami asosida, brauzerda jonli hisoblanadi) ----------
+  // ---------- Aniqlik: v2 (qo'lda) → v3 (real) → izoh ----------
+  const pctx = x => (x === null || x === undefined ? '—' : Math.round(x * 100) + '%');
+  const kpi = (v, l) => `<div class="kpi"><b>${v}</b><span>${l}</span></div>`;
+  // Bir xil to'rtta asosiy ko'rsatkich: boshlang'ich va hozirgi natijani yonma-yon solishtirish uchun
+  const kpis = m => [
+    kpi(pctx(m.accuracy), 'Umumiy aniqlik'),
+    kpi(pctx(m.risk_recall), "Xavfli e'lonlarni topish"),
+    kpi(pctx(m.false_positive_rate), "Halol e'lonni xavfli deyish (FPR)"),
+    kpi(pctx(m.discrimination_recall), 'Kamsitishni topish'),
+    kpi(pctx(m.trafficking_recall), 'Odam savdosini topish'),
+    kpi(pctx(m.reason_accuracy), 'Sabablar aniqligi')
+  ].join('');
+  const fromEval = r => ({
+    accuracy: r.risk.accuracy, risk_recall: r.risk.recall, false_positive_rate: r.risk.fpr,
+    discrimination_recall: r.discrimination.recall, trafficking_recall: r.trafficking.recall, reason_accuracy: r.flagRecall
+  });
+
   function renderMetrics() {
-    const cases = window.TEST_SET || [];
-    if (!cases.length || !window.IQEval) return;
-    const r = window.IQEval.evaluate(cases, A.analyze);
+    if (!window.IQEval) return;
+    const E = window.IQEval;
+    const v2 = (window.TEST_SET || []).filter(c => c.id.startsWith('v2'));
     const b = window.TEST_BASELINE;
-    const p = x => (x === null || x === undefined ? '—' : Math.round(x * 100) + '%');
-    const kpi = (v, l) => `<div class="kpi"><b>${v}</b><span>${l}</span></div>`;
-    const v1 = cases.filter(c => c.id.startsWith('v1')).length, v2 = cases.length - v1;
-    $('#metricsNote').innerHTML = `Test to'plamida <b>${cases.length}</b> ta qo'lda belgilangan e'lon bor: ${v1} tasi birinchi to'plam, ${v2} tasi keyin qo'shilgan qiyin holatlar (kirill, rus, aralash yozuv, odam savdosi, xato signal tuzoqlari). E'lonlarni loyiha muallifi yozgan, ular <b>real Telegram ma'lumoti emas</b>. Shuning uchun bu raqamlar faqat yo'nalishni ko'rsatadi; real e'lonlarda natija pastroq bo'lishi kutiladi.`;
-    $('#metricsBaseline').innerHTML = b ? [
-      kpi(p(b.accuracy), `Umumiy aniqlik (${b.n} ta yangi e'lon)`),
-      kpi(p(b.riskRecall), "Xavfli e'lonlarni topish"),
-      kpi(p(b.fpr), "Halol e'lonni xavfli deyish (FPR)"),
-      kpi(p(b.discRecall), 'Kamsitishni topish'),
-      kpi(p(b.traffRecall), 'Odam savdosi belgilarini topish')
-    ].join('') + `<p class="muted" style="grid-column:1/-1;margin:0;font-size:.85rem">Qoidalar bu e'lonlarni ko'rmasdan oldin o'lchangan (${esc(b.date)}). Notanish e'lonlarda tizim qanday ishlashining eng halol ko'rsatkichi shu.</p>` : '';
-    $('#metrics').innerHTML = [
-      kpi(p(r.risk.accuracy), 'Umumiy aniqlik'),
-      kpi(p(r.risk.recall), "Xavfli e'lonlarni topish"),
-      kpi(p(r.risk.fpr), "Halol e'lonni xavfli deyish (FPR)"),
-      kpi(p(r.discrimination.recall), 'Kamsitishni topish'),
-      kpi(p(r.trafficking.recall), 'Odam savdosi belgilarini topish'),
-      kpi(p(r.flagRecall), `Sabablarni aniq ko'rsatish (${r.expectedFlagCount} ta belgi)`)
-    ].join('') + `<p class="muted" style="grid-column:1/-1;margin:0;font-size:.85rem">Qoidalar shu e'lonlardagi xatolar asosida tuzatilgan, shuning uchun bu natija optimistik. U regressiyani ushlash uchun kerak: yangi o'zgarish eski holatlarni buzmasligini tekshiradi.</p>`;
+    $('#v2Note').innerHTML = `${v2.length} ta e'lon: kirill, rus, aralash yozuv, odam savdosi va xato signal tuzoqlari. Loyiha muallifi yozgan, <b>real ma'lumot emas</b>.`;
+    $('#v2Baseline').innerHTML = b ? kpis({
+      accuracy: b.accuracy, risk_recall: b.riskRecall, false_positive_rate: b.fpr,
+      discrimination_recall: b.discRecall, trafficking_recall: b.traffRecall, reason_accuracy: b.flagRecall
+    }) : '';
+    if (v2.length) $('#v2Current').innerHTML = kpis(fromEval(E.evaluate(v2, A.analyze)));
+
+    const v3 = window.TEST_SET_V3 || [];
+    const v3b = window.V3_BASELINE;
+    const box = $('#v3Block');
+    if (!v3.length) {
+      box.innerHTML = `<div class="v3-empty">📭 <b>Real e'lonlar hali qo'shilmagan.</b> 50 ta real Telegram e'loni qo'lda belgilanib <code>js/test-set-v3.js</code> ga qo'shilgach, birinchi natija qoidalar o'zgartirilmasdan qayd qilinadi va shu yerda ko'rsatiladi.</div>`;
+      return;
+    }
+    const current = E.evaluate(v3, A.analyze);
+    const channels = new Set(v3.map(c => c.source_channel)).size;
+    box.innerHTML = `<p class="muted metrics-note">${v3.length} ta real e'lon, ${channels} ta kanaldan. Telefon va shaxsiy ma'lumotlar yashirilgan.</p>
+      <div class="metrics-pair">
+        <div><h5>Boshlang'ich: qoidalar o'zgartirilmasdan${v3b ? ` (${esc(v3b.created_at.slice(0, 10))}, ${v3b.n} ta)` : ''}</h5>
+          <div class="metrics">${v3b ? kpis(v3b.metrics) : `<p class="muted" style="grid-column:1/-1;margin:0">Hali qayd qilinmagan: <code>npm run eval:v3-baseline</code></p>`}</div></div>
+        <div><h5>Hozirgi (jonli hisoblanadi)</h5><div class="metrics">${kpis(fromEval(current))}</div></div>
+      </div>`;
   }
   renderMetrics();
 

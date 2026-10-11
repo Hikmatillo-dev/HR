@@ -7,6 +7,7 @@ Telegram'dagi ish e'lonlarini **firibgarlik**, **odam savdosi belgilari** va **k
 Hakamlar va foydalanuvchilar uchun halol holat (2026-10-11):
 
 - **Dashboard hali real ma'lumot bilan sinalmagan.** Sukut bo'yicha sayt "Real ma'lumot yuklanmagan" holatini ko'rsatadi. 600 ta sintetik e'lon faqat **Demo** rejimida, har bir bo'limda "DEMO" belgisi bilan ko'rinadi. Real raqamlar uchun Telegram eksportini yuklash kerak.
+- **Real ma'lumotdagi sifat hali o'lchanmagan.** v3 to'plami (real Telegram e'lonlari) tuzilmasi tayyor, lekin hali bo'sh.
 - **Test to'plami kichik va qo'lda tayyorlangan.** 87 ta e'lonni loyiha muallifi yozgan, ular real Telegram e'lonlari emas. Qoidalar 49 ta yangi e'lonni ko'rmasdan oldingi natija: aniqlik **85%**, xavfli e'lonlarni topish **65%**, odam savdosi belgilarini topish **50%**. Hozirgi 100% natija optimistik, chunki qoidalar aynan shu xatolar asosida tuzatilgan.
 - **Claude API real kalit bilan hali sinovdan o'tmagan.** U faqat soxta (mock) API bilan 11 ta avtomatik testdan o'tgan.
 - **Telegram bot real token bilan hali ishga tushirilmagan.** Kod tayyor va token bo'lmasa to'g'ri xabar bilan to'xtaydi. `/check` va `/stats` buyruqlari hali yo'q (P1).
@@ -15,6 +16,26 @@ Hakamlar va foydalanuvchilar uchun halol holat (2026-10-11):
 - **Ma'lum xato holatlar:** qoidalar kalit so'zlarga tayanadi. Yangi so'z yoki imlo bilan yozilgan firibgarlikni o'tkazib yuborishi mumkin. Ikkala jinsga murojaat kabi kutilmagan iboralarni esa noto'g'ri belgilashi mumkin. Har bir topilgan xato `js/test-set.js` ga qo'shiladi.
 
 ## Evaluation (sifatni o'lchash)
+
+| To'plam | Fayl | Manba | Hajm | Vazifasi |
+|---|---|---|---|---|
+| **v1** | `js/test-set.js` | qo'lda yozilgan | 38 | Qoidalar shu e'lonlar asosida yozilgan (regressiya testi) |
+| **v2** | `js/test-set.js` | qo'lda yozilgan, qiyin holatlar | 49 | Boshlang'ich natija: aniqlik 85.4%, xavfli topish 64.7%, FPR 3.2%, kamsitish 72.7%, odam savdosi 50% |
+| **v3** | `js/test-set-v3.js` | **real Telegram e'lonlari** | 0 / 50 | Real ma'lumotdagi asosiy ko'rsatkich (hali to'ldirilmagan) |
+
+`npm test` uchala to'plamni alohida hisoblaydi. U formatni tekshiradi va quyidagi hollarda xato beradi:
+- v2 natijasi `tests/results/v2-reference.json` dagidan 5 punktdan ko'p pasaysa;
+- v3 natijasi boshlang'ich natijadan yomonlashsa.
+
+### v3 ni to'ldirish tartibi
+1. **Qoralama:** `node tools/redact.mjs --from-export result.json --channel @kanal --limit 50 > v3-qoralama.js`. Telefon, karta, email va @username yashiriladi, tizim bahosi ko'rsatilmaydi.
+2. **Belgilash:** har bir `TODO` ni e'lonni o'qib, **tizimga qaramasdan** to'ldiring (format: `js/test-set-v3.js` boshidagi izoh).
+3. **Qo'shish:** e'lonlarni `js/test-set-v3.js` dagi massivga qo'shing va `npm test` ishga tushiring. Format xatosi yoki yashirilmagan raqam bo'lsa, test aniq xabar beradi.
+4. **Commit:** `git commit -m "test: add v3 real postings"`.
+5. **Boshlang'ich natija:** `npm run eval:v3-baseline`. `analyzer.js` ga tegmang. Natija `tests/results/v3-baseline.json` ga, quyidagi blokka va "Loyiha haqida" bo'limiga yoziladi. Keyin uni commit qiling.
+6. **Xatolar tahlili:** `tests/results/v3-errors.md` dagi har bir xato uchun sabab va umumiy tuzatishni yozing. So'ng qoidalarni tuzating va `npm test` ishga tushiring.
+
+Qayta o'lchash `npm run eval:v3-baseline -- --force` bilan bajariladi. U faqat git holati toza bo'lganda ishlaydi, eski natija esa `tests/results/archive/` ga vaqt belgisi bilan ko'chiriladi.
 
 <!-- v3-baseline:start -->
 **v3 boshlang'ich natija:** hali yozilmagan — real e'lonlar qo'shilgandan keyin `npm run eval:v3-baseline`.
@@ -79,7 +100,9 @@ npm test
 |---|---|
 | `tests/importer.test.mjs` | Telegram JSON, CSV, TXT o'qilishi, takrorlar, buzilgan fayllar (8 test) |
 | `tests/ai.test.mjs` | AI xato holatlari mock API bilan: buzilgan JSON, sxema, refusal, 401, 429, 500+retry, timeout, bo'sh/uzun matn, kalitsiz rejim (11 test) |
-| `tests/run.mjs` | Test to'plami bo'yicha aniqlik, xavfli topish, FPR, kamsitish, odam savdosi, belgilar. Sifat chegarasidan pastga tushsa xato beradi |
+| `tests/redact.test.mjs` | Telefon, karta, email va @username yashirilishi; v3 qoralamasi (5 test) |
+| `tests/baseline.test.mjs` | Boshlang'ich natija skripti: qayta yozish taqiqi, `--force` va git tekshiruvi, arxivlash, `analyzer.js` himoyasi (6 test) |
+| `tests/run.mjs` | v1, v2, v3 bo'yicha aniqlik, xavfli topish, FPR, kamsitish, odam savdosi, sabablar; format tekshiruvi; v2 regressiya chegarasi |
 
 Batafsil xatolar ro'yxati: `node tests/run.mjs --verbose`.
 
@@ -91,6 +114,11 @@ js/analyzer.js              TAHLIL YADROSI: qoidalar, maosh, hudud, kasb, shaffo
 js/importer.js              Telegram JSON / CSV / TXT importi va takrorlarni aniqlash
 js/evaluate.js              aniqlik metrikalari (brauzer va testlar uchun bitta modul)
 js/test-set.js              qo'lda belgilangan test to'plami + boshlang'ich natija
+js/test-set-v3.js           REAL Telegram e'lonlari (v3), hozircha bo'sh
+js/results-v3-baseline.js   v3 boshlang'ich natija (brauzer uchun, avtomatik)
+tools/redact.mjs            shaxsiy ma'lumotni yashirish va v3 qoralamasi
+tools/eval-v3-baseline.mjs  v3 boshlang'ich natijani yozish
+tests/results/              v2-reference.json, v3-baseline.json, v3-errors.md, archive/
 js/ui-*.js, js/app.js       interfeys modullari, real/demo rejimlari
 js/sample-data.js           600 ta SINTETIK e'lon (faqat Demo rejimi)
 prompts/analysis.mjs        Claude promti va javob sxemasi
