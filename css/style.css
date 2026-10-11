@@ -65,7 +65,11 @@ a { color: var(--primary-ink); }
 /* ---------- Header ---------- */
 .topbar { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--surface) 92%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); }
 .topbar-inner { display: flex; align-items: center; gap: 12px; height: 58px; }
-.brand { font-size: 1.2rem; color: var(--text); text-decoration: none; white-space: nowrap; }
+.brand { font-size: 1.2rem; color: var(--text); text-decoration: none; white-space: nowrap; display: inline-flex; align-items: center; gap: 8px; }
+/* Logotip HTML ichida (inline SVG): ranglar mavzu o'zgaruvchilaridan — qo'lda almashtirilgan rejimga ham moslashadi */
+.brand-logo { width: 28px; height: 28px; flex: none; display: block; }
+.brand-logo .logo-shield { fill: var(--primary-strong, var(--primary)); }
+.brand-logo .logo-check { stroke: var(--on-primary); }
 .brand b { color: var(--primary); }
 nav { display: flex; gap: 2px; overflow-x: auto; flex: 1; scrollbar-width: none; }
 nav a { color: var(--text-2); text-decoration: none; padding: 6px 10px; border-radius: 8px; white-space: nowrap; font-size: .9rem; }

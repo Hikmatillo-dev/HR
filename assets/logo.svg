@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="128" height="128" role="img" aria-labelledby="t">
+  <title id="t">IshQalqon logotipi: qalqon va tekshiruv belgisi</title>
+  <style>
+    .shield { fill: #1c5cab; } .check { stroke: #ffffff; }
+    @media (prefers-color-scheme: dark) { .shield { fill: #3987e5; } .check { stroke: #0b0b0b; } }
+  </style>
+  <path class="shield" d="M16 1.8 3.6 6.4v9.1c0 7.7 5.3 13.4 12.4 15.6 7.1-2.2 12.4-7.9 12.4-15.6V6.4Z"/>
+  <path class="check" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="m10.2 16.4 4 4 7.6-7.9"/>
+</svg>

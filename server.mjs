@@ -21,7 +21,7 @@ const PORT = Number(process.env.PORT) || 3000;
 const HOST = process.env.HOST || '127.0.0.1';
 const DATA_DIR = process.env.IQ_DATA_DIR || path.join(ROOT, 'data');
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png' };
-const PUBLIC = ['index.html', 'css/', 'js/', 'vendor/', 'namuna/', 'config/'];
+const PUBLIC = ['index.html', 'assets/', 'css/', 'js/', 'vendor/', 'namuna/', 'config/'];
 
 // ---------- AI limitlari ----------
 // 1) Bir IP dan daqiqasiga IQ_AI_PER_MINUTE ta (standart 10). 2) Server bo'yicha kunlik IQ_AI_DAILY_LIMIT ta

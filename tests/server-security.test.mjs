@@ -99,6 +99,16 @@ try {
     assert.equal((await ai(srv, { headers: { origin: `http://127.0.0.1:${srv.port}` } })).status, 200);
   });
 
+  await test("Statik fayllar: logotip va favicon (assets/) beriladi; .env va boshqa fayllar yopiq", async () => {
+    const get = p => fetch(`http://127.0.0.1:${srv.port}/${p}`);
+    for (const f of ['assets/favicon.svg', 'assets/logo.svg']) {
+      const r = await get(f);
+      assert.equal(r.status, 200, f);
+      assert.equal(r.headers.get('content-type'), 'image/svg+xml');
+    }
+    for (const f of ['.env', '.env.example', 'package.json', 'server.mjs', 'assets/../server.mjs']) assert.equal((await get(f)).status, 404, f);
+  });
+
   await test("Server sukut bo'yicha faqat 127.0.0.1 da tinglaydi", async () => {
     assert.match(srv.log, new RegExp(`http://127\\.0\\.0\\.1:${srv.port}`));
     const external = Object.values(os.networkInterfaces()).flat().find(i => i && i.family === 'IPv4' && !i.internal);

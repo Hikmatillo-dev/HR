@@ -142,6 +142,51 @@ for (const scheme of ['light', 'dark']) {
   });
 }
 
+await test("Logotip: emoji yo'q, inline SVG qalqon, favicon assets/favicon.svg; qo'lda almashtirilgan rejimda rang o'zgaradi, kontrast ≥ 3:1", async () => {
+  const { page, errors } = await open({ demo: false });
+  assert.ok(!(await page.textContent('header .brand')).includes('🛡'), 'emoji logotip qolgan');
+  assert.ok(!(await page.content()).includes('🛡️</text>'), 'emoji favicon qolgan');
+  assert.equal(await page.locator('header .brand svg.brand-logo path').count(), 2, 'inline SVG (qalqon + belgi) yo\'q');
+  assert.equal(await page.getAttribute('link[rel="icon"]', 'href'), 'assets/favicon.svg');
+  const fs = await import('node:fs');
+  const fav = fs.readFileSync(new URL('../assets/favicon.svg', import.meta.url), 'utf8');
+  assert.match(fav, /^<svg[^>]+viewBox="0 0 32 32"/);
+  assert.ok(fs.existsSync(new URL('../assets/logo.svg', import.meta.url)));
+  assert.equal(await page.locator('img[src*="logo.svg"]').count(), 0, "logo.svg HTML'ga <img> orqali ulanmaydi");
+  // Grafik element uchun WCAG 1.4.11: qalqon fonga, belgi qalqonga nisbatan ≥ 3:1
+  const colors = () => page.evaluate(() => {
+    const rgb = c => c.match(/[\d.]+/g).slice(0, 3).map(Number);
+    const lum = ([r, g, b]) => { const f = v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }; return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b); };
+    const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m); return (x + 0.05) / (y + 0.05); };
+    const shield = getComputedStyle(document.querySelector('.logo-shield')).fill;
+    const check = getComputedStyle(document.querySelector('.logo-check')).stroke;
+    const bg = getComputedStyle(document.body).backgroundColor;
+    return { shield, toBg: ratio(rgb(shield), rgb(bg)), toCheck: ratio(rgb(shield), rgb(check)) };
+  });
+  const light = await colors();
+  await page.click('#themeBtn'); await page.waitForTimeout(100);
+  const dark = await colors();
+  assert.notEqual(light.shield, dark.shield, "qo'lda qorong'i rejimga o'tganda rang o'zgarmadi");
+  for (const [name, c] of [['yorug\'', light], ['qorong\'i', dark]]) {
+    assert.ok(c.toBg >= 3, `${name}: qalqon/fon ${c.toBg.toFixed(2)} < 3`);
+    assert.ok(c.toCheck >= 3, `${name}: belgi/qalqon ${c.toCheck.toFixed(2)} < 3`);
+  }
+  assert.deepEqual(errors, []);
+  await page.close();
+});
+
+await test("Logotip 390px: sarlavha bir qatorda, logotip ko'rinadi va menyu tugmasi bilan ustma-ust tushmaydi", async () => {
+  const { page } = await open({ demo: false, width: 390 });
+  const logo = await page.locator('.brand-logo').boundingBox();
+  const brand = await page.locator('header .brand').boundingBox();
+  const menu = await page.locator('#menuBtn').boundingBox();
+  assert.ok(logo.width >= 24 && logo.height >= 24, 'logotip juda kichik');
+  assert.ok(brand.height <= 40, 'sarlavha ikki qatorga bo\'lingan');
+  assert.ok(brand.x + brand.width <= menu.x, 'logotip menyu tugmasi bilan ustma-ust');
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), 390);
+  await page.close();
+});
+
 for (const [width, scheme] of [[390, 'light'], [390, 'dark'], [1280, 'light']]) {
   await test(`Kasblar grafigi ${width}px ${scheme}: yozuvlar ustma-ust tushmaydi, qisqa, jadval bor, gorizontal scroll yo'q`, async () => {
     const { page, errors } = await open({ width, scheme });

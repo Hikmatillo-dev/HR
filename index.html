@@ -5,14 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>IshQalqon</title>
   <meta name="description" content="Telegram'dagi vakansiyalarni firibgarlik va kamsitishga tekshiruvchi hamda mehnat bozorini tahlil qiluvchi platforma.">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/style.css">
   <script>try { const t = localStorage.getItem('iq-theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
 </head>
 <body>
   <header class="topbar">
     <div class="wrap topbar-inner">
-      <a class="brand" href="#">🛡️ <b>Ish</b>Qalqon</a>
+      <a class="brand" href="#" aria-label="IshQalqon — bosh sahifa">
+        <svg class="brand-logo" viewBox="0 0 32 32" width="28" height="28" aria-hidden="true" focusable="false">
+          <path class="logo-shield" d="M16 1.8 3.6 6.4v9.1c0 7.7 5.3 13.4 12.4 15.6 7.1-2.2 12.4-7.9 12.4-15.6V6.4Z"/>
+          <path class="logo-check" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="m10.2 16.4 4 4 7.6-7.9"/>
+        </svg><span><b>Ish</b>Qalqon</span>
+      </a>
       <button class="icon-btn menu-btn" id="menuBtn" aria-label="Menyu" aria-expanded="false" aria-controls="mainNav">☰</button>
       <nav id="mainNav" aria-label="Bo'limlar">
         <a href="#tekshir">Tekshirish</a>
