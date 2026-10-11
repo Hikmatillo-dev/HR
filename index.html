@@ -13,7 +13,8 @@
   <header class="topbar">
     <div class="wrap topbar-inner">
       <a class="brand" href="#">🛡️ <b>Ish</b>Qalqon</a>
-      <nav>
+      <button class="icon-btn menu-btn" id="menuBtn" aria-label="Menyu" aria-expanded="false" aria-controls="mainNav">☰</button>
+      <nav id="mainNav" aria-label="Bo'limlar">
         <a href="#tekshir">Tekshirish</a>
         <a href="#tahlil">Bozor tahlili</a>
         <a href="#kasblar">Kasblar</a>
@@ -77,6 +78,7 @@
         <button class="small needs-data" id="btnPrint">🖨️ Hisobot (PDF)</button>
       </div>
       <p class="data-note" id="dataNote" role="status"></p>
+      <p class="sample-cta"><button class="small primary" type="button" id="btnSampleUpload">📂 O'z kanalingiz eksportini yuklang</button> <span class="muted">Telegram Desktop → kanal → ⋮ → Export chat history → JSON. Fayl brauzerda o'qiladi, serverga yuborilmaydi.</span></p>
       <div class="import-report" id="importReport" hidden></div>
       <div class="empty-state" id="emptyState">
         <div class="empty-icon" aria-hidden="true">📭</div>
@@ -105,7 +107,7 @@
           <div class="legend-ramp" id="mapLegend"></div>
           <p class="hint">Hududni bossangiz, vakansiyalar bazasi shu hudud bo'yicha filtrlanadi.</p>
         </div>
-        <div class="chart-box wide"><h3>Kunlik dinamika (oxirgi 30 kun)</h3><div class="cv"><canvas id="chDaily"></canvas></div></div>
+        <div class="chart-box wide"><h3>Sanalar bo'yicha dinamika (oxirgi 30 ta sana)</h3><div class="cv"><canvas id="chDaily"></canvas></div></div>
         <div class="chart-box"><h3>Kamsitish turlari</h3><div class="cv"><canvas id="chDisc"></canvas></div></div>
         <div class="chart-box"><h3>Shaffoflik: e'lonlarda nima yetishmaydi</h3><div class="cv"><canvas id="chTransp"></canvas></div></div>
       </div>

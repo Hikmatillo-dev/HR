@@ -39,6 +39,20 @@
     return Object.assign(saved, { source: 'storage' });
   }
 
+  // Real namuna: js/test-set-v3.js dagi qo'lda belgilangan real Telegram e'lonlari (shaxsiy ma'lumot yashirilgan).
+  // Foydalanuvchi o'z eksportini yuklamaguncha "Real ma'lumot" rejimi shu namunani ko'rsatadi.
+  function loadSample() {
+    const v3 = window.TEST_SET_V3 || [];
+    if (!v3.length) return null;
+    const items = v3.map(c => ({
+      id: c.id, text: c.text,
+      channel: String(c.source_channel || '').replace(/^https?:\/\/t\.me\//, '@'),
+      date: ((c.reviewer_notes || '').match(/\d{4}-\d{2}-\d{2}/) || [''])[0]
+    }));
+    const channels = new Set(items.map(i => i.channel)).size;
+    return { items, stats: null, name: `real namuna: ${items.length} ta e'lon, ${channels} ta kanal`, source: 'sample', channels };
+  }
+
   function levelCounts(data) {
     const c = { high: 0, medium: 0, low: 0, disc: 0 };
     data.forEach(d => { c[d.a.level]++; if (d.a.discrimination.length) c.disc++; });
@@ -66,13 +80,14 @@
 
   function render() {
     const demo = state.mode === 'demo';
-    const real = state.real;
+    const real = state.real || state.sample;
     const empty = !demo && !real;
     document.body.classList.toggle('demo-mode', demo);
     document.body.classList.toggle('no-data', empty);
     IQ.$$('.mode-switch button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === state.mode)));
     $('#demoBadge').hidden = !demo;
     $('#btnClearReal').hidden = !(real && real.source === 'storage') || demo;
+    document.body.classList.toggle('sample-mode', !demo && !!real && real.source === 'sample');
 
     if (empty) {
       $('#dataNote').textContent = '';
@@ -85,7 +100,9 @@
     const data = withAnalysis(list);
     $('#dataNote').innerHTML = demo
       ? `⚠️ <b>Demo rejim:</b> ${data.length} ta <b>sintetik</b> e'lon. Bu raqamlar haqiqiy bozorni aks ettirmaydi va faqat interfeysni ko'rsatish uchun.`
-      : `✅ <b>Real ma'lumot:</b> ${esc(real.name)} — ${data.length} ta noyob e'lon. ${real.source === 'storage' ? "Ma'lumot faqat shu brauzerda saqlangan, serverga yuborilmagan." : ''}`;
+      : real.source === 'sample'
+        ? `📌 <b>Real namuna:</b> ${real.channels} ta Telegram kanalidan qo'lda tekshirilgan ${data.length} ta haqiqiy e'lon (telefon va shaxsiy ma'lumotlar yashirilgan). Namuna kichik — o'z kanalingiz eksportini yuklasangiz, tahlil shu ma'lumotda qayta quriladi.`
+        : `✅ <b>Real ma'lumot:</b> ${esc(real.name)} — ${data.length} ta noyob e'lon. ${real.source === 'storage' ? "Ma'lumot faqat shu brauzerda saqlangan, serverga yuborilmagan." : ''}`;
     renderImportReport(demo ? null : real, data);
     IQ.renderDashboard(data);
   }
@@ -124,8 +141,16 @@
     try { localStorage.removeItem(STORE_KEY); } catch (err) { /* e'tiborsiz */ }
     state.real = null; setMode('real');
   });
+  $('#btnSampleUpload').addEventListener('click', () => $('#fileInput').click());
   $('#btnCsv').addEventListener('click', () => IQ.exportCsv());
   $('#btnPrint').addEventListener('click', () => window.print());
+
+  // ---------- Telefon menyusi ----------
+  const topbar = document.querySelector('.topbar');
+  const setMenu = open => { topbar.classList.toggle('open', open); $('#menuBtn').setAttribute('aria-expanded', String(open)); };
+  $('#menuBtn').addEventListener('click', () => setMenu(!topbar.classList.contains('open')));
+  IQ.$$('#mainNav a').forEach(a => a.addEventListener('click', () => setMenu(false)));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') setMenu(false); });
 
   // ---------- Mavzu ----------
   $('#themeBtn').addEventListener('click', () => {
@@ -234,5 +259,6 @@
 
   // ---------- Boshlang'ich holat: faqat real ma'lumot, bo'lmasa — bo'sh holat ----------
   state.real = loadSavedReal();
+  state.sample = loadSample();
   render();
 })();

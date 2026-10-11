@@ -69,9 +69,10 @@
     const transp = Math.round(avg(DATA.map(d => d.a.transparency.score)));
     const dupes = count(DATA, d => d.dupes > 1);
 
-    $('#heroStats').innerHTML = `
-      <div><b>${total}</b>tahlil qilingan e'lon</div>
-      <div><b>${pct(high, total)}%</b>yuqori xavfli</div>
+    // Bosh sahifa faqat real ma'lumotni ko'rsatadi: demo raqamlari u yerga chiqmaydi
+    if (!document.body.classList.contains('demo-mode')) $('#heroStats').innerHTML = `
+      <div><b>${total}</b>tahlil qilingan real e'lon</div>
+      <div><b>${pct(high + medium, total)}%</b>xavfli yoki shubhali</div>
       <div><b>${pct(disc, total)}%</b>kamsituvchi talab bilan</div>
       <div><b>${transp}/100</b>o'rtacha shaffoflik</div>`;
 
@@ -178,7 +179,7 @@
   function renderInsights({ total, high, disc, noSalary }) {
     const groups = by(DATA, d => d.a.region);
     const riskByRegion = Object.entries(groups).filter(([r, l]) => l.length >= 8 && r !== "Noma'lum" && r !== 'Xorij')
-      .map(([r, l]) => [r, count(l, d => d.a.level === 'high') / l.length]).sort((x, y) => y[1] - x[1]);
+      .map(([r, l]) => [r, count(l, d => d.a.level !== 'low') / l.length]).filter(x => x[1] > 0).sort((x, y) => y[1] - x[1]);
     const signals = {};
     DATA.forEach(d => d.a.scam.forEach(s => { signals[s.label] = (signals[s.label] || 0) + 1; }));
     const topSignal = sortedEntries(signals)[0];
@@ -188,8 +189,9 @@
     if (high) ins.push(`Har <b>${Math.max(1, Math.round(total / high))}</b> ta e'londan taxminan bittasi yuqori xavfli.`);
     if (prepay) ins.push(`<b>${prepay}</b> ta e'londa ishga olish uchun pul so'ralgan. Bu firibgarlikning eng aniq belgisi.`);
     if (topSignal) ins.push(`Eng ko'p uchraydigan firibgarlik belgisi: <b>${esc(topSignal[0])}</b> (${topSignal[1]} ta e'lon).`);
-    if (abroad.length >= 5) ins.push(`Xorijga ish takliflarining <b>${pct(count(abroad, d => d.a.level === 'high'), abroad.length)}%</b>i yuqori xavfli.`);
-    if (riskByRegion.length) ins.push(`O'zbekiston ichida xavfli e'lonlar ulushi eng yuqori hudud: <b>${esc(riskByRegion[0][0])}</b> (${Math.round(riskByRegion[0][1] * 100)}%).`);
+    const abroadRisky = count(abroad, d => d.a.level !== 'low');
+    if (abroad.length >= 5 && abroadRisky) ins.push(`Xorijga ish takliflarining <b>${pct(abroadRisky, abroad.length)}%</b>ida firibgarlik yoki odam savdosi belgisi bor (yuqori yoki o'rtacha xavf).`);
+    if (riskByRegion.length) ins.push(`O'zbekiston ichida xavfli yoki shubhali e'lonlar ulushi eng yuqori hudud: <b>${esc(riskByRegion[0][0])}</b> (${Math.round(riskByRegion[0][1] * 100)}%).`);
     if (disc) ins.push(`E'lonlarning <b>${pct(disc, total)}%</b>ida kamsituvchi talab bor.`);
     ins.push(`E'lonlarning <b>${pct(noSalary, total)}%</b>ida maosh ko'rsatilmagan.`);
     $('#insights').innerHTML = `<h3>🔎 Avtomatik xulosalar</h3><ul>${ins.map(x => `<li>${x}</li>`).join('')}</ul>`;

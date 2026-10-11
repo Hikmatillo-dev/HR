@@ -25,7 +25,7 @@ async function open(opts = {}) {
   const errors = [];
   page.on('pageerror', e => errors.push(e.message));
   await page.goto(PAGE);
-  if (opts.demo !== false) { await page.click('#btnDemoEmpty'); await page.waitForTimeout(500); }
+  if (opts.demo !== false) { await page.click('[data-mode="demo"]'); await page.waitForTimeout(500); }
   return { page, errors };
 }
 
@@ -84,7 +84,7 @@ for (const [width, scheme] of [[390, 'light'], [390, 'dark'], [1280, 'light']]) 
   });
 }
 
-const CONTRAST_SELECTORS = ['.lvl-high', '.lvl-medium', '.lvl-low', '#demoBadge', '.tag.high', '.tag.low', '.tag.disc', '.badge-warn',
+const CONTRAST_SELECTORS = ['.lvl-high', '.lvl-medium', '.lvl-low', '.lvl-disc', '#demoBadge', '.tag.high', '.tag.low', '.tag.disc', '.badge-warn',
   '.kpi span', '.data-note', '.muted', '.hint', '.reasons small', 'mark', '.grade', '.tile', '.mode-switch button[aria-pressed="true"]',
   'nav a', 'button.primary', '.map-ctrl button.on', '.src-text'];
 

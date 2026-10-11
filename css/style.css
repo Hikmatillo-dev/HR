@@ -70,6 +70,15 @@ a { color: var(--primary-ink); }
 nav { display: flex; gap: 2px; overflow-x: auto; flex: 1; scrollbar-width: none; }
 nav a { color: var(--text-2); text-decoration: none; padding: 6px 10px; border-radius: 8px; white-space: nowrap; font-size: .9rem; }
 nav a:hover { background: var(--surface-2); color: var(--text); }
+.menu-btn { display: none; order: 3; font-size: 1.1rem; }
+@media (max-width: 760px) {
+  .menu-btn { display: inline-block; }
+  .brand { flex: 1; }
+  .topbar nav { display: none; position: absolute; top: 58px; left: 0; right: 0; flex-direction: column; gap: 0; padding: 6px 12px 12px;
+    background: var(--surface); border-bottom: 1px solid var(--border); box-shadow: 0 8px 20px rgb(0 0 0 / .12); }
+  .topbar.open nav { display: flex; }
+  .topbar nav a { padding: 12px 10px; font-size: 1rem; }
+}
 .icon-btn { background: transparent; border: 1px solid var(--border); border-radius: 10px; padding: 6px 10px; cursor: pointer; color: var(--text); }
 
 /* ---------- Hero ---------- */
@@ -126,6 +135,7 @@ button[hidden] { display: none; }
 .verdict .lvl { font-size: 1.2rem; font-weight: 700; }
 .verdict .sub { color: var(--text-2); font-size: .9rem; }
 .lvl-high { color: var(--critical); } .lvl-medium { color: #b7791f; } .lvl-low { color: var(--good); }
+.verdict .lvl-disc { color: var(--violet-text, var(--violet)); font-size: 1rem; margin-top: 2px; }
 :root[data-theme="dark"] .lvl-medium { color: var(--warning); }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lvl-medium { color: var(--warning); } }
 .reasons { list-style: none; padding: 0; margin: 0 0 10px; }
@@ -258,6 +268,8 @@ td.text div { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: v
 .import-report { border: 1px solid var(--good); background: var(--good-bg); border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; }
 .import-report .kpis { margin: 8px 0 0; }
 .import-report .kpi { background: var(--surface); }
+.sample-cta { display: none; margin: -4px 0 14px; font-size: .88rem; align-items: center; gap: 10px; flex-wrap: wrap; }
+body.sample-mode .sample-cta { display: flex; }
 .empty-state { text-align: center; border: 2px dashed var(--border); border-radius: 14px; padding: 32px 20px; }
 .empty-state p { max-width: 640px; margin-left: auto; margin-right: auto; color: var(--text-2); }
 .empty-icon { font-size: 2.4rem; }
