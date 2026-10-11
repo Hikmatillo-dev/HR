@@ -15,6 +15,30 @@ export const AnalysisSchema = z.object({
   recommended_questions_for_applicant: z.array(z.string())
 }).strict();
 
+// Gemini uchun xuddi shu javob tuzilmasi (OpenAPI sxema to'plami: Gemini "responseSchema" shuni qabul qiladi).
+// Gemini qo'shimcha maydonlarni taqiqlay olmaydi — javob baribir yuqoridagi qat'iy AnalysisSchema bilan tekshiriladi.
+// tests/ai-gemini.test.mjs ikkala sxemadagi maydonlar bir xilligini tekshiradi.
+const S = { type: 'STRING' };
+const quotedItem = fields => ({
+  type: 'OBJECT',
+  properties: { ...Object.fromEntries(fields.map(f => [f, S])), quote: S },
+  required: [...fields, 'quote'],
+  propertyOrdering: [...fields, 'quote']
+});
+const GEMINI_FIELDS = {
+  summary: S,
+  risk_level: { type: 'STRING', enum: ['low', 'medium', 'high'] },
+  risk_reasons: { type: 'ARRAY', items: quotedItem(['reason']) },
+  discrimination_flags: { type: 'ARRAY', items: quotedItem(['type', 'explanation']) },
+  human_trafficking_flags: { type: 'ARRAY', items: quotedItem(['indicator', 'explanation']) },
+  missing_information: { type: 'ARRAY', items: S },
+  improved_non_discriminatory_version: S,
+  recommended_questions_for_applicant: { type: 'ARRAY', items: S }
+};
+export const GEMINI_RESPONSE_SCHEMA = {
+  type: 'OBJECT', properties: GEMINI_FIELDS, required: Object.keys(GEMINI_FIELDS), propertyOrdering: Object.keys(GEMINI_FIELDS)
+};
+
 export const SYSTEM_PROMPT = `You analyze job postings collected from Telegram channels in Uzbekistan to protect job seekers.
 Posts may be in Uzbek (Latin or Cyrillic), Russian, or a mix.
 

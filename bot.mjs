@@ -1,6 +1,6 @@
 // IshQalqon Telegram boti. Buyruqlar: /start, /help, /check, /stats (mantiq: lib/bot-core.mjs)
 // Ishga tushirish: npm run bot  (.env dagi TELEGRAM_BOT_TOKEN avtomatik o'qiladi)
-// AI xulosa uchun qo'shimcha: ANTHROPIC_API_KEY=...
+// AI xulosa uchun qo'shimcha: ANTHROPIC_API_KEY=... yoki GEMINI_API_KEY=...
 import './lib/env.mjs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -19,7 +19,7 @@ const { createBot, AI_PER_HOUR_DEFAULT } = await import('./lib/bot-core.mjs');
 const { createDailyQuota, createWindowLimiter, parseLimit, DEFAULT_DAILY_LIMIT } = await import('./lib/ai-quota.mjs');
 const { logError } = await import('./lib/safe-log.mjs');
 const { createStore } = await import('./lib/bot-store.mjs');
-const { aiEnabled, aiAnalyze } = await import('./lib/ai.mjs');
+const { aiEnabled, aiAnalyze, aiProvider } = await import('./lib/ai.mjs');
 
 // IQ_TELEGRAM_API — faqat testlar uchun (soxta Telegram server)
 const API = `${process.env.IQ_TELEGRAM_API || 'https://api.telegram.org'}/bot${TOKEN}`;
@@ -66,7 +66,7 @@ await tg('setMyCommands', {
     { command: 'help', description: 'Yordam' }
   ]
 }).catch(e => logError('setMyCommands', e));
-console.log(`@${me.username} ishga tushdi (AI: ${aiEnabled ? `yoqilgan, foydalanuvchiga soatiga ${aiLimiter.max} ta, kunlik ${aiDaily.limit} ta` : "o'chirilgan"}). Statistika: ${store.file}`);
+console.log(`@${me.username} ishga tushdi (AI: ${aiEnabled ? `yoqilgan (${aiProvider === 'gemini' ? 'Gemini' : 'Claude'}), foydalanuvchiga soatiga ${aiLimiter.max} ta, kunlik ${aiDaily.limit} ta` : "o'chirilgan"}). Statistika: ${store.file}`);
 
 let offset = 0, stopping = false;
 for (const sig of ['SIGINT', 'SIGTERM']) process.on(sig, () => { stopping = true; console.log("\nTo'xtatilmoqda..."); setTimeout(() => process.exit(0), 500).unref(); });

@@ -121,11 +121,13 @@ Ma'lumotni doimiy fayl sifatida saqlash uchun: `python3 tools/telegram_export.py
 ### 3. AI'ni yoqish
 ```bash
 npm install
-cp .env.example .env          # ANTHROPIC_API_KEY ni to'ldiring
+cp .env.example .env          # ANTHROPIC_API_KEY (Claude) yoki GEMINI_API_KEY (Google Gemini) ni to'ldiring
 npm start                     # http://localhost:3000 — .env avtomatik o'qiladi (Node.js 20.12+)
 # eski Node.js uchun: npm run start:env  (20.6+)  yoki  ANTHROPIC_API_KEY=sk-ant-... npm start
 ```
-Kalit bo'lmasa server baribir ishlaydi. Bunda tugma o'chiq turadi va "AI tahlil faollashtirilmagan: ANTHROPIC_API_KEY sozlanmagan." degan yozuv chiqadi. Soxta AI javobi hech qachon ko'rsatilmaydi.
+Kalit bo'lmasa server baribir ishlaydi. Bunda tugma o'chiq turadi va "AI tahlil faollashtirilmagan: ANTHROPIC_API_KEY yoki GEMINI_API_KEY sozlanmagan." degan yozuv chiqadi. Soxta AI javobi hech qachon ko'rsatilmaydi.
+
+**Ikki provayder.** Claude (`ANTHROPIC_API_KEY`) yoki Google Gemini (`GEMINI_API_KEY`, aistudio.google.com da bepul limit bilan olinadi). Ikkala kalit bo'lsa Claude ishlatiladi; aniq tanlash uchun `IQ_AI_PROVIDER=gemini`. Gemini modeli sukut bo'yicha `gemini-flash-latest` (Google o'zi yangi Flash modelga yo'naltiradi), `IQ_GEMINI_MODEL` bilan almashtiriladi. Ikkala yo'lda bir xil promt, bir xil qat'iy sxema tekshiruvi, prompt injection himoyasi va iqtiboslarni tekshirish ishlaydi. Gemini kutubxonasiz, oddiy `fetch` bilan chaqiriladi; kalit URL'da emas, sarlavhada yuboriladi. Server ishga tushganda qaysi provayder va model ishlatilayotganini yozadi. Eslatma: Gemini'ning bepul rejimida Google yuborilgan matnni o'z xizmatlarini yaxshilash uchun ishlatishi mumkin.
 
 **Birinchi real sinov:** saytda "Misol: odam savdosi" → "🤖 AI chuqur tahlil" ni bosing. Javobda iqtiboslar bilan sabablar, savollar va xulosa chiqishini tekshiring.
 
@@ -199,6 +201,7 @@ npm test
 | Test fayli | Nimani tekshiradi |
 |---|---|
 | `tests/importer.test.mjs` | Telegram JSON, CSV, TXT o'qilishi, takrorlar, buzilgan fayllar (8 test) |
+| `tests/ai-gemini.test.mjs` | Gemini provayderi mock API bilan: so'rov formati (kalit sarlavhada), sxema mosligi, prompt injection, thought qismlari, buzilgan JSON, SAFETY/bloklangan, MAX_TOKENS, noto'g'ri kalit, 429+retry, 503+retry, timeout, to'qilgan iqtibos, provayder tanlash (13 test) |
 | `tests/ai.test.mjs` | AI xato holatlari mock API bilan: buzilgan JSON, sxema, ortiqcha maydon, refusal, 401, 429, 500+retry, timeout, bo‘sh/uzun matn, kalitsiz rejim; prompt injection (`</posting>` neytrallanishi); to‘qilgan iqtibosni aniqlash (14 test) |
 | `tests/redact.test.mjs` | Telefon (UZ, RU), karta, JSHSHIR, pasport, email, `t.me`, `@username` yashirilishi; STIR saqlanishi; validator; analyzer natijasi o'zgarmasligi; import va REPL'da yiqilmaslik; v3 qoralamasi (14 test) |
 | `tests/redact-parity.test.mjs` | `js/pii.js` va `tools/telegram_export.py` bir xil yashirishi (10 holat; Python bo'lmasa o'tkazib yuboriladi) |

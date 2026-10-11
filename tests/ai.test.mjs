@@ -115,7 +115,7 @@ await test("Kalit yo'q — AI o'chiq, soxta javob qaytmaydi", () => {
   const out = execFileSync(process.execPath, ['--input-type=module', '-e',
     "const m = await import('./lib/ai.mjs'); try { await m.aiAnalyze('Koreyaga ish, hujjat uchun to\\'lov 500$'); console.log('JAVOB'); } catch (e) { console.log(m.aiEnabled, e.code, e.message); }"],
   { env: { PATH: process.env.PATH }, cwd: new URL('..', import.meta.url).pathname }).toString();
-  assert.match(out, /^false disabled AI tahlil faollashtirilmagan: ANTHROPIC_API_KEY sozlanmagan\./);
+  assert.match(out, /^false disabled AI tahlil faollashtirilmagan: ANTHROPIC_API_KEY yoki GEMINI_API_KEY sozlanmagan\./);
 });
 
 mock.close();

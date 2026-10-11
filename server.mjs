@@ -1,11 +1,11 @@
 // Sayt + AI API serveri: node server.mjs  (http://localhost:3000)
-// AI uchun: .env ga ANTHROPIC_API_KEY=... yozing (yoki ANTHROPIC_API_KEY=... node server.mjs)
+// AI uchun: .env ga ANTHROPIC_API_KEY=... (Claude) yoki GEMINI_API_KEY=... (Google Gemini) yozing
 import './lib/env.mjs';
 import http from 'node:http';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { aiEnabled, aiDisabledReason, aiAnalyze, AiError, MAX_CHARS, validateText } from './lib/ai.mjs';
+import { aiEnabled, aiDisabledReason, aiAnalyze, aiProvider, aiModel, AiError, MAX_CHARS, validateText } from './lib/ai.mjs';
 import { createDailyQuota, createWindowLimiter, parseLimit, DEFAULT_DAILY_LIMIT } from './lib/ai-quota.mjs';
 import { logError } from './lib/safe-log.mjs';
 import './config/currency.js';
@@ -120,7 +120,7 @@ http.createServer(async (req, res) => {
   logError('server', e.code === 'EADDRINUSE' ? { code: e.code, message: `${HOST}:${PORT} band — boshqa PORT tanlang` } : e);
   process.exit(1);
 }).listen(PORT, HOST, () => {
-  console.log(`IshQalqon: http://${HOST}:${PORT}  (AI: ${aiEnabled ? `yoqilgan, kunlik limit ${daily.limit}, qolgan ${daily.remaining()}` : aiDisabledReason})`);
+  console.log(`IshQalqon: http://${HOST}:${PORT}  (AI: ${aiEnabled ? `yoqilgan — ${aiProvider === 'gemini' ? 'Google Gemini' : 'Claude'} (${aiModel}), kunlik limit ${daily.limit}, qolgan ${daily.remaining()}` : aiDisabledReason})`);
   if (HOST !== '127.0.0.1' && HOST !== 'localhost' && HOST !== '::1') console.warn(`Diqqat: server tarmoqqa ochiq (HOST=${HOST}). AI kunlik limiti: ${daily.limit}.`);
   if (RATES_OVERRIDDEN) {
     console.warn(`Kurslar .env dan: 1$=${CURRENCY.USD}, 1€=${CURRENCY.EUR}, 1₽=${CURRENCY.RUB} (${CURRENCY.updated}). Diqqat: js/analyzer.js hali config'ga ulanmagan — maosh hisobi standart kurslar bilan (README → Kutilayotgan ishlar).`);
