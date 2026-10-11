@@ -313,7 +313,8 @@
 
     // Daromad va'da qilinadi, lekin kasb ham, vazifa ham aytilmagan — ish mazmuni yashirilgan
     if (!scam.some(r => r.id === 'vague') && !prof && /daromad|доход|заработ/.test(t) &&
-        !/vazifa|lavozim|ish\s+turi|bo'sh\s+ish\s+o'rni|vakansiya|обязанност|должност|ваканси/.test(t)) {
+        !/vazifa|lavozim|ish\s+turi|bo'sh\s+ish\s+o'rni|vakansiya|обязанност|должност|ваканси/.test(t) &&
+        !/\b(sot(ing|ish|asiz)|yetkaz|tozala|tayyorla|tik(ish|asiz)|qadoqla|yukla|haydaysiz)|продава|достав|убор/.test(t)) {
       const v = SCAM_RULES.find(r => r.id === 'vague');
       scam.push({ id: 'vague', label: v.label, weight: v.weight, match: 'daromad bor, ish turi yo\'q',
         detail: "Daromad va'da qilinadi, lekin qanday ish ekani — kasb ham, vazifalar ham — aytilmagan." });

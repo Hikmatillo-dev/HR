@@ -58,6 +58,7 @@ test("Ish mazmuni yashirilgan: ma'lumot faqat ofisda; daromad bor, lekin ish tur
   has("Kuniga katta daromad! Halol va qonuniy. Yozing", 'vague');
   hasNot("Sotuvchi kerak. Vazifa: kassa, mijozlar bilan ishlash. Daromad 5 mln", 'vague');
   hasNot("Omborchi kerak, oylik daromad 4 mln so'm, Toshkent", 'vague');
+  hasNot("Mahsulotlarimizni soting va daromad oling", 'vague');
 });
 
 test("Ish vaqti ('kuniga 10-12 soat') — 'oson pul' emas va maoshni kunlik deb ko'paytirmaydi", () => {
