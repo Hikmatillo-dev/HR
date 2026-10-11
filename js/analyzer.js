@@ -23,7 +23,7 @@
     {
       id: 'prepay', weight: 40, label: "Oldindan pul so'ralmoqda", negatable: true,
       detail: "Halol ish beruvchi ishga olish uchun pul so'ramaydi. Bu firibgarlikning eng kuchli belgisi.",
-      re: /oldindan\s+(to'lov|pul)|to'lov\s+qilish(ingiz)?\s+kerak|pul\s+(to'lab|tashlab|o'tkazib)|ro'yxatdan\s+o'tish\s+(uchun\s+)?(to'lov|pul)|rasmiylashtirish\s+uchun\s+(to'lov|pul)|(hujjat\w*|forma|kiyim|tibbiy\s+ko'rik|test|imtihon|trening|o'qish|kurs)\s+(uchun\s+)?(to'lov|puli?)\b|o'qish\s+puli|xizmat\s+(haqi|narxi)\W{0,8}\d[\d\s.,]*\s*(so'm|sum|сум|сўм|\$|usd|dollar|ming|mln|eur|yevro)|стоимост\w*\s+услуг|услуг\w*\s+стоит|depozit|garov\s+puli|o'z\s+hisobingizdan|predoplata|предоплат|оплат\w*\s+за\s+(оформлени|обучени|регистрац|документ|форм|медосмотр|патент)|за\s+свой\s+сч[её]т|регистрац\w*\s+платн|платн\w*\s+регистрац|взнос|залог/
+      re: /oldindan\s+(to'lov|pul)|\d[\d\s.,]*\s*(\$|so'm|sum|сум|usd|dollar|ming|mln|евро|eur)\s*(\S+\s+)?oldindan|oldindan\s+\d[\d\s.,]*\s*(\$|so'm|sum|usd|dollar|ming|mln)|to'lov\s+qilish(ingiz)?\s+kerak|pul\s+(to'lab|tashlab|o'tkazib)|ro'yxatdan\s+o'tish\s+(uchun\s+)?(to'lov|pul)|rasmiylashtirish\s+uchun\s+(to'lov|pul)|([hx]ujjat\w*|forma|kiyim|tibbiy\s+ko'rik|test|imtihon|trening|o'qish|kurs)\s+(uchun\s+)?(to'lov|puli?)\b|o'qish\s+puli|xizmat\s+(haqi|narxi)\W{0,8}\d[\d\s.,]*\s*(so'm|sum|сум|сўм|\$|usd|dollar|ming|mln|eur|yevro)|стоимост\w*\s+услуг|услуг\w*\s+стоит|depozit|garov\s+puli|o'z\s+hisobingizdan|predoplata|предоплат|оплат\w*\s+за\s+(оформлени|обучени|регистрац|документ|форм|медосмотр|патент)|за\s+свой\s+сч[её]т|регистрац\w*\s+платн|платн\w*\s+регистрац|взнос|залог/
     },
     {
       id: 'personal', weight: 30, label: "Karta yoki shaxsiy ma'lumot so'ralmoqda",
@@ -38,12 +38,12 @@
     {
       id: 'debt', weight: 35, label: "Qarz evaziga ishlash (qarz qulligi)",
       detail: "Yo'l yoki viza \"qarzi\"ni maoshdan ushlab qolish odamni ish beruvchiga qaram qilib qo'yadi. Bu odam savdosining belgisi.",
-      re: /qarz\w*\s+(\S+\s+){0,3}(ushlab\s+qol|ayirib\s+qol)|ishlab\s+(uzasiz|qaytarasiz)|долг\w*\s+(\S+\s+){0,3}(вычит|удерж)|отработа(ете|ешь)\s+долг/
+      re: /qarz\w*\s+(\S+\s+){0,3}(ushlab\s+qol|ayirib\s+qol)|(yo'l|viza|chipta|bilet|aviabilet|hujjat)\w*\s+(puli|xarajat\w*|haqi)[^.!?]{0,80}(maosh|oylik|ish\s+haqi)\w*dan\s+(ushlab|ayirib|chegirib)|(дорог|билет|перел[её]т|виз)\w*[^.!?]{0,80}(вычит|удерж)\w*\s+из\s+(зарплат|заработ)|ishlab\s+(uzasiz|qaytarasiz)|долг\w*\s+(\S+\s+){0,3}(вычит|удерж)|отработа(ете|ешь)\s+долг/
     },
     {
       id: 'illegal', weight: 20, label: "Noqonuniy ishlash taklif qilinmoqda",
       detail: "Hujjatsiz yoki patentsiz ishlash sizni deportatsiya va ish haqisiz qolish xavfiga qo'yadi.",
-      re: /hujjatsiz\s+ish|patent\s+(shart\s+emas|kerak\s+emas)|patentsiz|без\s+(документов|патента)|нелегальн/
+      re: /[hx]ujjatsiz\s+ish|patent\s+(shart\s+emas|kerak\s+emas)|patentsiz|без\s+(документов|патента)|нелегальн/
     },
     {
       id: 'entertain', weight: 20, label: "Ko'ngilochar sohada noaniq ish (hostes, raqqosa)",
@@ -53,7 +53,7 @@
     {
       id: 'visa', weight: 25, label: "Viza yoki ish \"100% kafolatlangan\"",
       detail: "Hech kim vizani kafolatlay olmaydi. Xorijga ishga faqat litsenziyaga ega agentliklar yoki davlat dasturlari orqali boriladi.",
-      re: /viza\s*(100\s*%|kafolat|tayyor)|kafolatlangan\s+(viza|ish)|100\s*%\s*(kafolat|гарант)|гарантир\w*\s+(виз|трудоустр)/
+      re: /viza\w*\s*(100\s*%|kafolat|tayyor)|kafolatlangan\s+(viza|ish)|100\s*%\s*(kafolat|гарант)|гарантир\w*\s+(виз|трудоустр)/
     },
     {
       id: 'invest', weight: 25, label: "Investitsiya, piramida yoki referal sxema",
@@ -63,7 +63,7 @@
     {
       id: 'easy', weight: 20, label: '"Oson pul" va\'dasi',
       detail: "Kam mehnat evaziga katta daromad va'da qilinishi jalb qilish usulidir.",
-      re: /tez\s+pul|oson\s+pul|kuniga\s+\$?\s*\d[\d\s]*\$?(?![\d\s]*([-–]\s*\d+\s*)?(soat|час))|uydan\s+turib[^.\n]*(kuniga|oyiga|daromad)|telefon\s+orqali\s+(ish|daromad)|kunlik\s+(\d[\d\s]*\s*(ming|mln)\s+)?daromad|daromad\w*\s+cheksiz|cheksiz\s+daromad|yechib\s+oldim|telefon\s+(va\s+internet\s+)?bo'lsa\s+(kifoya|yetarli)|onla[yi]+n\s+daromad|online\s+daromad|passiv\s+daromad|л[её]гк\w+\s+(деньг|заработ)|пассивн\w+\s+доход/
+      re: /tez\s+pul|oson\s+pul|kuniga\s+\$?\s*\d[\d\s]*\$?(?![\d\s]*([-–]\s*\d+\s*)?(soat|час))|uydan\s+turib[^.\n]*(kuniga|oyiga|daromad)|telefon\s+orqali\s+(ish|daromad)|kunlik\s+(\d[\d\s]*\s*(ming|mln)\s+)?daromad|daromad\w*\s+cheksiz|cheksiz\s+daromad|yechib\s+oldim|telefon\s+(va\s+internet\s+)?bo'lsa\s+(kifoya|yetarli)|onla[yi]+n\s+daromad|online\s+daromad|passiv\s+daromad|л[её]гк\w+\s+(деньг|заработ)|пассивн\w+\s+доход|\d[\d\s]*\s*(сум|руб|\$|usd)\s+в\s+день|в\s+день\s+от\s+\d/
     },
     {
       id: 'link', weight: 15, label: "Shubhali yoki qisqartirilgan havola",
@@ -83,7 +83,7 @@
     {
       id: 'vague', weight: 10, label: 'Ish mazmuni yashirilgan',
       detail: "Ish haqidagi asosiy ma'lumot \"lichkada\" deb yashirilgan.",
-      re: /batafsil\s+(ma'lumot\s+)?(lichkada|lichkaga)|ma'?lumot\w*\s+(ofi?e?s\w*|suhbat\w*)\s*(da\s+)?berila|yozsa?ng?iz\s+ma'?lumot|ish\s+haqida\s+lichkada|подробност\w*\s+в\s+(лс|личк)/
+      re: /batafsil\s+(ma'lumot\s+)?(lichkada|lichkaga)|ma'?lumot\w*\s+(ofi?e?s\w*|suhbat\w*)\s*(da\s+)?berila|yozsa?ng?iz\s+ma'?lumot|ish\s+haqida\s+lichkada|подробност\w*\s+в\s+(лс|личк)|(пишите|писать|вс[её])\s+в\s+(лс|личк)/
     }
   ];
 

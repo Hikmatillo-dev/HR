@@ -81,4 +81,25 @@ test("Xorij: yangi davlatlar topiladi; ko'cha nomi, til, oshxona va qahva nomi �
   assert.equal(analyze('Bolgariyada avtomexanik').region, 'Xorij');
 });
 
+test("Klassik xorij firibgarligi kirillda: 'визаси кафолатланган', 'хужжатлар учун 1000$ олдиндан' — yuqori xavf, odam savdosi", () => {
+  const r = analyze('Тайёр иш! Корея визаси кафолатланган, хужжатлар учун 1000$ олдиндан');
+  assert.equal(r.level, 'high'); assert.ok(r.trafficking);
+  for (const id of ['prepay', 'visa', 'abroad']) has('Тайёр иш! Корея визаси кафолатланган, хужжатлар учун 1000$ олдиндан', id);
+  has("Germaniyaga ish, oldindan 500$ to'laysiz", 'prepay');
+  hasNot("Maosh har oy 5 mln, oldindan avans yo'q", 'prepay');
+});
+
+test("Qarz qulligi 'qarz' so'zisiz: yo'l/viza puli maoshdan ushlab qolinadi; soliq ushlanishi — emas", () => {
+  const t = "Rossiyaga ish, yo'l puli ish beruvchidan, keyin maoshdan ushlab qolinadi";
+  has(t, 'debt'); assert.ok(analyze(t).trafficking);
+  has('Билет покупаем мы, потом стоимость вычитаем из зарплаты', 'debt');
+  hasNot('Soliqlar maoshdan ushlab qolinadi, sotuvchi, oylik 4 mln', 'debt');
+  hasNot("Yo'l puli kompaniya hisobidan, maosh 1500$", 'debt');
+});
+
+test("Rus tilida 'oson pul' va yashirin ish: 'от 500 000 сум в день', 'пишите в лс'", () => {
+  const t = 'Работа на дому, оплата каждый день, от 500 000 сум в день, пишите в лс';
+  has(t, 'easy'); has(t, 'vague'); assert.notEqual(analyze(t).level, 'low');
+});
+
 console.log(`\n${passed} ta qoida testi o'tdi${process.exitCode ? ', xatolar bor' : ''}\n`);
