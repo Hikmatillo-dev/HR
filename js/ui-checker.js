@@ -11,6 +11,7 @@
     ok: "📢 «Smart Code» MChJ Samarqanddagi filialiga Frontend dasturchi kerak.\nSTIR: 305123456\n\nTalablar: React, TypeScript, Git, 1 yillik tajriba.\nMaosh: 10–15 mln so'm\nIsh vaqti: 9:00–18:00, rasmiy ishga joylashtirish.\nManzil: Samarqand sh., Registon ko'chasi 5\n\n📞 +998 91 555 44 33"
   };
 
+  const FOREIGN = /\$|€|usd|dollar|доллар|eur|yevro|евро|rubl|руб/i; // xorijiy valyutadagi maosh
   let last = null; // oxirgi tahlil (nusxalash va AI uchun)
 
   function gauge(value, color, label) {
@@ -58,6 +59,7 @@
             <span class="tag">📍 ${esc(a.region)}</span>
             <span class="tag">💼 ${esc(a.profession)}</span>
             ${a.salary ? `<span class="tag">💰 ${IQ.salaryText(a.salary)} mln so'm/oy</span>` : ''}
+            ${a.salary && FOREIGN.test(text) && IQ.rateInfo() && IQ.rateInfo().approximate ? `<span class="tag" title="${esc(IQ.rateInfo().text)}">💱 Kurslar taxminiy</span>` : ''}
             ${a.script !== 'uz-latn' ? `<span class="tag">🔤 ${a.script === 'ru' ? 'rus tili' : 'kirill'}</span>` : ''}
             ${a.discrimination.length ? `<span class="tag disc">⚖️ ${a.discrimination.length} ta kamsitish belgisi</span>` : ''}
             ${a.trafficking ? '<span class="tag high">🚨 Odam savdosi belgisi</span>' : ''}

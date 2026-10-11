@@ -113,6 +113,15 @@
   });
   matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', () => IQ.redrawCharts());
 
+  // ---------- Kurslar va rasmiy manbalar (config/) ----------
+  const rate = IQ.rateInfo();
+  if (rate) {
+    $('#rateNote').innerHTML = `💱 Xorijiy valyutadagi maosh so'mga o'girilgan: ${esc(rate.text)}${rate.approximate ? ' <span class="badge-warn">Kurslar taxminiy</span>' : ''}`;
+  }
+  $('#officialSources').innerHTML = (window.IQ_OFFICIAL_SOURCES || []).map(s => `<li>
+    <a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${esc(s.name)}</a>${s.verified ? '<span class="badge-ok">tasdiqlangan</span>' : `<span class="badge-warn" title="${esc(s.evidence)}">tekshirilmagan</span>`}
+    <br><span class="muted" style="font-size:.85rem">${esc(s.purpose)}${s.former_name ? ` (avvalgi nomi: ${esc(s.former_name)})` : ''}</span></li>`).join('');
+
   // ---------- Xorijga ketishdan oldin tekshiruv ro'yxati ----------
   const TODO = [
     "Agentlik litsenziyasini rasmiy manbadan tekshirdim",

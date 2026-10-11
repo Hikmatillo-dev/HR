@@ -11,8 +11,8 @@ Hakamlar va foydalanuvchilar uchun halol holat (2026-10-11):
 - **Test to'plami kichik va qo'lda tayyorlangan.** 87 ta e'lonni loyiha muallifi yozgan, ular real Telegram e'lonlari emas. Qoidalar 49 ta yangi e'lonni ko'rmasdan oldingi natija: aniqlik **85%**, xavfli e'lonlarni topish **65%**, odam savdosi belgilarini topish **50%**. Hozirgi 100% natija optimistik, chunki qoidalar aynan shu xatolar asosida tuzatilgan.
 - **Claude API real kalit bilan hali sinovdan o'tmagan.** U faqat soxta (mock) API bilan 11 ta avtomatik testdan o'tgan.
 - **Telegram bot real token bilan hali ishga tushirilmagan.** `/start`, `/help`, `/check` va `/stats` soxta Telegram server bilan 14 ta testdan o'tgan.
-- **Valyuta kurslari taxminiy va kodga yozilgan:** 1 USD = 12 600, 1 EUR = 13 700, 1 RUB = 150 so'm (`js/analyzer.js`). Ular faqat maosh baholashga ta'sir qiladi.
-- **Rasmiy idoralar nomlari tekshirilishi kerak.** "Tashqi mehnat migratsiyasi agentligi" va "Kambag'allikni qisqartirish va bandlik vazirligi" nomlari rasmiy manbadan tasdiqlanmagan.
+- **Valyuta kurslari taxminiy:** 1 USD = 12 600, 1 EUR = 13 700, 1 RUB = 150 so'm. Kurslar `config/currency.js` da va `.env` orqali almashtiriladi; UI'da "Kurslar taxminiy" belgisi chiqadi. Lekin `js/analyzer.js` hali config'ga ulanmagan (pastdagi "Kutilayotgan ishlar"ga qarang). Kurslar faqat maosh baholashga ta'sir qiladi.
+- **Rasmiy idoralar tasdiqlanmagan.** `config/official-sources.js` dagi ikkala manba `verified: false`: ular veb-qidiruvda topilgan, lekin `gov.uz` sahifalari ishlab chiqish muhitidan ochilmadi. Qidiruv natijalariga ko'ra "Tashqi mehnat migratsiyasi agentligi" endi "Vazirlar Mahkamasi huzuridagi Migratsiya agentligi" deb ataladi. UI'da "tekshirilmagan" belgisi chiqadi.
 - **Ma'lum xato holatlar:** qoidalar kalit so'zlarga tayanadi. Yangi so'z yoki imlo bilan yozilgan firibgarlikni o'tkazib yuborishi mumkin. Ikkala jinsga murojaat kabi kutilmagan iboralarni esa noto'g'ri belgilashi mumkin. Har bir topilgan xato `js/test-set.js` ga qo'shiladi.
 
 ## Evaluation (sifatni o'lchash)
@@ -40,6 +40,12 @@ Qayta o'lchash `npm run eval:v3-baseline -- --force` bilan bajariladi. U faqat g
 <!-- v3-baseline:start -->
 **v3 boshlang'ich natija:** hali yozilmagan — real e'lonlar qo'shilgandan keyin `npm run eval:v3-baseline`.
 <!-- v3-baseline:end -->
+
+## Kutilayotgan ishlar (v3 baseline yozilgandan keyin)
+
+Bu o'zgarishlar `js/analyzer.js` ga tegadi. v3 boshlang'ich natija o'zgartirilmagan qoidalar bilan olinishi uchun ular keyinga qoldirilgan.
+1. **`js/analyzer.js` ni `config/currency.js` ga ulash.** O'zgarmaslar o'rniga `IQCurrency.rates` ishlatiladi. Shundan keyin `.env` dagi `IQ_RATE_*` maosh hisobiga ham ta'sir qiladi. Hozircha `tests/config.test.mjs` ikkala joydagi qiymat bir xilligini tekshiradi, server esa `.env` da kurs berilganda ogohlantiradi.
+2. **"Xorijga ish" qoidasidagi agentlik nomini yangilash.** Nom `config/official-sources.js` dan olinadi, bu ish manba tasdiqlangandan keyin bajariladi.
 
 ## Imkoniyatlar
 
@@ -113,6 +119,10 @@ npm run bot:env
 3. Halol e'lon yuboring.
 4. `/stats` yozing: 2 ta tekshiruv va 1 ta xavfli chiqishi kerak.
 
+### Sozlamalar (`config/`)
+- `config/currency.js`: kurslar, ularning sanasi va manbasi. `.env` dagi `IQ_RATE_USD`, `IQ_RATE_EUR`, `IQ_RATE_RUB`, `IQ_RATES_UPDATED` va `IQ_RATES_SOURCE` bu qiymatlarni almashtiradi. Sana ko'rsatilmasa yoki u 30 kundan eski bo'lsa, UI'da "Kurslar taxminiy" belgisi chiqadi.
+- `config/official-sources.js`: rasmiy idoralar ro'yxati. Har biri uchun nom, havola, `verified` holati, tekshirilgan sana va dalil yoziladi. Manbani tekshirganingizdan keyin `verified: true` qiling.
+
 ### 5. Testlar
 ```bash
 npm test
@@ -124,6 +134,7 @@ npm test
 | `tests/redact.test.mjs` | Telefon, karta, email va @username yashirilishi; v3 qoralamasi (5 test) |
 | `tests/baseline.test.mjs` | Boshlang'ich natija skripti: qayta yozish taqiqi, `--force` va git tekshiruvi, arxivlash, `analyzer.js` himoyasi (6 test) |
 | `tests/bot.test.mjs` | Bot: 4 buyruq, HTML escape, bo'laklash va 4096 chegarasi, disclaimer, `/stats` va xeshlangan `user_id`, tokensiz ishga tushish, soxta Telegram server bilan to'liq oqim (14 test) |
+| `tests/config.test.mjs` | Config va `analyzer.js` kurslari bir xilligi, `.env` orqali almashtirish, eskirgan kurs, rasmiy manbalar formati, server orqali uzatish (6 test) |
 | `tests/run.mjs` | v1, v2, v3 bo'yicha aniqlik, xavfli topish, FPR, kamsitish, odam savdosi, sabablar; format tekshiruvi; v2 regressiya chegarasi |
 
 Batafsil xatolar ro'yxati: `node tests/run.mjs --verbose`.
@@ -140,6 +151,8 @@ js/test-set-v3.js           REAL Telegram e'lonlari (v3), hozircha bo'sh
 js/results-v3-baseline.js   v3 boshlang'ich natija (brauzer uchun, avtomatik)
 tools/redact.mjs            shaxsiy ma'lumotni yashirish va v3 qoralamasi
 tools/eval-v3-baseline.mjs  v3 boshlang'ich natijani yozish
+config/currency.js          valyuta kurslari (.env orqali almashtiriladi)
+config/official-sources.js  rasmiy idoralar va havolalar (tekshirilgan holati bilan)
 tests/results/              v2-reference.json, v3-baseline.json, v3-errors.md, archive/
 js/ui-*.js, js/app.js       interfeys modullari, real/demo rejimlari
 js/sample-data.js           600 ta SINTETIK e'lon (faqat Demo rejimi)

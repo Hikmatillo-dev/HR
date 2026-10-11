@@ -280,3 +280,8 @@ button:disabled { opacity: .55; cursor: not-allowed; }
 .metrics-caveats { margin: 6px 0 10px; padding-left: 20px; font-size: .9rem; }
 .v3-empty { border: 1px dashed var(--border); border-radius: 12px; padding: 14px; color: var(--text-2); font-size: .9rem; margin-top: 8px; }
 @media (max-width: 860px) { .metrics-pair { grid-template-columns: 1fr; } }
+.sources { margin: 0; padding-left: 18px; font-size: .9rem; }
+.sources li { margin: 6px 0; }
+.badge-warn { display: inline-block; font-size: .72rem; font-weight: 700; padding: 1px 7px; border-radius: 999px; background: var(--warning); color: #0b0b0b; margin-left: 6px; vertical-align: middle; }
+.badge-ok { display: inline-block; font-size: .72rem; font-weight: 700; padding: 1px 7px; border-radius: 999px; background: var(--good); color: #fff; margin-left: 6px; }
+.rate-note { margin-top: 10px; font-size: .82rem; color: var(--muted); }

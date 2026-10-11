@@ -125,6 +125,7 @@
         <div class="chart-box"><h3>O'rtacha maosh sohalar bo'yicha (mln so'm)</h3><div class="cv tall"><canvas id="chSalary"></canvas></div></div>
       </div>
       <div class="insights" id="skillInsights"></div>
+      <p class="hint rate-note" id="rateNote"></p>
       </div>
     </section>
 
@@ -218,9 +219,11 @@
           <h3>Xorijga ishga ketishdan oldin: tekshiruv ro'yxati</h3>
           <div class="progress"><i id="todoBar" style="width:0"></i></div>
           <ul class="todo" id="todo"></ul>
-          <details class="block">
+          <details class="block" open>
             <summary>Qayerga murojaat qilish mumkin?</summary>
-            <p class="muted" style="margin-top:8px">Firibgarlik haqida ichki ishlar organlariga ariza bering. Xorijga ishga yuboruvchi agentlik litsenziyasini <b>Tashqi mehnat migratsiyasi agentligi</b>ning, bandlik masalalarini esa <b>Kambag'allikni qisqartirish va bandlik vazirligi</b>ning rasmiy sayti va ishonch telefoni orqali tekshiring. Aloqa ma'lumotlarini faqat rasmiy saytlardan oling.</p>
+            <p class="muted" style="margin:8px 0 6px">Firibgarlik haqida ichki ishlar organlariga ariza bering. Agentlik litsenziyasi va bandlik masalalari bo'yicha:</p>
+            <ul class="sources" id="officialSources"></ul>
+            <p class="muted" style="font-size:.8rem;margin:6px 0 0">Telefon raqamlari va manzillarni faqat rasmiy saytlardan oling.</p>
           </details>
         </div>
       </div>
@@ -270,6 +273,8 @@
   <footer class="foot">IshQalqon — prototip. Tahlil qoidalari ochiq: har bir baho uchun sabab ko'rsatiladi. Tizim yakuniy hukm chiqarmaydi, qaror foydalanuvchida qoladi.</footer>
 
   <script src="vendor/chart.umd.js"></script>
+  <script src="config/currency.js"></script>
+  <script src="config/official-sources.js"></script>
   <script src="js/analyzer.js"></script>
   <script src="js/sample-data.js"></script>
   <script src="js/real-data.js"></script>

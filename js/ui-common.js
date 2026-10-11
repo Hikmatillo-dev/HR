@@ -16,6 +16,18 @@
   IQ.color = name => getComputedStyle(document.documentElement).getPropertyValue('--' + name).trim();
   IQ.levelColor = lvl => IQ.color({ high: 'critical', medium: 'warning', low: 'good' }[lvl]);
 
+  // Valyuta kurslari holati (config/currency.js)
+  IQ.rateInfo = () => {
+    const C = window.IQCurrency;
+    if (!C) return null;
+    const r = C.rates, st = C.status();
+    const fmt = n => Number(n).toLocaleString('ru-RU').replace(/,/g, ' ');
+    return {
+      approximate: st.approximate,
+      text: `1 $ = ${fmt(r.USD)}, 1 € = ${fmt(r.EUR)}, 1 ₽ = ${fmt(r.RUB)} so'm (${r.updated}; ${r.source})`
+    };
+  };
+
   IQ.toast = msg => {
     const el = document.createElement('div');
     el.className = 'toast'; el.textContent = msg;
