@@ -10,7 +10,7 @@ Hakamlar va foydalanuvchilar uchun halol holat (2026-10-11):
 - **Real ma'lumotdagi sifat hali o'lchanmagan.** v3 to'plami (real Telegram e'lonlari) tuzilmasi tayyor, lekin hali bo'sh.
 - **Test to'plami kichik va qo'lda tayyorlangan.** 87 ta e'lonni loyiha muallifi yozgan, ular real Telegram e'lonlari emas. Qoidalar 49 ta yangi e'lonni ko'rmasdan oldingi natija: aniqlik **85%**, xavfli e'lonlarni topish **65%**, odam savdosi belgilarini topish **50%**. Hozirgi 100% natija optimistik, chunki qoidalar aynan shu xatolar asosida tuzatilgan.
 - **Claude API real kalit bilan hali sinovdan o'tmagan.** U faqat soxta (mock) API bilan 11 ta avtomatik testdan o'tgan.
-- **Telegram bot real token bilan hali ishga tushirilmagan.** Kod tayyor va token bo'lmasa to'g'ri xabar bilan to'xtaydi. `/check` va `/stats` buyruqlari hali yo'q (P1).
+- **Telegram bot real token bilan hali ishga tushirilmagan.** `/start`, `/help`, `/check` va `/stats` soxta Telegram server bilan 14 ta testdan o'tgan.
 - **Valyuta kurslari taxminiy va kodga yozilgan:** 1 USD = 12 600, 1 EUR = 13 700, 1 RUB = 150 so'm (`js/analyzer.js`). Ular faqat maosh baholashga ta'sir qiladi.
 - **Rasmiy idoralar nomlari tekshirilishi kerak.** "Tashqi mehnat migratsiyasi agentligi" va "Kambag'allikni qisqartirish va bandlik vazirligi" nomlari rasmiy manbadan tasdiqlanmagan.
 - **Ma'lum xato holatlar:** qoidalar kalit so'zlarga tayanadi. Yangi so'z yoki imlo bilan yozilgan firibgarlikni o'tkazib yuborishi mumkin. Ikkala jinsga murojaat kabi kutilmagan iboralarni esa noto'g'ri belgilashi mumkin. Har bir topilgan xato `js/test-set.js` ga qo'shiladi.
@@ -90,7 +90,28 @@ AI cheklovlari: matn 20–6000 belgi bo'lishi kerak, uzun matn kesilmaydi va rad
 # @BotFather → /newbot → tokenni .env ga TELEGRAM_BOT_TOKEN= qilib yozing
 npm run bot:env
 ```
-Token bo'lmasa bot "TELEGRAM_BOT_TOKEN o'rnatilmagan" deb to'xtaydi. Tekshirish: botga `/start` yozing, keyin e'lon matnini yuboring.
+
+**Buyruqlar:**
+
+| Buyruq | Nima qiladi |
+|---|---|
+| `/start`, `/help` | Bot haqida qisqa ma'lumot va buyruqlar ro'yxati |
+| `/check matn` yoki `/check` → keyingi xabar | E'lonni tekshiradi: xavf darajasi, asosiy sabablar (iqtibos bilan), kamsitish, odam savdosi belgisi, tavsiya |
+| `/stats` | Siz tekshirgan e'lonlar soni, ulardan xavflilari va oxirgi 5 ta natija |
+| Oddiy matn yoki forward | `/check` bilan bir xil ishlaydi |
+
+**Qanday ishlaydi:**
+- Har bir javob `Bu avtomatik tahlil. Yakuniy qaror o'zingizda.` degan ogohlantirish bilan tugaydi.
+- Matn HTML escape qilinadi. Javob 4096 belgidan oshmaydigan xabarlarga qator chegarasida bo'linadi, shuning uchun teg yoki `&amp;` o'rtasidan kesilmaydi.
+- 4000 belgidan uzun matn bo'sh qatorlar bo'yicha e'lonlarga bo'linadi va har biri alohida baholanadi. Javobda eng xavfli bo'lak ko'rsatiladi.
+- **Maxfiylik.** `data/bot-stats.json` da e'lon matni saqlanmaydi. Telegram `user_id` ham ochiq saqlanmaydi, faqat `SHA-256(tuz:user_id)` xeshi yoziladi. Tuz `IQ_BOT_HASH_SALT` dan yoki avtomatik yaratilgan `data/bot-salt` dan olinadi. `data/` git'ga tushmaydi.
+- **Token bo'lmasa yoki noto'g'ri bo'lsa** bot tushunarli xabar bilan chiqadi (exit 1). Bu ikki xil holatda bo'ladi: token formati noto'g'ri bo'lsa yoki Telegram uni rad etsa (401). Agar bir token bilan ikkinchi nusxa ishga tushirilsa (409), bot ham to'xtaydi.
+
+**Real token bilan tekshirish:**
+1. Botga `/start` yozing.
+2. "Misol: odam savdosi" matnini `/check` bilan yuboring.
+3. Halol e'lon yuboring.
+4. `/stats` yozing: 2 ta tekshiruv va 1 ta xavfli chiqishi kerak.
 
 ### 5. Testlar
 ```bash
@@ -102,6 +123,7 @@ npm test
 | `tests/ai.test.mjs` | AI xato holatlari mock API bilan: buzilgan JSON, sxema, refusal, 401, 429, 500+retry, timeout, bo'sh/uzun matn, kalitsiz rejim (11 test) |
 | `tests/redact.test.mjs` | Telefon, karta, email va @username yashirilishi; v3 qoralamasi (5 test) |
 | `tests/baseline.test.mjs` | Boshlang'ich natija skripti: qayta yozish taqiqi, `--force` va git tekshiruvi, arxivlash, `analyzer.js` himoyasi (6 test) |
+| `tests/bot.test.mjs` | Bot: 4 buyruq, HTML escape, bo'laklash va 4096 chegarasi, disclaimer, `/stats` va xeshlangan `user_id`, tokensiz ishga tushish, soxta Telegram server bilan to'liq oqim (14 test) |
 | `tests/run.mjs` | v1, v2, v3 bo'yicha aniqlik, xavfli topish, FPR, kamsitish, odam savdosi, sabablar; format tekshiruvi; v2 regressiya chegarasi |
 
 Batafsil xatolar ro'yxati: `node tests/run.mjs --verbose`.
@@ -123,7 +145,9 @@ js/ui-*.js, js/app.js       interfeys modullari, real/demo rejimlari
 js/sample-data.js           600 ta SINTETIK e'lon (faqat Demo rejimi)
 prompts/analysis.mjs        Claude promti va javob sxemasi
 lib/ai.mjs                  Claude API chaqiruvi va xatolarni boshqarish
-server.mjs, bot.mjs         veb-server va Telegram bot
+server.mjs, bot.mjs         veb-server va Telegram bot (Telegram bilan aloqa)
+lib/bot-core.mjs            bot buyruqlari, formatlash, bo'laklash (testlanadi)
+lib/bot-store.mjs           /stats: tuzli SHA-256 bilan anonim statistika
 tools/telegram_export.py    eksportni js/real-data.js ga aylantirish
 ```
 

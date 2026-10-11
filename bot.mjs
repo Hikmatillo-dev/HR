@@ -1,71 +1,67 @@
-// IshQalqon Telegram boti: e'lon matnini (yoki kanaldan forward qilingan xabarni) yuboring — bot tekshiradi.
-// Ishga tushirish: TELEGRAM_BOT_TOKEN=... node bot.mjs   (token @BotFather dan olinadi)
+// IshQalqon Telegram boti. Buyruqlar: /start, /help, /check, /stats (mantiq: lib/bot-core.mjs)
+// Ishga tushirish: TELEGRAM_BOT_TOKEN=... node bot.mjs   yoki   npm run bot:env  (.env dan)
 // AI xulosa uchun qo'shimcha: ANTHROPIC_API_KEY=...
-import { aiEnabled, aiAnalyze, MAX_CHARS } from './lib/ai.mjs';
-import './js/analyzer.js';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const { analyze, LEVEL_TEXT } = globalThis.IshQalqon;
-const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const TOKEN = (process.env.TELEGRAM_BOT_TOKEN || '').trim();
 if (!TOKEN) {
-  console.error('TELEGRAM_BOT_TOKEN o\'rnatilmagan. @BotFather dan token oling.');
+  console.error("TELEGRAM_BOT_TOKEN o'rnatilmagan. @BotFather → /newbot orqali token oling va .env ga yozing (README → Telegram bot).");
   process.exit(1);
 }
-const API = `https://api.telegram.org/bot${TOKEN}`;
-const DOT = { high: '🔴', medium: '🟡', low: '🟢' };
+if (!/^\d+:[\w-]{30,}$/.test(TOKEN)) {
+  console.error("TELEGRAM_BOT_TOKEN formati noto'g'ri. U \"123456789:AA...\" ko'rinishida bo'ladi.");
+  process.exit(1);
+}
 
-async function tg(method, body) {
-  const res = await fetch(`${API}/${method}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-  const data = await res.json();
-  if (!data.ok) throw new Error(`${method}: ${data.description}`);
+const { createBot } = await import('./lib/bot-core.mjs');
+const { createStore } = await import('./lib/bot-store.mjs');
+const { aiEnabled, aiAnalyze } = await import('./lib/ai.mjs');
+
+// IQ_TELEGRAM_API — faqat testlar uchun (soxta Telegram server)
+const API = `${process.env.IQ_TELEGRAM_API || 'https://api.telegram.org'}/bot${TOKEN}`;
+const DATA_DIR = process.env.IQ_BOT_DATA_DIR || path.join(path.dirname(fileURLToPath(import.meta.url)), 'data');
+
+class TelegramError extends Error {
+  constructor(method, status, description) { super(`${method}: ${description}`); this.status = status; }
+}
+
+async function tg(method, body, timeoutMs = 40_000) {
+  const res = await fetch(`${API}/${method}`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: AbortSignal.timeout(timeoutMs)
+  });
+  const data = await res.json().catch(() => ({ ok: false, description: `HTTP ${res.status}` }));
+  if (!data.ok) throw new TelegramError(method, data.error_code || res.status, data.description);
   return data.result;
 }
 
-const escHtml = s => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+const store = createStore(DATA_DIR);
+const handle = createBot({
+  send: (chatId, html) => tg('sendMessage', { chat_id: chatId, text: html, parse_mode: 'HTML', link_preview_options: { is_disabled: true } }),
+  store,
+  ai: { enabled: aiEnabled, analyze: aiAnalyze }
+});
 
-function report(a) {
-  const lines = [
-    `${DOT[a.level]} <b>${LEVEL_TEXT[a.level]}</b>: ${a.score}/100`,
-    `📋 Shaffoflik: ${a.transparency.score}/100`,
-    `📍 ${escHtml(a.region)} · 💼 ${escHtml(a.profession)}${a.salary ? ` · 💰 ${a.salary.min === a.salary.max ? a.salary.max : `${a.salary.min}–${a.salary.max}`} mln so'm` : ''}`
-  ];
-  if (a.scam.length) lines.push('', '<b>Xavf belgilari:</b>', ...a.scam.map(s => `⚠️ ${escHtml(s.label)}`));
-  if (a.discrimination.length) lines.push('', '<b>Kamsitish:</b>', ...a.discrimination.map(d => `⚖️ ${escHtml(d.label)}`));
-  if (a.trust.length) lines.push('', `✅ ${a.trust.map(t => escHtml(t.label)).join(' · ')}`);
-  lines.push('', a.level === 'high'
-    ? "❗ Pul to'lamang va shaxsiy ma'lumotlaringizni yubormang."
-    : a.level === 'medium' ? "Ehtiyot bo'ling: kompaniyani va litsenziyani tekshiring." : "Jiddiy xavf topilmadi. Baribir oldindan pul to'lamang.");
-  return lines.join('\n');
+let me;
+try {
+  me = await tg('getMe', {}, 15_000);
+} catch (e) {
+  console.error(e.status === 401 || e.status === 404 ? "Token noto'g'ri yoki bekor qilingan: @BotFather dan yangi token oling." : `Telegram'ga ulanib bo'lmadi: ${e.message}`);
+  process.exit(1);
 }
+await tg('setMyCommands', {
+  commands: [
+    { command: 'check', description: "E'lonni tekshirish" },
+    { command: 'stats', description: 'Mening statistikam' },
+    { command: 'help', description: 'Yordam' }
+  ]
+}).catch(e => console.error('setMyCommands:', e.message));
+console.log(`@${me.username} ishga tushdi (AI: ${aiEnabled ? 'yoqilgan' : "o'chirilgan"}). Statistika: ${store.file}`);
 
-const HELP = "🛡️ <b>IshQalqon</b>\n\nVakansiya matnini yuboring yoki kanaldan forward qiling. Men uni firibgarlik va kamsitish belgilari bo'yicha tekshiraman.\n\nO'zbek (lotin/kirill) va rus tilidagi e'lonlarni tushunaman.";
+let offset = 0, stopping = false;
+for (const sig of ['SIGINT', 'SIGTERM']) process.on(sig, () => { stopping = true; console.log("\nTo'xtatilmoqda..."); setTimeout(() => process.exit(0), 500).unref(); });
 
-async function handle(msg) {
-  const text = msg.text || msg.caption || '';
-  if (!text || text === '/start' || text === '/help') return tg('sendMessage', { chat_id: msg.chat.id, text: HELP, parse_mode: 'HTML' });
-  if (text.length < 20) return tg('sendMessage', { chat_id: msg.chat.id, text: "Iltimos, vakansiyaning to'liq matnini yuboring." });
-
-  const a = analyze(text);
-  await tg('sendMessage', { chat_id: msg.chat.id, text: report(a), parse_mode: 'HTML', reply_to_message_id: msg.message_id });
-
-  if (aiEnabled && text.length <= MAX_CHARS) {
-    try {
-      const ai = await aiAnalyze(text);
-      const extra = [`🤖 <b>AI xulosasi</b>\n${escHtml(ai.summary)}`];
-      if (ai.recommended_questions_for_applicant.length) {
-        extra.push('', "<b>Ish beruvchidan so'rang:</b>", ...ai.recommended_questions_for_applicant.map(q => `• ${escHtml(q)}`));
-      }
-      if (ai.improved_non_discriminatory_version) extra.push('', `<b>Kamsitishsiz variant:</b>\n${escHtml(ai.improved_non_discriminatory_version)}`);
-      extra.push('', "<i>Bu avtomatik tahlil. Yakuniy qaror sizda.</i>");
-      await tg('sendMessage', { chat_id: msg.chat.id, text: extra.join('\n').slice(0, 4000), parse_mode: 'HTML' });
-    } catch (e) {
-      console.error('AI:', e.code || '', e.message);
-    }
-  }
-}
-
-let offset = 0;
-console.log(`Bot ishga tushdi (AI: ${aiEnabled ? 'yoqilgan' : "o'chirilgan"})`);
-for (;;) {
+while (!stopping) {
   try {
     const updates = await tg('getUpdates', { offset, timeout: 30, allowed_updates: ['message'] });
     for (const u of updates) {
@@ -73,6 +69,8 @@ for (;;) {
       if (u.message) handle(u.message).catch(e => console.error('Xabar:', e.message));
     }
   } catch (e) {
+    if (e.status === 401) { console.error("Token bekor qilingan. Bot to'xtatildi."); process.exit(1); }
+    if (e.status === 409) { console.error("Bu token bilan boshqa bot nusxasi ishlayapti (409). Bittasini to'xtating."); process.exit(1); }
     console.error('Ulanish:', e.message);
     await new Promise(r => setTimeout(r, 3000));
   }
