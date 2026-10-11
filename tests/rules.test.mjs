@@ -31,4 +31,33 @@ test("Jins cheklovi: heshteg, ro'yxat bandi, yoshdan keyingi jins, 'fakatgina'; 
     "Ayollar kiyimi do'koniga sotuvchi", "20 yoshdan katta har qanday qiz ham, yigit ham"]) hasNot(t, 'disc:gender');
 });
 
+test("Agentlik 'xizmat haqi/narxi' + summa — oldindan to'lov; ofitsiantning 'xizmat haqi 10%' va 'bepul' — emas", () => {
+  has("Xorijga ish. Xizmat narxi 9 600 000 so'm, shartnomada 4 mln to'lanadi", 'prepay');
+  has("Xizmat haqi: 500$", 'prepay');
+  hasNot("Ofitsiant kerak. Maosh 3 mln + xizmat haqi 10%", 'prepay');
+  hasNot("Agentlik xizmat haqi olinmaydi, maosh 1500$", 'prepay');
+  const r = analyze("Polsha. Xizmat narxi 9 600 000 so'm. Oylik 700$");
+  assert.ok(r.salary && r.salary.max < 15, "to'lov summasi maosh deb hisoblanmaydi");
+});
+
+test("Tarmoq marketingi brendlari va 'a'zo bo'lish tekin' — referal sxema", () => {
+  for (const t of ['Greenway kompaniyasiga menejer', "Faberlic kompaniyasi: a'zo bo'lish tekin", 'ГРИНВЕЙ компанияси']) has(t, 'invest');
+});
+
+test("'Kunlik daromad', 'daromadimni yechib oldim', 'telefon bo'lsa kifoya' — oson pul", () => {
+  for (const t of ["Bir kunlik daromad 300 ming so'mdan", "Bugun daromadimni yechib oldim!", "Telefon va internet bo'lsa kifoya", 'Onlayn daromad, yozing']) has(t, 'easy');
+  hasNot("Yuk tashuvchi, kunlik ish haqi 150 000 so'm, manzil: Sergeli", 'easy');
+});
+
+test("Shoshiltirish: 'hozir boshlang', 'ketish muddati qisqa', 'o'rinlar cheklangan'", () => {
+  for (const t of ['Hozir boshlang — orqada qolmang!', 'Ketish muddati qisqa', "Bo'sh ish o'rinlari cheklangan"]) has(t, 'urgency');
+});
+
+test("Ish mazmuni yashirilgan: ma'lumot faqat ofisda; daromad bor, lekin ish turi yo'q", () => {
+  has("Ish haqida ma'lumot ofisda beriladi", 'vague');
+  has("Kuniga katta daromad! Halol va qonuniy. Yozing", 'vague');
+  hasNot("Sotuvchi kerak. Vazifa: kassa, mijozlar bilan ishlash. Daromad 5 mln", 'vague');
+  hasNot("Omborchi kerak, oylik daromad 4 mln so'm, Toshkent", 'vague');
+});
+
 console.log(`\n${passed} ta qoida testi o'tdi${process.exitCode ? ', xatolar bor' : ''}\n`);

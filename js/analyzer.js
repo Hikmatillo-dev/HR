@@ -13,7 +13,7 @@
     {
       id: 'prepay', weight: 40, label: "Oldindan pul so'ralmoqda", negatable: true,
       detail: "Halol ish beruvchi ishga olish uchun pul so'ramaydi. Bu firibgarlikning eng kuchli belgisi.",
-      re: /oldindan\s+(to'lov|pul)|to'lov\s+qilish(ingiz)?\s+kerak|pul\s+(to'lab|tashlab|o'tkazib)|ro'yxatdan\s+o'tish\s+(uchun\s+)?(to'lov|pul)|rasmiylashtirish\s+uchun\s+(to'lov|pul)|(hujjat\w*|forma|kiyim|tibbiy\s+ko'rik|test|imtihon|trening|o'qish|kurs)\s+(uchun\s+)?(to'lov|puli?)\b|o'qish\s+puli|depozit|garov\s+puli|o'z\s+hisobingizdan|predoplata|предоплат|оплат\w*\s+за\s+(оформлени|обучени|регистрац|документ|форм|медосмотр|патент)|за\s+свой\s+сч[её]т|регистрац\w*\s+платн|платн\w*\s+регистрац|взнос|залог/
+      re: /oldindan\s+(to'lov|pul)|to'lov\s+qilish(ingiz)?\s+kerak|pul\s+(to'lab|tashlab|o'tkazib)|ro'yxatdan\s+o'tish\s+(uchun\s+)?(to'lov|pul)|rasmiylashtirish\s+uchun\s+(to'lov|pul)|(hujjat\w*|forma|kiyim|tibbiy\s+ko'rik|test|imtihon|trening|o'qish|kurs)\s+(uchun\s+)?(to'lov|puli?)\b|o'qish\s+puli|xizmat\s+(haqi|narxi)\W{0,8}\d[\d\s.,]*\s*(so'm|sum|сум|сўм|\$|usd|dollar|ming|mln|eur|yevro)|стоимост\w*\s+услуг|услуг\w*\s+стоит|depozit|garov\s+puli|o'z\s+hisobingizdan|predoplata|предоплат|оплат\w*\s+за\s+(оформлени|обучени|регистрац|документ|форм|медосмотр|патент)|за\s+свой\s+сч[её]т|регистрац\w*\s+платн|платн\w*\s+регистрац|взнос|залог/
     },
     {
       id: 'personal', weight: 30, label: "Karta yoki shaxsiy ma'lumot so'ralmoqda",
@@ -48,12 +48,12 @@
     {
       id: 'invest', weight: 25, label: "Investitsiya, piramida yoki referal sxema",
       detail: "Ish o'rniga pul tikish yoki odam taklif qilish so'ralsa, bu moliyaviy piramida bo'lishi mumkin.",
-      re: /investitsiya|sarmoya|piramida|referal|tarmoq\s+marketing|\bmlm\b|jamoa\w*\s+quring|сетев\w+\s+маркетинг|do'st\w*ni\s+taklif|kripto|forex|p2p|arbitraj|treyding|bot\s+orqali\s+daromad|инвест|реферал|крипт|форекс|арбитраж|трейдинг/
+      re: /investitsiya|sarmoya|piramida|referal|tarmoq\s+marketing|greenway|gr[ei]e?nve[iy]|faberli[ck]|oriflame|orifleym|amway|herbalife|gerbalayf|siberian\s+wellness|coral\s+club|a'zo\s+bo'lish\s+(tekin|bepul)|\bmlm\b|jamoa\w*\s+quring|сетев\w+\s+маркетинг|do'st\w*ni\s+taklif|kripto|forex|p2p|arbitraj|treyding|bot\s+orqali\s+daromad|инвест|реферал|крипт|форекс|арбитраж|трейдинг/
     },
     {
       id: 'easy', weight: 20, label: '"Oson pul" va\'dasi',
       detail: "Kam mehnat evaziga katta daromad va'da qilinishi jalb qilish usulidir.",
-      re: /tez\s+pul|oson\s+pul|kuniga\s+\$?\s*\d[\d\s]*\$?|uydan\s+turib[^.\n]*(kuniga|oyiga|daromad)|telefon\s+orqali\s+(ish|daromad)|passiv\s+daromad|л[её]гк\w+\s+(деньг|заработ)|пассивн\w+\s+доход/
+      re: /tez\s+pul|oson\s+pul|kuniga\s+\$?\s*\d[\d\s]*\$?|uydan\s+turib[^.\n]*(kuniga|oyiga|daromad)|telefon\s+orqali\s+(ish|daromad)|kunlik\s+(\d[\d\s]*\s*(ming|mln)\s+)?daromad|daromad\w*\s+cheksiz|cheksiz\s+daromad|yechib\s+oldim|telefon\s+(va\s+internet\s+)?bo'lsa\s+(kifoya|yetarli)|onla[yi]+n\s+daromad|online\s+daromad|passiv\s+daromad|л[её]гк\w+\s+(деньг|заработ)|пассивн\w+\s+доход/
     },
     {
       id: 'link', weight: 15, label: "Shubhali yoki qisqartirilgan havola",
@@ -68,12 +68,12 @@
     {
       id: 'urgency', weight: 10, label: 'Shoshiltirish',
       detail: "\"Faqat bugun\", \"joylar cheklangan\" kabi iboralar o'ylab ko'rishga vaqt bermaslik uchun ishlatiladi.",
-      re: /shoshiling|joylar\s+cheklangan|faqat\s+bugun|vaqt\s+kam|срочно|места\s+ограничен|только\s+сегодня/
+      re: /shoshiling|joylar\s+cheklangan|o'rin\w*\s+cheklangan|hozir(oq)?\s+boshlang|orqada\s+qolmang|ketish\s+muddati\s+qisqa|faqat\s+bugun|vaqt\s+kam|срочно|места\s+ограничен|только\s+сегодня/
     },
     {
       id: 'vague', weight: 10, label: 'Ish mazmuni yashirilgan',
       detail: "Ish haqidagi asosiy ma'lumot \"lichkada\" deb yashirilgan.",
-      re: /batafsil\s+(ma'lumot\s+)?(lichkada|lichkaga)|ish\s+haqida\s+lichkada|подробност\w*\s+в\s+(лс|личк)/
+      re: /batafsil\s+(ma'lumot\s+)?(lichkada|lichkaga)|ma'?lumot\w*\s+(ofi?e?s\w*|suhbat\w*)\s*(da\s+)?berila|yozsa?ng?iz\s+ma'?lumot|ish\s+haqida\s+lichkada|подробност\w*\s+в\s+(лс|личк)/
     }
   ];
 
@@ -218,7 +218,7 @@
     const eur = /€\s*(\d[\d\s,]*\d|\d)|(\d[\d\s,]*\d|\d)\s*(?:€|eur|yevro|евро)/g;
     const rub = /(\d[\d\s]*\d|\d)\s*(?:rubl|руб)/g;
     // To'lov summasi (masalan "hujjat uchun to'lov 500$") maosh emas — o'tkazib yuboramiz
-    const isFee = idx => /(to'lov|puli?|uchun|depozit|garov|оплат|предоплат|взнос|залог)[^.\n]{0,12}$/.test(t.slice(Math.max(0, idx - 30), idx));
+    const isFee = idx => /(to'lov|puli?|uchun|narxi|xizmat\s+haqi|depozit|garov|оплат|предоплат|взнос|залог)[^.\n]{0,12}$/.test(t.slice(Math.max(0, idx - 30), idx));
     let m;
     while ((m = mln.exec(t))) {
       if (isFee(m.index)) continue;
@@ -299,6 +299,14 @@
         detail: `Oyiga taxminan ${salary.max} mln so'm. Bu kasb uchun odatiy darajadan bir necha barobar yuqori.`,
         match: `${salary.max} mln so'm`
       });
+    }
+
+    // Daromad va'da qilinadi, lekin kasb ham, vazifa ham aytilmagan — ish mazmuni yashirilgan
+    if (!scam.some(r => r.id === 'vague') && !prof && /daromad|доход|заработ/.test(t) &&
+        !/vazifa|lavozim|ish\s+turi|bo'sh\s+ish\s+o'rni|vakansiya|обязанност|должност|ваканси/.test(t)) {
+      const v = SCAM_RULES.find(r => r.id === 'vague');
+      scam.push({ id: 'vague', label: v.label, weight: v.weight, match: 'daromad bor, ish turi yo\'q',
+        detail: "Daromad va'da qilinadi, lekin qanday ish ekani — kasb ham, vazifalar ham — aytilmagan." });
     }
 
     const trust = [];
