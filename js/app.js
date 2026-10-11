@@ -251,7 +251,10 @@
     fetch('/api/health').then(r => (r.ok ? r.json() : Promise.reject(new Error(r.status)))).then(h => {
       IQ.ai = h.ai ? { state: 'on', maxChars: h.maxChars } : { state: 'off', reason: h.reason || "AI tahlil faollashtirilmagan: ANTHROPIC_API_KEY sozlanmagan." };
     }).catch(() => {
-      IQ.ai = { state: 'off', reason: "AI tahlil mavjud emas: sayt AI serverisiz ishlayapti (npm start bilan ishga tushiring)." };
+      // Statik hosting (GitHub Pages): qoidalar tahlili to'liq ishlaydi, AI uchun server kerak
+      IQ.ai = { state: 'off', reason: location.hostname.endsWith('github.io')
+        ? "Bu onlayn versiya: qoidalar asosidagi tahlil to'liq ishlaydi. AI chuqur tahlil uchun loyiha serveri (npm run start:env + API kalit) kerak."
+        : "AI tahlil mavjud emas: sayt AI serverisiz ishlayapti (npm start bilan ishga tushiring)." };
     }).finally(() => IQ.onAiStatus());
   } else {
     IQ.ai = { state: 'off', reason: "AI tahlil mavjud emas: sayt fayl sifatida ochilgan. AI uchun `npm start` bilan ishga tushiring va ANTHROPIC_API_KEY ni sozlang." };
