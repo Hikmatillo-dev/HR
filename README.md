@@ -7,13 +7,14 @@ Telegram'dagi ish e'lonlarini **firibgarlik**, **odam savdosi belgilari** va **k
 Hakamlar va foydalanuvchilar uchun halol holat (2026-10-11):
 
 - **Dashboard hali real ma'lumot bilan sinalmagan.** Sukut bo'yicha sayt "Real ma'lumot yuklanmagan" holatini ko'rsatadi. 600 ta sintetik e'lon faqat **Demo** rejimida, har bir bo'limda "DEMO" belgisi bilan ko'rinadi. Real raqamlar uchun Telegram eksportini yuklash kerak.
-- **Real ma'lumotdagi sifat hali o'lchanmagan.** v3 to'plami (real Telegram e'lonlari) tuzilmasi tayyor, lekin hali bo'sh.
+- **Real ma'lumotdagi sifat o'lchandi, lekin to'plam kichik.** v3: 5 ta kanaldan 34 ta real e'lon. Qoidalar o'zgartirilmasdan olingan boshlang'ich natija: aniqlik **70.6%**, xavfli e'lonlarni topish **16.7%**. Qoidalar shu xatolar asosida tuzatilgach: aniqlik **91.2%**, xavfli topish **75.0%**, FPR **0%**, kamsitish **100%**. Bu natija optimistik, chunki qoidalar aynan shu e'lonlarga qarab tuzatilgan. Mustaqil tekshiruv uchun hali ko'rilmagan e'lonlar (v4) kerak.
+- **v3 da 6 ta e'lon hali to'g'ri baholanmaydi:** v3-003, v3-028 ("high" kutilgan, "medium" chiqadi); v3-007, v3-011, v3-033 (qoidalar ish va talab mos kelmasligini sezmaydi); v3-034 (tizim "xorijga ish + to'lov" ni odam savdosi belgisi deydi, inson belgisida bu yo'q — qaror kutilmoqda).
 - **Test to'plami kichik va qo'lda tayyorlangan.** 87 ta e'lonni loyiha muallifi yozgan, ular real Telegram e'lonlari emas. Qoidalar 49 ta yangi e'lonni ko'rmasdan oldingi natija: aniqlik **85%**, xavfli e'lonlarni topish **65%**, odam savdosi belgilarini topish **50%**. Hozirgi 100% natija optimistik, chunki qoidalar aynan shu xatolar asosida tuzatilgan.
 - **Claude API real kalit bilan hali sinovdan o'tmagan.** U faqat soxta (mock) API bilan 11 ta avtomatik testdan o'tgan.
 - **Telegram bot real token bilan hali ishga tushirilmagan.** `/start`, `/help`, `/check` va `/stats` soxta Telegram server bilan 14 ta testdan o'tgan.
 - **Valyuta kurslari taxminiy:** 1 USD = 12 600, 1 EUR = 13 700, 1 RUB = 150 so'm. Kurslar `config/currency.js` da va `.env` orqali almashtiriladi; UI'da "Kurslar taxminiy" belgisi chiqadi. Lekin `js/analyzer.js` hali config'ga ulanmagan (pastdagi "Kutilayotgan ishlar"ga qarang). Kurslar faqat maosh baholashga ta'sir qiladi.
 - **Rasmiy idoralar tasdiqlanmagan.** `config/official-sources.js` dagi ikkala manba `verified: false`: ular veb-qidiruvda topilgan, lekin `gov.uz` sahifalari ishlab chiqish muhitidan ochilmadi. Qidiruv natijalariga ko'ra "Tashqi mehnat migratsiyasi agentligi" endi "Vazirlar Mahkamasi huzuridagi Migratsiya agentligi" deb ataladi. UI'da "tekshirilmagan" belgisi chiqadi.
-- **Ma'lum xato holatlar:** qoidalar kalit so'zlarga tayanadi. Yangi so'z yoki imlo bilan yozilgan firibgarlikni o'tkazib yuborishi mumkin. Ikkala jinsga murojaat kabi kutilmagan iboralarni esa noto'g'ri belgilashi mumkin. Har bir topilgan xato `js/test-set.js` ga qo'shiladi.
+- **Ma'lum xato holatlar:** qoidalar kalit so'zlarga tayanadi. `tests/rules.test.mjs` dagi 31 ta turli sun'iy e'lon (oddiy firibgarlik, rus va kirill yozuvi, halol e'lonlar) to'g'ri ajratiladi, lekin bu ham qo'lda yozilgan to'plam. Yangi so'z yoki imlo bilan yozilgan firibgarlikni o'tkazib yuborishi mumkin. Ikkala jinsga murojaat kabi kutilmagan iboralarni esa noto'g'ri belgilashi mumkin. Har bir topilgan xato `js/test-set.js` ga qo'shiladi.
 
 ## Evaluation (sifatni o'lchash)
 
@@ -21,7 +22,8 @@ Hakamlar va foydalanuvchilar uchun halol holat (2026-10-11):
 |---|---|---|---|---|
 | **v1** | `js/test-set.js` | qo'lda yozilgan | 38 | Qoidalar shu e'lonlar asosida yozilgan (regressiya testi) |
 | **v2** | `js/test-set.js` | qo'lda yozilgan, qiyin holatlar | 49 | Boshlang'ich natija: aniqlik 85.4%, xavfli topish 64.7%, FPR 3.2%, kamsitish 72.7%, odam savdosi 50% |
-| **v3** | `js/test-set-v3.js` | **real Telegram e'lonlari** | 0 / 50 | Real ma'lumotdagi asosiy ko'rsatkich (hali to'ldirilmagan) |
+| **v3** | `js/test-set-v3.js` | **real Telegram e'lonlari** (5 kanal) | 34 | Boshlang'ich natija: aniqlik 70.6%, xavfli topish 16.7%. Hozir: 91.2% / 75.0% |
+| qoida testlari | `tests/rules.test.mjs` | sun'iy, turli yozilish | 20 test, shu jumladan 31 ta e'lon | Har bir qoida umumiy naqshni topishi va noto'g'ri signal bermasligi |
 
 `npm test` uchala to'plamni alohida hisoblaydi. U formatni tekshiradi va quyidagi hollarda xato beradi:
 - v2 natijasi `tests/results/v2-reference.json` dagidan 5 punktdan ko'p pasaysa;
