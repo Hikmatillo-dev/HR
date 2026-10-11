@@ -191,8 +191,8 @@
     ['Flutter', true, /flutter/], ['Git', true, /\bgit\b/], ['Django / FastAPI', true, /django|fastapi/],
     ['1C', true, /\b1c\b|1с/], ['Excel', true, /excel/], ['Power BI', true, /power\s*bi/],
     ['Figma', true, /figma/], ['Photoshop', true, /photoshop/], ['AutoCAD', true, /autocad/],
-    ['Video montaj', true, /montaj|premiere|capcut/], ['Target reklama', true, /target|таргет/],
-    ['SMM', true, /\bsmm\b|instagram|kontent/], ['CRM', true, /\bcrm\b|amocrm|bitrix/],
+    ['Video montaj', true, /video\s*-?\s*montaj|montaj\w*\s+video|видео\s*-?\s*монтаж|монтаж\w*\s+видео|premiere|capcut|after\s+effects/], ['Target reklama', true, /target|таргет/],
+    ['SMM', true, /\bsmm\b|kontent|контент|instagram\s+(sahifa|akkaunt|profil)\w*|ведени\w+\s+(соцсет|инстаграм)/], ['CRM', true, /\bcrm\b|amocrm|bitrix/],
     ['Kompyuter savodxonligi', true, /kompyuter\s+savodxon|компьютер|ms\s+office|word\b/],
     ['Ingliz tili', false, /ingliz|english|английск|ielts/], ['Rus tili', false, /rus\s+tili|русск/],
     ['Koreys tili', false, /koreys|topik|корейск/], ['Nemis tili', false, /nemis|немецк/],
@@ -231,11 +231,20 @@
     const values = [];
     const mln = /(?:(\d+(?:[.,]\d+)?)\s*[-–]\s*)?(\d+(?:[.,]\d+)?)\s*(?:mln|million|миллион|млн)/g;
     const som = /(\d{1,3}(?:[\s.,]\d{3})+|\d{4,})\s*(?:so'm|sum|сум|сўм)/g;
-    const usd = /\$\s*(\d[\d\s,]*\d|\d)|(\d[\d\s,]*\d|\d)\s*(?:\$|usd|dollar|доллар)/g;
+    const usd = /\$\s*(\d[\d\s,]*\d|\d)(?:\s*[-–]\s*(\d[\d\s,]*\d|\d)(?!\s*[\d%]))?|(\d[\d\s,]*\d|\d)\s*(?:\$|usd|dollar|доллар)/g;
     const eur = /€\s*(\d[\d\s,]*\d|\d)|(\d[\d\s,]*\d|\d)\s*(?:€|eur|yevro|евро)/g;
     const rub = /(\d[\d\s]*\d|\d)\s*(?:rubl|руб)/g;
     // To'lov summasi (masalan "hujjat uchun to'lov 500$") maosh emas — o'tkazib yuboramiz
-    const isFee = idx => /(to'lov|puli?|uchun|narxi|xizmat\s+haqi|depozit|garov|оплат|предоплат|взнос|залог)[^.\n]{0,12}$/.test(t.slice(Math.max(0, idx - 30), idx));
+    const FEE_WORD = /xizmat\s+(haqi|narxi)|хизмат\s+(ҳақи|хаки|нархи)|narxi|нархи|to'lov\w*|тўлов\w*|тулов\w*|depozit|garov|взнос|залог|стоимост\w*\s+услуг/g;
+    const PAY_WORD = /oylik|maosh|ish\s+haqi|daromad|ойлик|маош|иш\s+(ҳақи|хаки)|зарплат|оклад|доход/g;
+    const lastIndex = (re, str) => { let i = -1, x; re.lastIndex = 0; while ((x = re.exec(str))) i = x.index; return i; };
+    // Summa oldidagi 150 belgida eng oxirgi so'z to'lov bo'lsa (maosh emas) — bu to'lov summasi:
+    // "XIZMAT NARXI 9 600 000 so'm (... 4 000 000 so'm shartnoma tuzganda ...)"
+    const isFee = idx => {
+      const before = t.slice(Math.max(0, idx - 150), idx);
+      if (/(to'lov|puli?|uchun|narxi|xizmat\s+haqi|depozit|garov|оплат|предоплат|взнос|залог)[^.\n]{0,12}$/.test(before.slice(-30))) return true;
+      return lastIndex(FEE_WORD, before) > lastIndex(PAY_WORD, before);
+    };
     let m;
     while ((m = mln.exec(t))) {
       if (isFee(m.index)) continue;
@@ -243,7 +252,11 @@
       values.push(toNumber(m[2]));
     }
     while ((m = som.exec(t))) if (!isFee(m.index)) values.push(toNumber(m[1].replace(/[.,]/g, '')) / 1e6);
-    while ((m = usd.exec(t))) if (!isFee(m.index)) values.push(toNumber(m[1] || m[2]) * USD_RATE / 1e6);
+    while ((m = usd.exec(t))) {
+      if (isFee(m.index)) continue;
+      values.push(toNumber(m[1] || m[3]) * USD_RATE / 1e6);
+      if (m[2]) values.push(toNumber(m[2]) * USD_RATE / 1e6); // "$600-850"
+    }
     while ((m = eur.exec(t))) if (!isFee(m.index)) values.push(toNumber(m[1] || m[2]) * EUR_RATE / 1e6);
     while ((m = rub.exec(t))) if (!isFee(m.index)) values.push(toNumber(m[1]) * RUB_RATE / 1e6);
 

@@ -125,4 +125,19 @@ test("C2: pasport nusxasini yuborish so'ralsa — o'rtacha xavf (kritik emas); k
   hasNot("Hujjatlar: pasport nusxasi, diplom — kadrlar bo'limiga shaxsan olib keling", 'idcopy');
 });
 
+test("Maosh: agentlik to'lovi (kirillda ham) maosh emas; '$600-850' oralig'i to'liq olinadi; 'to'lov har oyda' maoshni yashirmaydi", () => {
+  const fee = analyze("ХИЗМАТ НАРХИ 9,600,000 СЎМ! (4,000,000 сўм шартнома тузганда тўланади). Ойлик маош: $600-850");
+  assert.deepEqual([fee.salary.min, fee.salary.max], [7.6, 10.7]);
+  assert.equal(analyze("Oylik 5 mln so'm, to'lov har oyning 10-sanasida").salary.max, 5);
+  assert.equal(analyze("Xizmat narxi 2 mln so'm. Oylik maosh 1500$").salary.max, 18.9);
+});
+
+test("Ko'nikmalar: 'леса монтаж' — video montaj emas; Instagram havolasi — SMM emas", () => {
+  const skills = t => analyze(t).skills.map(x => x.name);
+  assert.ok(!skills('Леса монтаж қилишга ишчилар').includes('Video montaj'));
+  assert.ok(!skills('Kontakt: instagram.com/kompaniya, sotuvchi').includes('SMM'));
+  assert.ok(skills('SMM mutaxassis, Instagram sahifalarini yuritish, video montaj').includes('Video montaj'));
+  assert.ok(skills('SMM mutaxassis, Instagram sahifalarini yuritish').includes('SMM'));
+});
+
 console.log(`\n${passed} ta qoida testi o'tdi${process.exitCode ? ', xatolar bor' : ''}\n`);
