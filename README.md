@@ -14,6 +14,12 @@ Hakamlar va foydalanuvchilar uchun halol holat (2026-10-11):
 - **Rasmiy idoralar nomlari tekshirilishi kerak.** "Tashqi mehnat migratsiyasi agentligi" va "Kambag'allikni qisqartirish va bandlik vazirligi" nomlari rasmiy manbadan tasdiqlanmagan.
 - **Ma'lum xato holatlar:** qoidalar kalit so'zlarga tayanadi. Yangi so'z yoki imlo bilan yozilgan firibgarlikni o'tkazib yuborishi mumkin. Ikkala jinsga murojaat kabi kutilmagan iboralarni esa noto'g'ri belgilashi mumkin. Har bir topilgan xato `js/test-set.js` ga qo'shiladi.
 
+## Evaluation (sifatni o'lchash)
+
+<!-- v3-baseline:start -->
+**v3 boshlang'ich natija:** hali yozilmagan — real e'lonlar qo'shilgandan keyin `npm run eval:v3-baseline`.
+<!-- v3-baseline:end -->
+
 ## Imkoniyatlar
 
 | Bo'lim | Nima qiladi |
