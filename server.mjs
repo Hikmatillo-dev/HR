@@ -1,5 +1,6 @@
 // Sayt + AI API serveri: node server.mjs  (http://localhost:3000)
-// AI uchun: ANTHROPIC_API_KEY=... node server.mjs
+// AI uchun: .env ga ANTHROPIC_API_KEY=... yozing (yoki ANTHROPIC_API_KEY=... node server.mjs)
+import './lib/env.mjs';
 import http from 'node:http';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';

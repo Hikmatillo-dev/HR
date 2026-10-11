@@ -240,7 +240,7 @@ try {
 
   // ---------- bot.mjs: ishga tushirish ----------
   await test("Tokensiz: tushunarli xabar, exit 1, stack trace yo'q", () => {
-    const r = spawnSync(process.execPath, ['bot.mjs'], { cwd: ROOT, env: { PATH: process.env.PATH }, encoding: 'utf8' });
+    const r = spawnSync(process.execPath, ['bot.mjs'], { cwd: ROOT, env: { PATH: process.env.PATH, IQ_SKIP_DOTENV: '1' }, encoding: 'utf8' });
     assert.equal(r.status, 1);
     assert.match(r.stderr, /TELEGRAM_BOT_TOKEN o'rnatilmagan/);
     assert.doesNotMatch(r.stderr, /at .*\.mjs:\d+/);
@@ -251,7 +251,7 @@ try {
     await new Promise(r => server.listen(0, r));
     const token = '123456:' + 'B'.repeat(35);
     // spawnSync shu jarayondagi soxta serverni bloklab qo'yadi — shuning uchun asinxron spawn
-    const child = spawn(process.execPath, ['bot.mjs'], { cwd: ROOT, env: { PATH: process.env.PATH, TELEGRAM_BOT_TOKEN: token, IQ_TELEGRAM_API: `http://127.0.0.1:${server.address().port}`, IQ_BOT_DATA_DIR: path.join(tmp, 'd401') } });
+    const child = spawn(process.execPath, ['bot.mjs'], { cwd: ROOT, env: { PATH: process.env.PATH, IQ_SKIP_DOTENV: '1', TELEGRAM_BOT_TOKEN: token, IQ_TELEGRAM_API: `http://127.0.0.1:${server.address().port}`, IQ_BOT_DATA_DIR: path.join(tmp, 'd401') } });
     let stderr = ''; child.stderr.on('data', d => { stderr += d; });
     const status = await new Promise(res => child.on('exit', res));
     server.close();
@@ -282,7 +282,7 @@ try {
     await new Promise(r => server.listen(0, r));
     const child = spawn(process.execPath, ['bot.mjs'], {
       cwd: ROOT,
-      env: { PATH: process.env.PATH, TELEGRAM_BOT_TOKEN: '123456:' + 'A'.repeat(35), IQ_TELEGRAM_API: `http://127.0.0.1:${server.address().port}`, IQ_BOT_DATA_DIR: path.join(tmp, 'c') }
+      env: { PATH: process.env.PATH, IQ_SKIP_DOTENV: '1', TELEGRAM_BOT_TOKEN: '123456:' + 'A'.repeat(35), IQ_TELEGRAM_API: `http://127.0.0.1:${server.address().port}`, IQ_BOT_DATA_DIR: path.join(tmp, 'c') }
     });
     let log = ''; child.stdout.on('data', d => { log += d; }); child.stderr.on('data', d => { log += d; });
     const deadline = Date.now() + 8000;

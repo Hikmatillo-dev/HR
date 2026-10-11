@@ -64,7 +64,7 @@ await test("Rasmiy manbalar: nom, https havola, maqsad, tekshirilgan holati va d
 await test("server.mjs .env dagi kurslarni brauzerga config/currency.js orqali uzatadi", async () => {
   const port = 3900 + Math.floor(Math.random() * 90);
   const child = spawn(process.execPath, ['server.mjs'], {
-    cwd: ROOT, env: { PATH: process.env.PATH, PORT: String(port), IQ_RATE_USD: '13000', IQ_RATES_UPDATED: new Date().toISOString().slice(0, 10), IQ_RATES_SOURCE: 'sinov' }
+    cwd: ROOT, env: { PATH: process.env.PATH, IQ_SKIP_DOTENV: '1', PORT: String(port), IQ_RATE_USD: '13000', IQ_RATES_UPDATED: new Date().toISOString().slice(0, 10), IQ_RATES_SOURCE: 'sinov' }
   });
   let log = ''; child.stdout.on('data', d => { log += d; }); child.stderr.on('data', d => { log += d; });
   try {

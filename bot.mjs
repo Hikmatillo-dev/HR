@@ -1,6 +1,7 @@
 // IshQalqon Telegram boti. Buyruqlar: /start, /help, /check, /stats (mantiq: lib/bot-core.mjs)
-// Ishga tushirish: TELEGRAM_BOT_TOKEN=... node bot.mjs   yoki   npm run bot:env  (.env dan)
+// Ishga tushirish: npm run bot  (.env dagi TELEGRAM_BOT_TOKEN avtomatik o'qiladi)
 // AI xulosa uchun qo'shimcha: ANTHROPIC_API_KEY=...
+import './lib/env.mjs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 

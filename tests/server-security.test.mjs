@@ -40,7 +40,7 @@ async function startServer(extraEnv = {}) {
   const dataDir = mkdtempSync(path.join(tmpdir(), 'iq-srv-'));
   const child = spawn(process.execPath, ['server.mjs'], {
     cwd: ROOT,
-    env: { PATH: process.env.PATH, PORT: String(port), ANTHROPIC_API_KEY: SECRET_KEY, ANTHROPIC_BASE_URL: `http://127.0.0.1:${mock.address().port}`, IQ_AI_RETRIES: '0', IQ_DATA_DIR: dataDir, ...extraEnv }
+    env: { PATH: process.env.PATH, IQ_SKIP_DOTENV: '1', PORT: String(port), ANTHROPIC_API_KEY: SECRET_KEY, ANTHROPIC_BASE_URL: `http://127.0.0.1:${mock.address().port}`, IQ_AI_RETRIES: '0', IQ_DATA_DIR: dataDir, ...extraEnv }
   });
   const srv = { child, port, dataDir, log: '' };
   child.stdout.on('data', d => { srv.log += d; }); child.stderr.on('data', d => { srv.log += d; });

@@ -122,8 +122,8 @@ Ma'lumotni doimiy fayl sifatida saqlash uchun: `python3 tools/telegram_export.py
 ```bash
 npm install
 cp .env.example .env          # ANTHROPIC_API_KEY ni to'ldiring
-npm run start:env             # http://localhost:3000  (Node.js 20.6+)
-# yoki: ANTHROPIC_API_KEY=sk-ant-... npm start
+npm start                     # http://localhost:3000 — .env avtomatik o'qiladi (Node.js 20.12+)
+# eski Node.js uchun: npm run start:env  (20.6+)  yoki  ANTHROPIC_API_KEY=sk-ant-... npm start
 ```
 Kalit bo'lmasa server baribir ishlaydi. Bunda tugma o'chiq turadi va "AI tahlil faollashtirilmagan: ANTHROPIC_API_KEY sozlanmagan." degan yozuv chiqadi. Soxta AI javobi hech qachon ko'rsatilmaydi.
 
@@ -153,7 +153,7 @@ AI cheklovlari: matn 20–6000 belgi bo'lishi kerak, uzun matn kesilmaydi va rad
 ### 4. Telegram botni ishga tushirish
 ```bash
 # @BotFather → /newbot → tokenni .env ga TELEGRAM_BOT_TOKEN= qilib yozing
-npm run bot:env
+npm run bot                   # .env dagi token avtomatik o'qiladi
 ```
 
 **Buyruqlar:**
@@ -261,7 +261,7 @@ Kuchli tomon sifatida ko'rsating: o'lchanadigan sifat, ochiq hujjatlashtirilgan 
 | **1-kun, ertalab** | 8–15 ta kanalni JSON qilib eksport qiling va saytga yuklang | Import hisobotida xabarlar soni > 0, takrorlar olib tashlangan, xavf taqsimoti ko'rinadi |
 | **1-kun, tushlik** | Real e'lonlardan 50 tasini o'qib, qo'lda belgilang (xavfli / xavfsiz / kamsituvchi) va `js/test-set.js` ga `v3-xx` qilib qo'shing | `npm test` → **v3 natijasini qoidalarga tegmasdan yozib oling.** Bu real ma'lumotdagi birinchi halol ko'rsatkich |
 | **1-kun, kechqurun** | v3 xatolarini `js/analyzer.js` da tuzating | `npm test` o'tadi; FPR ≤ 10% |
-| **1-kun, kechqurun** | API kalit oling, `npm run start:env`, 5 ta e'londa AI'ni sinang | Javoblarda iqtiboslar e'lon matnida haqiqatan bor; o'zbekcha tushunarli |
+| **1-kun, kechqurun** | API kalit oling, `.env` ga yozing, `npm start`, 5 ta e'londa AI'ni sinang | Javoblarda iqtiboslar e'lon matnida haqiqatan bor; o'zbekcha tushunarli |
 | **2-kun, ertalab** | Bot tokenini oling va botni ishga tushiring, telefondan 5 ta e'lon yuboring | Javob 5 soniyadan tez keladi, disclaimer bor |
 | **2-kun, ertalab** | Saytni internetga chiqaring (GitHub Pages yoki Netlify; AI uchun Node server) | Telefondan ochib, yuklash va tekshirishni sinang |
 | **2-kun, tushlik** | Valyuta kurslari va idoralar nomlarini rasmiy manbadan tekshiring | README cheklovlar bo'limini yangilang |
