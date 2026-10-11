@@ -264,8 +264,8 @@
       options: baseOptions({
         layout: { padding: { right: 70 } },
         scales: {
-          x: { title: { display: true, text: "E'lonlar soni (talab)", color: IQ.color('text-2') }, grid: { color: IQ.color('grid') }, ticks: { color: IQ.color('text-2') } },
-          y: { title: { display: true, text: "O'rtacha maosh, mln so'm", color: IQ.color('text-2') }, grid: { color: IQ.color('grid') }, ticks: { color: IQ.color('text-2') } }
+          x: { beginAtZero: true, title: { display: true, text: "E'lonlar soni (talab)", color: IQ.color('text-2') }, grid: { color: IQ.color('grid') }, ticks: { color: IQ.color('text-2'), precision: 0 } },
+          y: { beginAtZero: true, title: { display: true, text: "O'rtacha maosh, mln so'm", color: IQ.color('text-2') }, grid: { color: IQ.color('grid') }, ticks: { color: IQ.color('text-2') } }
         },
         plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${c.raw.name}: ${c.raw.x} ta e'lon, ~${c.raw.y} mln so'm` } } }
       }),
@@ -320,17 +320,21 @@
   }
 
   // ---------- 4. Kanallar reytingi ----------
-  function grade(highShare, discShare) {
-    const p = highShare + discShare * 0.5;
+  // Yuqori xavf to'liq, o'rtacha (shubhali) va kamsitish yarim og'irlik bilan: faqat "oson pul"
+  // e'lonlaridan iborat kanal ham "ishonchli" bo'lib qolmasligi uchun
+  function grade(highShare, mediumShare, discShare) {
+    const p = highShare + mediumShare * 0.5 + discShare * 0.5;
     return p < 5 ? 'A' : p < 12 ? 'B' : p < 22 ? 'C' : p < 35 ? 'D' : 'F';
   }
 
   function renderChannels() {
     const groups = by(DATA, d => d.channel || "Noma'lum");
     const rows = Object.entries(groups).map(([ch, l]) => {
-      const high = pct(count(l, d => d.a.level === 'high'), l.length);
+      const highOnly = pct(count(l, d => d.a.level === 'high'), l.length);
+      const medium = pct(count(l, d => d.a.level === 'medium'), l.length);
+      const high = pct(count(l, d => d.a.level !== 'low'), l.length); // jadvalda: xavfli yoki shubhali
       const disc = pct(count(l, d => d.a.discrimination.length), l.length);
-      return { ch, n: l.length, high, disc, transp: Math.round(avg(l.map(d => d.a.transparency.score))), dupes: count(l, d => d.dupes > 1), g: grade(high, disc) };
+      return { ch, n: l.length, high, disc, transp: Math.round(avg(l.map(d => d.a.transparency.score))), dupes: count(l, d => d.dupes > 1), g: grade(highOnly, medium, disc) };
     }).sort((x, y) => x.g.localeCompare(y.g) || x.high - y.high);
     $('#channelRows').innerHTML = rows.map(r => `
       <tr>
