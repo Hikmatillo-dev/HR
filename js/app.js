@@ -143,23 +143,28 @@
   // ---------- Aniqlik (test to'plami asosida, brauzerda jonli hisoblanadi) ----------
   function renderMetrics() {
     const cases = window.TEST_SET || [];
-    if (!cases.length) return;
-    const m = (pred, truth) => {
-      let tp = 0, fp = 0, fn = 0, tn = 0;
-      pred.forEach((p, i) => { if (p && truth[i]) tp++; else if (p) fp++; else if (truth[i]) fn++; else tn++; });
-      const pr = tp / (tp + fp || 1), rc = tp / (tp + fn || 1);
-      return { pr, rc, f1: 2 * pr * rc / (pr + rc || 1), acc: (tp + tn) / pred.length };
-    };
-    const res = cases.map(c => A.analyze(c.text));
-    const s = m(res.map(a => a.level !== 'low'), cases.map(c => c.scam));
-    const d = m(res.map(a => a.discrimination.length > 0), cases.map(c => c.disc));
-    const p = x => Math.round(x * 100) + '%';
-    $('#metricsNote').innerHTML = `Ko'rsatkichlar qo'lda belgilangan <b>${cases.length}</b> ta test e'loni bo'yicha hozir, brauzerning o'zida hisoblandi (<code>js/test-set.js</code>). Haqiqiy ma'lumotda natija farq qilishi mumkin, shuning uchun test to'plami doimiy kengaytiriladi.`;
+    if (!cases.length || !window.IQEval) return;
+    const r = window.IQEval.evaluate(cases, A.analyze);
+    const b = window.TEST_BASELINE;
+    const p = x => (x === null || x === undefined ? '—' : Math.round(x * 100) + '%');
+    const kpi = (v, l) => `<div class="kpi"><b>${v}</b><span>${l}</span></div>`;
+    const v1 = cases.filter(c => c.id.startsWith('v1')).length, v2 = cases.length - v1;
+    $('#metricsNote').innerHTML = `Test to'plamida <b>${cases.length}</b> ta qo'lda belgilangan e'lon bor: ${v1} tasi birinchi to'plam, ${v2} tasi keyin qo'shilgan qiyin holatlar (kirill, rus, aralash yozuv, odam savdosi, xato signal tuzoqlari). E'lonlarni loyiha muallifi yozgan, ular <b>real Telegram ma'lumoti emas</b>. Shuning uchun bu raqamlar faqat yo'nalishni ko'rsatadi; real e'lonlarda natija pastroq bo'lishi kutiladi.`;
+    $('#metricsBaseline').innerHTML = b ? [
+      kpi(p(b.accuracy), `Umumiy aniqlik (${b.n} ta yangi e'lon)`),
+      kpi(p(b.riskRecall), "Xavfli e'lonlarni topish"),
+      kpi(p(b.fpr), "Halol e'lonni xavfli deyish (FPR)"),
+      kpi(p(b.discRecall), 'Kamsitishni topish'),
+      kpi(p(b.traffRecall), 'Odam savdosi belgilarini topish')
+    ].join('') + `<p class="muted" style="grid-column:1/-1;margin:0;font-size:.85rem">Qoidalar bu e'lonlarni ko'rmasdan oldin o'lchangan (${esc(b.date)}). Notanish e'lonlarda tizim qanday ishlashining eng halol ko'rsatkichi shu.</p>` : '';
     $('#metrics').innerHTML = [
-      [p(s.pr), 'Firibgarlik: aniqlik (precision)'], [p(s.rc), "Firibgarlik: to'liqlik (recall)"],
-      [p(d.pr), 'Kamsitish: aniqlik'], [p(d.rc), "Kamsitish: to'liqlik"],
-      [A.SCAM_RULES.length + 1, 'Firibgarlik belgilari'], [A.DISCRIMINATION_RULES.length, 'Kamsitish turlari']
-    ].map(([v, l]) => `<div class="kpi"><b>${v}</b><span>${l}</span></div>`).join('');
+      kpi(p(r.risk.accuracy), 'Umumiy aniqlik'),
+      kpi(p(r.risk.recall), "Xavfli e'lonlarni topish"),
+      kpi(p(r.risk.fpr), "Halol e'lonni xavfli deyish (FPR)"),
+      kpi(p(r.discrimination.recall), 'Kamsitishni topish'),
+      kpi(p(r.trafficking.recall), 'Odam savdosi belgilarini topish'),
+      kpi(p(r.flagRecall), `Sabablarni aniq ko'rsatish (${r.expectedFlagCount} ta belgi)`)
+    ].join('') + `<p class="muted" style="grid-column:1/-1;margin:0;font-size:.85rem">Qoidalar shu e'lonlardagi xatolar asosida tuzatilgan, shuning uchun bu natija optimistik. U regressiyani ushlash uchun kerak: yangi o'zgarish eski holatlarni buzmasligini tekshiradi.</p>`;
   }
   renderMetrics();
 

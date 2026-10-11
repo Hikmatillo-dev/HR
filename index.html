@@ -237,9 +237,20 @@
       </div>
       <h3 style="margin-top:20px">Qanday ishlaydi</h3>
       <div class="flow"><span>📥 Telegram kanallar</span><em>→</em><span>🧹 Tozalash va takrorlarni aniqlash</span><em>→</em><span>🔤 Kirill → lotin</span><em>→</em><span>⚖️ Qoidalar tizimi (tushuntiriladigan)</span><em>→</em><span>🤖 AI chuqur tahlil (ixtiyoriy)</span><em>→</em><span>📊 Dashboard, bot, hisobot</span></div>
-      <h3 style="margin-top:20px">Tizim aniqligi</h3>
+      <h3 style="margin-top:20px">Tizim aniqligi: halol ko'rsatkichlar</h3>
       <p class="muted" id="metricsNote"></p>
+      <h4 class="metrics-title">1) Yangi, notanish e'lonlarda birinchi sinov</h4>
+      <div class="metrics" id="metricsBaseline"></div>
+      <h4 class="metrics-title">2) Hozirgi holat — barcha test e'lonlari (optimistik)</h4>
       <div class="metrics" id="metrics"></div>
+      <details class="block"><summary>Metrikalar nimani anglatadi?</summary>
+        <ul class="muted" style="margin:8px 0 0;padding-left:20px;font-size:.9rem">
+          <li><b>Xavfli e'lonlarni topish (recall)</b> — haqiqatda xavfli e'lonlarning necha foizini tizim topdi.</li>
+          <li><b>Noto'g'ri signal (FPR)</b> — halol e'lonlarning necha foizi xato bilan "xavfli" deb belgilandi.</li>
+          <li><b>Aniqlik (precision)</b> — tizim "xavfli" deganida necha foiz holatda to'g'ri chiqdi.</li>
+          <li><b>Belgilarni topish</b> — kutilgan sabablarning (masalan "oldindan to'lov", "pasport") necha foizi aniq ko'rsatildi.</li>
+        </ul>
+      </details>
     </section>
   </main>
 
@@ -250,6 +261,7 @@
   <script src="js/sample-data.js"></script>
   <script src="js/real-data.js"></script>
   <script src="js/test-set.js"></script>
+  <script src="js/evaluate.js"></script>
   <script src="js/importer.js"></script>
   <script src="js/ui-common.js"></script>
   <script src="js/ui-checker.js"></script>

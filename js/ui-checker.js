@@ -60,6 +60,7 @@
             ${a.salary ? `<span class="tag">💰 ${IQ.salaryText(a.salary)} mln so'm/oy</span>` : ''}
             ${a.script !== 'uz-latn' ? `<span class="tag">🔤 ${a.script === 'ru' ? 'rus tili' : 'kirill'}</span>` : ''}
             ${a.discrimination.length ? `<span class="tag disc">⚖️ ${a.discrimination.length} ta kamsitish belgisi</span>` : ''}
+            ${a.trafficking ? '<span class="tag high">🚨 Odam savdosi belgisi</span>' : ''}
           </div>
         </div>
       </div>

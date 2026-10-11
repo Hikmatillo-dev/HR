@@ -11,9 +11,9 @@
   // ---------- Firibgarlik belgilari ----------
   const SCAM_RULES = [
     {
-      id: 'prepay', weight: 40, label: "Oldindan pul so'ralmoqda",
+      id: 'prepay', weight: 40, label: "Oldindan pul so'ralmoqda", negatable: true,
       detail: "Halol ish beruvchi ishga olish uchun pul so'ramaydi. Bu firibgarlikning eng kuchli belgisi.",
-      re: /oldindan\s+(to'lov|pul)|to'lov\s+qilish(ingiz)?\s+kerak|pul\s+(to'lab|tashlab|o'tkazib)|ro'yxatdan\s+o'tish\s+(uchun\s+)?(to'lov|pul)|rasmiylashtirish\s+uchun\s+(to'lov|pul)|(hujjat\w*|forma|kiyim|tibbiy\s+ko'rik|test|imtihon|trening|o'qish|kurs)\s+(uchun\s+)?(to'lov|puli?)\b|o'qish\s+puli|depozit|garov\s+puli|predoplata|предоплат|оплат\w*\s+за\s+(оформлени|обучени|регистрац|документ|форм|медосмотр)|взнос|залог/
+      re: /oldindan\s+(to'lov|pul)|to'lov\s+qilish(ingiz)?\s+kerak|pul\s+(to'lab|tashlab|o'tkazib)|ro'yxatdan\s+o'tish\s+(uchun\s+)?(to'lov|pul)|rasmiylashtirish\s+uchun\s+(to'lov|pul)|(hujjat\w*|forma|kiyim|tibbiy\s+ko'rik|test|imtihon|trening|o'qish|kurs)\s+(uchun\s+)?(to'lov|puli?)\b|o'qish\s+puli|depozit|garov\s+puli|o'z\s+hisobingizdan|predoplata|предоплат|оплат\w*\s+за\s+(оформлени|обучени|регистрац|документ|форм|медосмотр|патент)|за\s+свой\s+сч[её]т|регистрац\w*\s+платн|платн\w*\s+регистрац|взнос|залог/
     },
     {
       id: 'personal', weight: 30, label: "Karta yoki shaxsiy ma'lumot so'ralmoqda",
@@ -23,7 +23,22 @@
     {
       id: 'passport', weight: 35, label: "Pasportni topshirish talab qilinmoqda",
       detail: "Ish beruvchi pasportingizni olib qolishi qonunga zid va odam savdosining asosiy belgilaridan biri.",
-      re: /pasport\w*\s+(garov|qoldir|ish\s+beruvchida|bizda\s+turadi)|паспорт\w*\s+(оставля|в\s+залог|храни\w+\s+у\s+работодател)/
+      re: /pasport\w*\s+(garov|qoldir|ish\s+beruvchida|bizda\s+(turadi|saqlanadi|qoladi))|pasport\w*\s+(\S+\s+){0,2}(topshir|yig'ib\s+olin|olib\s+qolin)|паспорт\w*\s+(оставл|оставит|оставь|в\s+залог|сда|отда|храни\w+\s+у\s+работодател)|(оставить|сдать)\s+паспорт/
+    },
+    {
+      id: 'debt', weight: 35, label: "Qarz evaziga ishlash (qarz qulligi)",
+      detail: "Yo'l yoki viza \"qarzi\"ni maoshdan ushlab qolish odamni ish beruvchiga qaram qilib qo'yadi. Bu odam savdosining belgisi.",
+      re: /qarz\w*\s+(\S+\s+){0,3}(ushlab\s+qol|ayirib\s+qol)|ishlab\s+(uzasiz|qaytarasiz)|долг\w*\s+(\S+\s+){0,3}(вычит|удерж)|отработа(ете|ешь)\s+долг/
+    },
+    {
+      id: 'illegal', weight: 20, label: "Noqonuniy ishlash taklif qilinmoqda",
+      detail: "Hujjatsiz yoki patentsiz ishlash sizni deportatsiya va ish haqisiz qolish xavfiga qo'yadi.",
+      re: /hujjatsiz\s+ish|patent\s+(shart\s+emas|kerak\s+emas)|patentsiz|без\s+(документов|патента)|нелегальн/
+    },
+    {
+      id: 'entertain', weight: 20, label: "Ko'ngilochar sohada noaniq ish (hostes, raqqosa)",
+      detail: "Xorijda \"hostes\", \"raqqosa\" yoki tungi klubga yosh qizlarni chaqirish odam savdosida ko'p uchraydi.",
+      re: /hostes|raqqosa|eskort|tungi\s+klub|хостес|танцовщ|эскорт|ночн\w*\s+клуб/
     },
     {
       id: 'visa', weight: 25, label: "Viza yoki ish \"100% kafolatlangan\"",
@@ -33,7 +48,7 @@
     {
       id: 'invest', weight: 25, label: "Investitsiya, piramida yoki referal sxema",
       detail: "Ish o'rniga pul tikish yoki odam taklif qilish so'ralsa, bu moliyaviy piramida bo'lishi mumkin.",
-      re: /investitsiya|sarmoya|piramida|referal|do'st\w*ni\s+taklif|kripto|forex|p2p|arbitraj|treyding|bot\s+orqali\s+daromad|инвест|реферал|крипт|форекс|арбитраж|трейдинг/
+      re: /investitsiya|sarmoya|piramida|referal|tarmoq\s+marketing|\bmlm\b|jamoa\w*\s+quring|сетев\w+\s+маркетинг|do'st\w*ni\s+taklif|kripto|forex|p2p|arbitraj|treyding|bot\s+orqali\s+daromad|инвест|реферал|крипт|форекс|арбитраж|трейдинг/
     },
     {
       id: 'easy', weight: 20, label: '"Oson pul" va\'dasi',
@@ -48,7 +63,7 @@
     {
       id: 'abroad', weight: 10, label: 'Xorijga ish taklifi',
       detail: "Xorijdagi ish takliflarida firibgarlik ko'p uchraydi. Agentlik litsenziyasini Tashqi mehnat migratsiyasi agentligi orqali tekshiring.",
-      re: /koreya|polsha|germaniya|chexiya|dubay|turkiya|rossiya|yevropa|xorij|chet\s+el|корея|корею|польш|германи|турци|дубай|европ|за\s+границ|за\s+рубеж/
+      re: /koreya|polsha|germaniya|chexiya|dubay|turkiya|rossiya|yevropa|xorij|chet\s+el|moskva|корея|корею|польш|германи|турци|дуба[йе]|москв|петербург|европ|за\s+границ|за\s+рубеж/
     },
     {
       id: 'urgency', weight: 10, label: 'Shoshiltirish',
@@ -76,12 +91,12 @@
     {
       id: 'age', label: 'Yosh cheklovi',
       fix: "Yosh chegarasini olib tashlang. Buning o'rniga kerakli tajriba yoki ko'nikmani yozing.",
-      re: /\d{2}\s*[-–]\s*\d{2}\s*(yosh|лет)|\d{2}\s*yosh(gacha|dan\s+kichik)|до\s*\d{2}\s*лет|не\s+старше\s+\d{2}/
+      re: /\d{2}\s*[-–]\s*\d{2}\s*(yosh|лет)(?!li\s+(o'quvchi|bola|talaba|o'smir|guruh))|\d{2}\s*yosh(gacha|dan\s+kichik)|yoshi\s*:?\s*\d{2}\s*[-–]\s*\d{2}|до\s*\d{2}\s*лет|не\s+старше\s+\d{2}|возраст\w*\s*:?\s*(от\s*)?\d{2}\s*[-–]/
     },
     {
       id: 'gender', label: "Jins bo'yicha cheklov",
       fix: "\"Qizlar kerak\" o'rniga \"xodim kerak\" deb yozing. Ishni erkak ham, ayol ham bajara oladi.",
-      re: /faqat\s+(qiz|ayol|erkak|yigit)\w*|(qizlar|yigitlar|erkaklar|ayollar)\s+kerak|qiz\s+bola\s+kerak|только\s+(девушк|мужчин|женщин|парн)\w*|требуется\s+девушка/
+      re: /faqat\s+(qiz|ayol|erkak|yigit)\w*|(qizlar|yigitlar|erkaklar|ayollar)\s*(kerak|afzal|bo'lishi|[,.]|$)|chiroyli\s+qiz|qiz\s+bola\s+kerak|только\s+(девушк|мужчин|женщин|парн)\w*|требу\w+\s+(девушк|мужчин|женщин|парн)|для\s+девуш|девушк\w*\s+(до|от)\s+\d/
     },
     {
       id: 'appearance', label: "Tashqi ko'rinish talabi",
@@ -91,7 +106,7 @@
     {
       id: 'marital', label: 'Oilaviy holat talabi',
       fix: "Oilaviy holatga oid talabni olib tashlang, uning ishga aloqasi yo'q.",
-      re: /turmush(ga)?\s+(chiqmagan|qurmagan)|uylanmagan|bo'ydoq|farzand\w*siz|не\s+замужем|без\s+детей/
+      re: /turmush(ga)?\s+(chiqmagan|qurmagan|qurgan)|uylanmagan|uylangan|oilali\s+bo'lish|bo'ydoq|farzand\w*siz|не\s+замужем|замужн|женат|без\s+детей/
     },
     {
       id: 'origin', label: 'Millat yoki propiska talabi',
@@ -116,7 +131,7 @@
     ['Jizzax', /jizzax|джизак/],
     ['Sirdaryo', /sirdaryo|guliston|сырдар|гулистан/],
     ['Xorazm', /xorazm|urganch|хорезм|ургенч/],
-    ['Xorij', /koreya|polsha|germaniya|chexiya|dubay|turkiya|rossiya|yevropa|xorij|chet\s+el|корея|корею|польш|германи|турци|дубай|европ|за\s+границ/]
+    ['Xorij', /koreya|polsha|germaniya|chexiya|dubay|turkiya|rossiya|yevropa|xorij|chet\s+el|moskva|корея|корею|польш|германи|турци|дуба[йе]|москв|петербург|европ|за\s+границ/]
   ];
 
   // ---------- Kasblar (soha bilan) ----------
@@ -237,6 +252,25 @@
       .replace(/[^\p{L}\d]+/gu, ' ').trim().slice(0, 200);
   }
 
+  const INCLUSIVE = /(qizlar|ayollar)\s+va\s+(yigitlar|erkaklar)|(yigitlar|erkaklar)\s+va\s+(qizlar|ayollar)|мужчин\w*\s+и\s+женщин|женщин\w*\s+и\s+мужчин/u;
+  const CRITICAL = ['prepay', 'personal', 'passport', 'debt'];
+  const CRITICAL_FLOOR = 55;
+  // Inkor: "depozit yo'q", "garov talab qilinmaydi", "без залога", "hech qanday to'lov olinmaydi"
+  const NEG_AFTER = /^[^.!?\n]{0,25}?(yo'q|olinmaydi|talab\s+qilinmaydi|shart\s+emas|bepul|не\s+(требуется|нужн|бер[её]м)|нет\b|отсутств)/u;
+  const NEG_BEFORE = /(hech\s+qanday|без|никак\w*)\s*$/u;
+
+  function firstAffirmed(re, t) {
+    const g = new RegExp(re.source, re.flags.includes('g') ? re.flags : re.flags + 'g');
+    let m;
+    while ((m = g.exec(t))) {
+      const before = t.slice(Math.max(0, m.index - 20), m.index);
+      const after = t.slice(m.index + m[0].length, m.index + m[0].length + 40);
+      if (!NEG_AFTER.test(after) && !NEG_BEFORE.test(before)) return m;
+      if (!m[0].length) g.lastIndex++;
+    }
+    return null;
+  }
+
   function analyze(text) {
     const n = normalize(text);
     // Kirill o'zbekcha matn ham lotin qoidalariga tushishi uchun ikkala variant tekshiriladi
@@ -244,7 +278,7 @@
 
     const scam = [];
     for (const rule of SCAM_RULES) {
-      const m = t.match(rule.re);
+      const m = rule.negatable ? firstAffirmed(rule.re, t) : t.match(rule.re);
       if (m) scam.push({ id: rule.id, label: rule.label, detail: rule.detail, weight: rule.weight, match: m[0] });
     }
 
@@ -276,7 +310,10 @@
     const discrimination = [];
     for (const rule of DISCRIMINATION_RULES) {
       const m = t.match(rule.re);
-      if (m) discrimination.push({ id: rule.id, label: rule.label, fix: rule.fix, match: m[0] });
+      if (!m) continue;
+      // "Qizlar va yigitlar, ..." — ikkala jinsga murojaat, kamsitish emas ("faqat ..." bo'lmasa)
+      if (rule.id === 'gender' && INCLUSIVE.test(t) && !/faqat|только/.test(m[0])) continue;
+      discrimination.push({ id: rule.id, label: rule.label, fix: rule.fix, match: m[0] });
     }
 
     const skills = SKILLS.filter(s => s[2].test(t)).map(s => ({ name: s[0], digital: s[1] }));
@@ -301,14 +338,22 @@
     };
 
     const raw = scam.reduce((s, r) => s + r.weight, 0);
-    const critical = scam.some(r => r.id === 'prepay' || r.id === 'personal' || r.id === 'passport');
+    const critical = scam.some(r => CRITICAL.includes(r.id));
     // Ishonch belgilari xavfni kamaytiradi, lekin pul yoki hujjat so'ralsa — yo'q
     const trustBonus = critical ? 0 : Math.min(15, trust.reduce((s, r) => s + r.weight, 0));
-    const score = Math.max(0, Math.min(100, raw - (raw > 0 ? trustBonus : 0)));
+    let score = Math.max(0, Math.min(100, raw - (raw > 0 ? trustBonus : 0)));
+    // Pul, karta/SMS kod yoki pasport so'ralsa — boshqa belgilar bo'lmasa ham kamida "yuqori xavf"
+    if (critical) score = Math.max(score, CRITICAL_FLOOR);
     const level = score >= 50 ? 'high' : score >= 25 ? 'medium' : 'low';
 
+    // Odam savdosi belgisi: pasportni olib qolish, qarz qulligi yoki xorijga ish + to'lov / "kafolatlangan viza" /
+    // ko'ngilochar soha / noqonuniy ishlash
+    const has = id => scam.some(r => r.id === id);
+    const trafficking = has('passport') || has('debt') ||
+      (has('abroad') && (has('prepay') || has('visa') || has('entertain') || has('illegal')));
+
     return {
-      score, level, scam, trust, discrimination, transparency, salary, skills,
+      score, level, scam, trust, discrimination, transparency, salary, skills, trafficking,
       profession, category, noExperience, hasContact,
       region: regionItem ? regionItem[0] : "Noma'lum",
       script: /[а-яё]/.test(n) ? (/[ўқғҳ]/.test(n) ? 'uz-cyrl' : 'ru') : 'uz-latn'
