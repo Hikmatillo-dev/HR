@@ -38,6 +38,9 @@ try {
   cpSync(path.join(REPO, 'js'), path.join(dir, 'js'), { recursive: true });
   cpSync(path.join(REPO, 'README.md'), path.join(dir, 'README.md'));
   rmSync(path.join(dir, 'js/real-data.js'), { force: true });
+  // Loyihadagi v3 to'plami va natijasi to'ldirilgan bo'lishi mumkin — test bo'sh holatdan boshlanadi
+  writeFileSync(path.join(dir, 'js/test-set-v3.js'), '(function (g) { g.TEST_SET_V3 = []; })(globalThis);\n');
+  writeFileSync(path.join(dir, 'js/results-v3-baseline.js'), 'window.V3_BASELINE = null;\n');
   git('init', '-q'); git('config', 'user.email', 't@t'); git('config', 'user.name', 't');
   commitAll('init');
 
