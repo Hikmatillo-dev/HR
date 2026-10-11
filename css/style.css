@@ -196,7 +196,8 @@ td.text { max-width: 440px; }
 td.text div { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .table-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; color: var(--muted); }
 .grade { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; font-weight: 700; color: #fff; }
-.grade.A { background: #0ca30c; } .grade.B { background: #5a9e1c; } .grade.C { background: #b7791f; } .grade.D { background: #d4602f; } .grade.F { background: #d03b3b; }
+/* Oq matn bilan kontrast ≥ 4.5:1 (WCAG AA) */
+.grade.A { background: #0a7a0a; } .grade.B { background: #3f7512; } .grade.C { background: #8a560c; } .grade.D { background: #a8441a; } .grade.F { background: #b52d2d; }
 .bar-cell { display: flex; align-items: center; gap: 8px; }
 .bar-cell i { display: block; height: 8px; border-radius: 4px; background: var(--critical); min-width: 2px; }
 
@@ -285,3 +286,15 @@ button:disabled { opacity: .55; cursor: not-allowed; }
 .badge-warn { display: inline-block; font-size: .72rem; font-weight: 700; padding: 1px 7px; border-radius: 999px; background: var(--warning); color: #0b0b0b; margin-left: 6px; vertical-align: middle; }
 .badge-ok { display: inline-block; font-size: .72rem; font-weight: 700; padding: 1px 7px; border-radius: 999px; background: var(--good); color: #fff; margin-left: 6px; }
 .rate-note { margin-top: 10px; font-size: .82rem; color: var(--muted); }
+
+/* ---------- Accessibility ---------- */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+button.tile { font: inherit; font-size: .74rem; text-align: left; width: 100%; }
+button.tile:focus-visible { outline: 3px solid var(--text); outline-offset: 2px; }
+button.tile:hover { filter: brightness(.95); }
+:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+/* Faol tugmalar: yorug' rejimda oq matn bilan ≥ 4.5:1 bo'lishi uchun to'qroq ko'k */
+:root { --primary-strong: #1c5cab; }
+:root[data-theme="dark"] { --primary-strong: var(--primary); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --primary-strong: var(--primary); } }
+button.primary, .mode-switch button[aria-pressed="true"], .map-ctrl button.on { background: var(--primary-strong); border-color: var(--primary-strong); }

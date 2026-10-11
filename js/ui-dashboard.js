@@ -166,9 +166,11 @@
     $('#tilemap').innerHTML = Object.entries(TILE_POS).map(([region, [c, r]]) => {
       const m = metrics[region], v = m[mapMetric];
       const bg = v === null ? IQ.color('surface-2') : steps[Math.min(5, Math.floor(((v - min) / (max - min || 1)) * 5.999))];
-      return `<div class="tile ${ink(bg) ? 'dark-ink' : ''} ${active === region ? 'active' : ''}" data-region="${esc(region)}"
-        style="grid-column:${c};grid-row:${r};background:${bg}" title="${esc(region)}: ${m.n} ta e'lon">
-        ${esc(region)}<b>${v === null ? '—' : v + unit}</b></div>`;
+      const label = `${region}: ${v === null ? "ma'lumot yo'q" : v + unit}, ${m.n} ta e'lon. ${active === region ? 'Filtrni olib tashlash' : 'Bazani shu hudud bo\'yicha filtrlash'}`;
+      return `<button type="button" class="tile ${ink(bg) ? 'dark-ink' : ''} ${active === region ? 'active' : ''}" data-region="${esc(region)}"
+        aria-pressed="${active === region}" aria-label="${esc(label)}" title="${esc(label)}"
+        style="grid-column:${c};grid-row:${r};background:${bg}">
+        ${esc(region)}<b>${v === null ? '—' : v + unit}</b></button>`;
     }).join('');
     $('#mapLegend').innerHTML = `<span>${min}${unit}</span>${steps.map(s => `<i style="background:${s}"></i>`).join('')}<span>${max}${unit}</span>`;
   }
@@ -194,15 +196,48 @@
   }
 
   // ---------- 3. Kasblar va ko'nikmalar ----------
+  // Kasb nomlari: tor ekranda qisqartiriladi va 2 qatorga bo'linadi; boshqa yozuv yoki grafik chegarasi
+  // bilan ustma-ust tushadigan yozuv chizilmaydi (to'liq nom — tooltip va pastdagi jadvalda)
+  function labelLines(name, narrow) {
+    if (!narrow) return [name];
+    const max = 12;
+    const words = name.split(/\s+/);
+    if (words.length > 1 && words[0].length <= max) {
+      const second = words.slice(1).join(' ');
+      return [words[0], second.length > max ? second.slice(0, max - 1) + '…' : second];
+    }
+    return [name.length > max ? name.slice(0, max - 1) + '…' : name];
+  }
+
   const labelPlugin = {
     id: 'bubbleLabels',
     afterDatasetsDraw(ch) {
-      const { ctx } = ch; const meta = ch.getDatasetMeta(0);
-      ctx.save(); ctx.font = '11px system-ui, sans-serif'; ctx.fillStyle = IQ.color('text');
-      meta.data.forEach((pt, i) => {
+      const { ctx, chartArea } = ch;
+      const meta = ch.getDatasetMeta(0);
+      const narrow = ch.width < 520;
+      const lineH = narrow ? 11 : 13;
+      ctx.save();
+      ctx.font = `${narrow ? 10 : 11}px system-ui, sans-serif`;
+      ctx.fillStyle = IQ.color('text');
+      const placed = [];
+      const overlaps = b => placed.some(p => b.x < p.x + p.w && b.x + b.w > p.x && b.y < p.y + p.h && b.y + b.h > p.y);
+      // Avval kattaroq (ko'proq e'lonli) pufakchalar yoziladi
+      const order = meta.data.map((pt, i) => i).sort((a, b) => ch.data.datasets[0].data[b].x - ch.data.datasets[0].data[a].x);
+      for (const i of order) {
         const d = ch.data.datasets[0].data[i];
-        if (d.label) ctx.fillText(d.label, pt.x + d.r + 3, pt.y + 4);
-      });
+        const pt = meta.data[i];
+        if (!d.label) continue;
+        const lines = labelLines(d.label, narrow);
+        const w = Math.max(...lines.map(l => ctx.measureText(l).width));
+        const h = lines.length * lineH;
+        // O'ngga sig'masa — chapga
+        let x = pt.x + d.r + 3;
+        if (x + w > chartArea.right) x = pt.x - d.r - 3 - w;
+        const box = { x, y: pt.y - h / 2, w, h };
+        if (x < chartArea.left || box.y < chartArea.top || box.y + h > chartArea.bottom || overlaps(box)) continue;
+        placed.push(box);
+        lines.forEach((l, k) => ctx.fillText(l, x, box.y + (k + 1) * lineH - 3));
+      }
       ctx.restore();
     }
   };
@@ -215,17 +250,12 @@
       return { name, n: list.length, salary: paid.length ? round1(avg(paid.map(midSalary))) : null };
     }).filter(p => p.salary !== null && p.n >= 2);
     const maxN = Math.max(1, ...points.map(p => p.n));
-    // Yozuvlar ustma-ust tushmasligi uchun faqat ko'zga ko'ringan kasblar nomlanadi; qolganlari — tooltipda
-    const labeled = new Set([
-      ...points.slice().sort((x, y) => y.n - x.n).slice(0, 7),
-      ...points.slice().sort((x, y) => y.salary - x.salary).slice(0, 4)
-    ].map(p => p.name));
     chart('chBubble', {
       type: 'bubble',
       data: {
         datasets: [{
           label: 'Kasblar',
-          data: points.map(p => ({ x: p.n, y: p.salary, r: 5 + 12 * Math.sqrt(p.n / maxN), name: p.name, label: labeled.has(p.name) ? p.name : '' })),
+          data: points.map(p => ({ x: p.n, y: p.salary, r: 5 + 12 * Math.sqrt(p.n / maxN), name: p.name, label: p.name })),
           backgroundColor: IQ.color('primary') + '99', borderColor: IQ.color('primary'), borderWidth: 1.5
         }]
       },
@@ -239,6 +269,9 @@
       }),
       plugins: [labelPlugin]
     });
+
+    $('#bubbleTable').innerHTML = points.slice().sort((x, y) => y.n - x.n)
+      .map(p => `<tr><td>${esc(p.name)}</td><td class="num">${p.n}</td><td class="num">${p.salary}</td></tr>`).join('');
 
     const skills = {};
     ok.forEach(d => d.a.skills.forEach(s => { skills[s.name] = skills[s.name] || { n: 0, digital: s.digital }; skills[s.name].n++; }));

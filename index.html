@@ -120,7 +120,10 @@
       <p class="empty-note">Ma'lumot yuklanmagan. 2-bo'limda Telegram eksportini yuklang yoki <b>Demo</b> rejimini yoqing.</p>
       <div class="needs-data">
       <div class="grid">
-        <div class="chart-box wide"><h3>Kasblar xaritasi: talab va maosh</h3><div class="cv tall"><canvas id="chBubble"></canvas></div><p class="hint">Gorizontal o'q — e'lonlar soni (talab), vertikal o'q — o'rtacha maosh. O'ng yuqori burchak: talab ham, maosh ham yuqori.</p></div>
+        <div class="chart-box wide"><h3>Kasblar xaritasi: talab va maosh</h3><div class="cv tall"><canvas id="chBubble" role="img" aria-label="Kasblar bo'yicha talab va o'rtacha maosh grafigi. Jadval ko'rinishi grafik ostida."></canvas></div><p class="hint">Gorizontal o'q — e'lonlar soni (talab), vertikal o'q — o'rtacha maosh. O'ng yuqori burchak: talab ham, maosh ham yuqori. Nomi yozilmagan pufakchani bosing yoki jadvalga qarang.</p>
+          <details class="block"><summary>Jadval ko'rinishida</summary>
+            <div class="table-wrap" style="margin-top:8px"><table><thead><tr><th>Kasb</th><th class="num">E'lonlar</th><th class="num">O'rtacha maosh, mln so'm</th></tr></thead><tbody id="bubbleTable"></tbody></table></div>
+          </details></div>
         <div class="chart-box"><h3>Eng ko'p so'raladigan ko'nikmalar</h3><div class="cv tall"><canvas id="chSkills"></canvas></div></div>
         <div class="chart-box"><h3>O'rtacha maosh sohalar bo'yicha (mln so'm)</h3><div class="cv tall"><canvas id="chSalary"></canvas></div></div>
       </div>
@@ -270,6 +273,7 @@
     </section>
   </main>
 
+  <div id="liveRegion" class="sr-only" role="status" aria-live="polite"></div>
   <footer class="foot">IshQalqon — prototip. Tahlil qoidalari ochiq: har bir baho uchun sabab ko'rsatiladi. Tizim yakuniy hukm chiqarmaydi, qaror foydalanuvchida qoladi.</footer>
 
   <script src="vendor/chart.umd.js"></script>

@@ -28,9 +28,12 @@
     };
   };
 
+  // Toast ko'rinadi, ekran o'quvchiga esa doimiy aria-live hududi orqali e'lon qilinadi
   IQ.toast = msg => {
+    const live = document.getElementById('liveRegion');
+    if (live) { live.textContent = ''; setTimeout(() => { live.textContent = msg; }, 50); }
     const el = document.createElement('div');
-    el.className = 'toast'; el.textContent = msg;
+    el.className = 'toast'; el.setAttribute('aria-hidden', 'true'); el.textContent = msg;
     document.body.appendChild(el);
     setTimeout(() => el.remove(), 2200);
   };

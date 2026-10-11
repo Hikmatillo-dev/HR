@@ -119,6 +119,12 @@ npm run bot:env
 3. Halol e'lon yuboring.
 4. `/stats` yozing: 2 ta tekshiruv va 1 ta xavfli chiqishi kerak.
 
+### Accessibility
+- Xarita kataklari tugma sifatida ishlaydi: Tab bilan o'tiladi, Enter yoki Space bilan filtrlanadi, holati `aria-pressed` orqali bildiriladi.
+- Toast xabarlari `aria-live="polite"` hududi orqali ekran o'quvchiga e'lon qilinadi.
+- Kasblar grafigida tor ekranda nomlar 12 belgigacha qisqartiriladi va 2 qatorga bo'linadi. Ustma-ust tushadigan yozuv chizilmaydi. To'liq nom tooltip'da va "Jadval ko'rinishida" ro'yxatida bor.
+- Kontrast WCAG AA ga mos: matn ≥ 4.5:1, katta matn ≥ 3:1. Bu ikkala rejimda `npm run test:ui` bilan o'lchanadi.
+
 ### Sozlamalar (`config/`)
 - `config/currency.js`: kurslar, ularning sanasi va manbasi. `.env` dagi `IQ_RATE_USD`, `IQ_RATE_EUR`, `IQ_RATE_RUB`, `IQ_RATES_UPDATED` va `IQ_RATES_SOURCE` bu qiymatlarni almashtiradi. Sana ko'rsatilmasa yoki u 30 kundan eski bo'lsa, UI'da "Kurslar taxminiy" belgisi chiqadi.
 - `config/official-sources.js`: rasmiy idoralar ro'yxati. Har biri uchun nom, havola, `verified` holati, tekshirilgan sana va dalil yoziladi. Manbani tekshirganingizdan keyin `verified: true` qiling.
@@ -135,6 +141,7 @@ npm test
 | `tests/baseline.test.mjs` | Boshlang'ich natija skripti: qayta yozish taqiqi, `--force` va git tekshiruvi, arxivlash, `analyzer.js` himoyasi (6 test) |
 | `tests/bot.test.mjs` | Bot: 4 buyruq, HTML escape, bo'laklash va 4096 chegarasi, disclaimer, `/stats` va xeshlangan `user_id`, tokensiz ishga tushish, soxta Telegram server bilan to'liq oqim (14 test) |
 | `tests/config.test.mjs` | Config va `analyzer.js` kurslari bir xilligi, `.env` orqali almashtirish, eskirgan kurs, rasmiy manbalar formati, server orqali uzatish (6 test) |
+| `tests/ui.e2e.mjs` (`npm run test:ui`) | Brauzerda (Playwright): xaritani klaviatura bilan boshqarish, `aria-live`, 390px va 1280px ekranda kasb nomlari ustma-ust tushmasligi, gorizontal scroll yo'qligi, yorug' va qorong'i rejimda WCAG AA kontrast (7 test). Playwright o'rnatilmagan bo'lsa o'tkazib yuboriladi |
 | `tests/run.mjs` | v1, v2, v3 bo'yicha aniqlik, xavfli topish, FPR, kamsitish, odam savdosi, sabablar; format tekshiruvi; v2 regressiya chegarasi |
 
 Batafsil xatolar ro'yxati: `node tests/run.mjs --verbose`.

@@ -9,7 +9,8 @@
     "start:env": "node --env-file=.env server.mjs",
     "bot:env": "node --env-file=.env bot.mjs",
     "redact": "node tools/redact.mjs",
-    "eval:v3-baseline": "node tools/eval-v3-baseline.mjs"
+    "eval:v3-baseline": "node tools/eval-v3-baseline.mjs",
+    "test:ui": "node tests/ui.e2e.mjs"
   },
   "repository": {
     "type": "git",
