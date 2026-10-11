@@ -1,0 +1,11 @@
+{
+  "note": "v2 qo‘lda yozilgan to‘plamning qoidalar tuzatilgandan keyingi natijasi. tests/run.mjs v2 bundan 5 punktdan ko‘p pasaysa xato beradi. Ataylab yangilash uchun shu faylni qo‘lda o‘zgartiring.",
+  "created_at": "2026-10-11",
+  "n": 49,
+  "accuracy": 1,
+  "risk_recall": 1,
+  "false_positive_rate": 0,
+  "discrimination_recall": 1,
+  "trafficking_recall": 1,
+  "flag_recall": 1
+}
