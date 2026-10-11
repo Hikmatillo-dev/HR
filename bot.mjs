@@ -14,7 +14,9 @@ if (!/^\d+:[\w-]{30,}$/.test(TOKEN)) {
   process.exit(1);
 }
 
-const { createBot } = await import('./lib/bot-core.mjs');
+const { createBot, AI_PER_HOUR_DEFAULT } = await import('./lib/bot-core.mjs');
+const { createDailyQuota, createWindowLimiter, parseLimit, DEFAULT_DAILY_LIMIT } = await import('./lib/ai-quota.mjs');
+const { logError } = await import('./lib/safe-log.mjs');
 const { createStore } = await import('./lib/bot-store.mjs');
 const { aiEnabled, aiAnalyze } = await import('./lib/ai.mjs');
 
@@ -36,27 +38,34 @@ async function tg(method, body, timeoutMs = 40_000) {
 }
 
 const store = createStore(DATA_DIR);
-const handle = createBot({
-  send: (chatId, html) => tg('sendMessage', { chat_id: chatId, text: html, parse_mode: 'HTML', link_preview_options: { is_disabled: true } }),
-  store,
-  ai: { enabled: aiEnabled, analyze: aiAnalyze }
-});
+// AI limitlari: foydalanuvchiga soatiga IQ_BOT_AI_PER_HOUR (standart 5), bot bo'yicha kunlik IQ_AI_DAILY_LIMIT
+const aiLimiter = createWindowLimiter({ max: parseLimit(process.env.IQ_BOT_AI_PER_HOUR, AI_PER_HOUR_DEFAULT), windowMs: 3600_000 });
+const aiDaily = createDailyQuota({ limit: parseLimit(process.env.IQ_AI_DAILY_LIMIT, DEFAULT_DAILY_LIMIT), file: path.join(DATA_DIR, 'ai-usage-bot.json') });
+setInterval(() => aiLimiter.cleanup(), 600_000).unref();
 
 let me;
 try {
   me = await tg('getMe', {}, 15_000);
 } catch (e) {
-  console.error(e.status === 401 || e.status === 404 ? "Token noto'g'ri yoki bekor qilingan: @BotFather dan yangi token oling." : `Telegram'ga ulanib bo'lmadi: ${e.message}`);
+  console.error(e.status === 401 || e.status === 404 ? "Token noto'g'ri yoki bekor qilingan: @BotFather dan yangi token oling." : "Telegram'ga ulanib bo'lmadi. Internet va tokenni tekshiring.");
+  logError('telegram', e);
   process.exit(1);
 }
+const handle = createBot({
+  send: (chatId, html) => tg('sendMessage', { chat_id: chatId, text: html, parse_mode: 'HTML', link_preview_options: { is_disabled: true } }),
+  store,
+  ai: { enabled: aiEnabled, analyze: aiAnalyze },
+  aiLimiter, aiDaily,
+  botUsername: me.username
+});
 await tg('setMyCommands', {
   commands: [
     { command: 'check', description: "E'lonni tekshirish" },
     { command: 'stats', description: 'Mening statistikam' },
     { command: 'help', description: 'Yordam' }
   ]
-}).catch(e => console.error('setMyCommands:', e.message));
-console.log(`@${me.username} ishga tushdi (AI: ${aiEnabled ? 'yoqilgan' : "o'chirilgan"}). Statistika: ${store.file}`);
+}).catch(e => logError('setMyCommands', e));
+console.log(`@${me.username} ishga tushdi (AI: ${aiEnabled ? `yoqilgan, foydalanuvchiga soatiga ${aiLimiter.max} ta, kunlik ${aiDaily.limit} ta` : "o'chirilgan"}). Statistika: ${store.file}`);
 
 let offset = 0, stopping = false;
 for (const sig of ['SIGINT', 'SIGTERM']) process.on(sig, () => { stopping = true; console.log("\nTo'xtatilmoqda..."); setTimeout(() => process.exit(0), 500).unref(); });
@@ -66,12 +75,12 @@ while (!stopping) {
     const updates = await tg('getUpdates', { offset, timeout: 30, allowed_updates: ['message'] });
     for (const u of updates) {
       offset = u.update_id + 1;
-      if (u.message) handle(u.message).catch(e => console.error('Xabar:', e.message));
+      if (u.message) handle(u.message).catch(e => logError('xabar', e));
     }
   } catch (e) {
     if (e.status === 401) { console.error("Token bekor qilingan. Bot to'xtatildi."); process.exit(1); }
     if (e.status === 409) { console.error("Bu token bilan boshqa bot nusxasi ishlayapti (409). Bittasini to'xtating."); process.exit(1); }
-    console.error('Ulanish:', e.message);
+    logError('ulanish', e);
     await new Promise(r => setTimeout(r, 3000));
   }
 }

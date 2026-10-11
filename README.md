@@ -89,7 +89,20 @@ Kalit bo'lmasa server baribir ishlaydi. Bunda tugma o'chiq turadi va "AI tahlil 
 
 **Birinchi real sinov:** saytda "Misol: odam savdosi" → "🤖 AI chuqur tahlil" ni bosing. Javobda iqtiboslar bilan sabablar, savollar va xulosa chiqishini tekshiring.
 
-AI cheklovlari: matn 20–6000 belgi bo'lishi kerak, uzun matn kesilmaydi va rad etiladi. Vaqt chegarasi 45 soniya, xatoda 2 marta qayta urinadi, bitta IP dan daqiqasiga 10 ta so'rov. Promt `prompts/analysis.mjs` faylida.
+AI cheklovlari: matn 20–6000 belgi bo'lishi kerak, uzun matn kesilmaydi va rad etiladi. Vaqt chegarasi 45 soniya, xatoda 2 marta qayta urinadi. Promt `prompts/analysis.mjs` faylida.
+
+**AI endpoint xavfsizligi (`/api/ai`):**
+- Server sukut bo'yicha faqat `127.0.0.1` da tinglaydi. Tarmoqqa ochish uchun `HOST=0.0.0.0` beriladi, bunda ogohlantirish chiqadi.
+- Faqat `Content-Type: application/json` qabul qilinadi, boshqalariga 415 qaytadi. Shuning uchun boshqa sayt oddiy forma yoki `text/plain` so'rov bilan kalitingizni sarflay olmaydi.
+- `Origin` bo'lsa, u Host bilan bir xil bo'lishi kerak, aks holda 403 qaytadi. Qo'shimcha domenlar `IQ_ALLOWED_ORIGINS` orqali ruxsat etiladi.
+- **Limitlar:**
+  - bitta IP dan daqiqasiga `IQ_AI_PER_MINUTE` (10) ta;
+  - kunlik `IQ_AI_DAILY_LIMIT` (200) ta;
+  - limit tugasa 429 va tushunarli xabar qaytadi;
+  - kunlik hisob `data/ai-usage-server.json` da saqlanadi, shuning uchun server qayta ishga tushirilsa ham nolga tushmaydi;
+  - bo'sh yoki noto'g'ri so'rov limitni sarflamaydi.
+- `X-Forwarded-For` faqat `IQ_TRUST_PROXY=<proksilar soni>` berilganda o'qiladi. Aks holda uni soxtalashtirib limitni chetlab o'tish mumkin bo'lardi.
+- Loglarda API kalit, bot token, e'lon matni va PII bo'lmaydi: faqat xato turi va tozalangan qisqa xabar yoziladi (`lib/safe-log.mjs`).
 
 ### 4. Telegram botni ishga tushirish
 ```bash
@@ -102,9 +115,13 @@ npm run bot:env
 | Buyruq | Nima qiladi |
 |---|---|
 | `/start`, `/help` | Bot haqida qisqa ma'lumot va buyruqlar ro'yxati |
-| `/check matn` yoki `/check` → keyingi xabar | E'lonni tekshiradi: xavf darajasi, asosiy sabablar (iqtibos bilan), kamsitish, odam savdosi belgisi, tavsiya |
+| `/check matn`, `/check` → keyingi xabar, yoki e'longa reply qilib `/check` | E'lonni tekshiradi: xavf darajasi, asosiy sabablar (iqtibos bilan), kamsitish, odam savdosi belgisi, tavsiya. AI yoqilgan bo'lsa, AI xulosasi ham qo'shiladi |
 | `/stats` | Siz tekshirgan e'lonlar soni, ulardan xavflilari va oxirgi 5 ta natija |
-| Oddiy matn yoki forward | `/check` bilan bir xil ishlaydi |
+| Oddiy matn yoki forward (shaxsiy chatda) | Faqat qoidalar bilan tekshiradi; AI chaqirilmaydi |
+
+**AI limitlari va guruhlar:**
+- AI **faqat `/check`** bilan ishlaydi. Har bir foydalanuvchi uchun limit soatiga `IQ_BOT_AI_PER_HOUR` (5) ta, bot uchun kunlik limit `IQ_AI_DAILY_LIMIT` ta. Limit tugasa foydalanuvchi qachon yana urinish mumkinligi haqida xabar oladi, qoidalar tahlili esa limitsiz ishlayveradi.
+- **Guruhlarda** bot faqat `/start`, `/help`, `/check` va `/stats` ga javob beradi. Oddiy xabarlar, noma'lum buyruqlar va boshqa botga yozilgan `/check@BoshqaBot` e'tiborsiz qoldiriladi. Guruhda `/check matn` yoki e'longa reply qilib `/check` yoziladi.
 
 **Qanday ishlaydi:**
 - Har bir javob `Bu avtomatik tahlil. Yakuniy qaror o'zingizda.` degan ogohlantirish bilan tugaydi.
@@ -140,9 +157,10 @@ npm test
 | `tests/redact.test.mjs` | Telefon (UZ, RU), karta, JSHSHIR, pasport, email, `t.me`, `@username` yashirilishi; STIR saqlanishi; validator; analyzer natijasi o'zgarmasligi; import va REPL'da yiqilmaslik; v3 qoralamasi (14 test) |
 | `tests/redact-parity.test.mjs` | `js/pii.js` va `tools/telegram_export.py` bir xil yashirishi (10 holat; Python bo'lmasa o'tkazib yuboriladi) |
 | `tests/baseline.test.mjs` | Boshlang'ich natija skripti: qayta yozish taqiqi, `--force` va git tekshiruvi, arxivlash, `analyzer.js` himoyasi (6 test) |
-| `tests/bot.test.mjs` | Bot: 4 buyruq, HTML escape, bo'laklash va 4096 chegarasi, disclaimer, `/stats` va xeshlangan `user_id`, tokensiz ishga tushish, soxta Telegram server bilan to'liq oqim (14 test) |
+| `tests/bot.test.mjs` | Bot: 4 buyruq, HTML escape, bo'laklash va 4096 chegarasi, disclaimer, `/stats` va xeshlangan `user_id`; AI faqat `/check`, foydalanuvchi va kunlik AI limiti; guruh qoidalari; xavfsiz log; tokensiz va 401 holatlari; soxta Telegram server bilan to'liq oqim (21 test) |
 | `tests/config.test.mjs` | Config va `analyzer.js` kurslari bir xilligi, `.env` orqali almashtirish, eskirgan kurs, rasmiy manbalar formati, server orqali uzatish (6 test) |
 | `tests/ui.e2e.mjs` (`npm run test:ui`) | Brauzerda (Playwright): xaritani klaviatura bilan boshqarish, `aria-live`, 390px va 1280px ekranda kasb nomlari ustma-ust tushmasligi, gorizontal scroll yo'qligi, yorug' va qorong'i rejimda WCAG AA kontrast (7 test). Playwright o'rnatilmagan bo'lsa o'tkazib yuboriladi |
+| `tests/server-security.test.mjs` | `/api/ai`: Content-Type (415), Origin (403), faqat `127.0.0.1`, kunlik va IP limiti, `X-Forwarded-For` ni soxtalashtirish, `IQ_TRUST_PROXY`, loglarda kalit va PII yo'qligi (13 test, haqiqiy `server.mjs` + mock API) |
 | `tests/run.mjs` | v1, v2, v3 bo'yicha aniqlik, xavfli topish, FPR, kamsitish, odam savdosi, sabablar; format tekshiruvi; v2 regressiya chegarasi |
 
 Batafsil xatolar ro'yxati: `node tests/run.mjs --verbose`.
@@ -170,6 +188,8 @@ lib/ai.mjs                  Claude API chaqiruvi va xatolarni boshqarish
 server.mjs, bot.mjs         veb-server va Telegram bot (Telegram bilan aloqa)
 lib/bot-core.mjs            bot buyruqlari, formatlash, bo'laklash (testlanadi)
 lib/bot-store.mjs           /stats: tuzli SHA-256 bilan anonim statistika
+lib/ai-quota.mjs            AI kunlik va oyna (IP / foydalanuvchi) limitlari
+lib/safe-log.mjs            kalit, token va PII'siz xato logi
 tools/telegram_export.py    eksportni js/real-data.js ga aylantirish
 ```
 

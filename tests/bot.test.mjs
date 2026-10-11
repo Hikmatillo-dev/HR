@@ -146,11 +146,119 @@ try {
     assert.ok(parts.length >= 3 && parts.every(p => p.length <= 4000));
   });
 
+  // ---------- AI limitlari va guruhlar ----------
+  function makeAiBot(opts = {}) {
+    const sent = [], aiCalls = [];
+    const store = createStore(path.join(tmp, 'ai-' + Math.random().toString(36).slice(2)));
+    const handle = createBot({
+      send: async (chatId, html) => { assertSafeHtml(html); sent.push({ chatId, html }); },
+      store,
+      ai: { enabled: true, analyze: async text => { aiCalls.push(text); return { summary: 'AI xulosa', recommended_questions_for_applicant: [], improved_non_discriminatory_version: '' }; } },
+      aiLimiter: opts.aiLimiter,
+      aiDaily: opts.aiDaily,
+      botUsername: 'IshQalqonBot'
+    });
+    const say = async (text, { userId = 7, chat = { id: 1, type: 'private' }, reply } = {}) => {
+      sent.length = 0;
+      await handle({ chat, from: { id: userId }, text, reply_to_message: reply ? { text: reply } : undefined });
+      return sent.map(x => x.html).join('\n');
+    };
+    return { say, aiCalls };
+  }
+
+  await test('/check AI ni chaqiradi; oddiy matn AI chaqirmaydi (faqat qoidalar + maslahat)', async () => {
+    const { say, aiCalls } = makeAiBot();
+    const out1 = await say(`/check ${SCAM}`);
+    assert.equal(aiCalls.length, 1); assert.match(out1, /AI xulosasi/);
+    const out2 = await say(SCAM);
+    assert.equal(aiCalls.length, 1, 'oddiy matnda AI chaqirilmasligi kerak');
+    assert.match(out2, /Yuqori xavf/); assert.match(out2, /AI chuqur tahlil uchun/);
+    await say('/check'); await say(OK);
+    assert.equal(aiCalls.length, 2, "/check dan keyingi xabar — /check hisoblanadi");
+  });
+
+  await test("Foydalanuvchi AI limiti (soatiga 5): 6-chi /check da AI chaqirilmaydi, limit xabari chiqadi, qoidalar ishlaydi", async () => {
+    const { say, aiCalls } = makeAiBot();
+    for (let i = 0; i < 5; i++) await say(`/check ${SCAM}`);
+    assert.equal(aiCalls.length, 5);
+    const out = await say(`/check ${SCAM}`);
+    assert.equal(aiCalls.length, 5, 'limitdan keyin AI chaqirilmasligi kerak');
+    assert.match(out, /AI tahlil limiti: soatiga 5 ta\. Keyingisi taxminan \d+ daqiqadan keyin/);
+    assert.match(out, /Yuqori xavf/, 'qoidalar tahlili limitsiz');
+    assert.ok(out.includes(DISCLAIMER));
+    await say(`/check ${SCAM}`, { userId: 8 });
+    assert.equal(aiCalls.length, 6, 'boshqa foydalanuvchining limiti alohida');
+  });
+
+  await test("Kunlik umumiy AI limiti tugasa AI chaqirilmaydi", async () => {
+    let left = 1;
+    const aiDaily = { limit: 1, remaining: () => left, take: () => (left > 0 ? (left--, true) : false) };
+    const { say, aiCalls } = makeAiBot({ aiDaily });
+    await say(`/check ${SCAM}`);
+    const out = await say(`/check ${SCAM}`, { userId: 9 });
+    assert.equal(aiCalls.length, 1);
+    assert.match(out, /Bugungi AI tahlil limiti \(1 ta\) tugadi/);
+  });
+
+  await test("Guruh: oddiy xabarga javob yo'q va AI chaqirilmaydi; noma'lum buyruq va boshqa botga yozilgan buyruq e'tiborsiz", async () => {
+    const { say, aiCalls } = makeAiBot();
+    const group = { id: -100, type: 'supergroup' };
+    assert.equal(await say(SCAM, { chat: group }), '', 'oddiy xabarga javob berilmasligi kerak');
+    assert.equal(await say('/foo', { chat: group }), '');
+    assert.equal(await say(`/check@BoshqaBot ${SCAM}`, { chat: group }), '');
+    assert.equal(aiCalls.length, 0);
+  });
+
+  await test("Guruh: /start, /help, /stats, /check matn va reply qilib /check ishlaydi", async () => {
+    const { say, aiCalls } = makeAiBot();
+    const group = { id: -100, type: 'group' };
+    assert.match(await say('/help@IshQalqonBot', { chat: group }), /\/check/);
+    assert.match(await say('/start', { chat: group }), /\/stats/);
+    assert.match(await say(`/check ${SCAM}`, { chat: group }), /Yuqori xavf[\s\S]*AI xulosasi/);
+    assert.match(await say('/check', { chat: group, reply: OK }), /Past xavf/);
+    assert.equal(aiCalls.length, 2);
+    assert.match(await say('/stats', { chat: group }), /Tekshirilgan e'lonlar: <b>2<\/b>/);
+    assert.match(await say('/check', { chat: group }), /Guruhda: <code>\/check/, "guruhda /check matnsiz — yo'riqnoma, keyingi xabar kutilmaydi");
+    assert.equal(await say(OK, { chat: group }), '', 'guruhda /check dan keyingi oddiy xabar tekshirilmaydi');
+  });
+
+  await test("AI xatosi: foydalanuvchiga qisqa xabar, logda stack trace va e'lon matni yo'q", async () => {
+    const sent = [], logs = [];
+    const orig = console.error; console.error = (...a) => logs.push(a.join(' '));
+    try {
+      const h = createBot({ send: async (c, html) => sent.push(html), store: createStore(path.join(tmp, 'aierr')),
+        ai: { enabled: true, analyze: async () => { const e = new Error(`model javobi: ${SCAM} +998 90 123 45 67`); e.code = 'bad_json'; throw e; } } });
+      await h({ chat: { id: 1, type: 'private' }, from: { id: 1 }, text: `/check ${SCAM}` });
+    } finally { console.error = orig; }
+    assert.match(sent.join(''), /AI tahlil hozir bajarilmadi/);
+    assert.equal(logs.length, 1);
+    assert.match(logs[0], /^\[bot-ai\] bad_json:/);
+    assert.ok(!/90 123 45 67/.test(logs[0]), 'telefon logda');
+    assert.ok(logs[0].length < 220, "log qisqa bo'lishi kerak");
+    assert.ok(!/\n\s+at /.test(logs[0]), 'stack trace');
+  });
+
   // ---------- bot.mjs: ishga tushirish ----------
   await test("Tokensiz: tushunarli xabar, exit 1, stack trace yo'q", () => {
     const r = spawnSync(process.execPath, ['bot.mjs'], { cwd: ROOT, env: { PATH: process.env.PATH }, encoding: 'utf8' });
     assert.equal(r.status, 1);
     assert.match(r.stderr, /TELEGRAM_BOT_TOKEN o'rnatilmagan/);
+    assert.doesNotMatch(r.stderr, /at .*\.mjs:\d+/);
+  });
+
+  await test("Bekor qilingan token (401): tushunarli xabar, exit 1, stack trace va token yo'q", async () => {
+    const server = http.createServer((req, res) => { res.writeHead(401, { 'content-type': 'application/json' }); res.end(JSON.stringify({ ok: false, error_code: 401, description: 'Unauthorized' })); });
+    await new Promise(r => server.listen(0, r));
+    const token = '123456:' + 'B'.repeat(35);
+    // spawnSync shu jarayondagi soxta serverni bloklab qo'yadi — shuning uchun asinxron spawn
+    const child = spawn(process.execPath, ['bot.mjs'], { cwd: ROOT, env: { PATH: process.env.PATH, TELEGRAM_BOT_TOKEN: token, IQ_TELEGRAM_API: `http://127.0.0.1:${server.address().port}`, IQ_BOT_DATA_DIR: path.join(tmp, 'd401') } });
+    let stderr = ''; child.stderr.on('data', d => { stderr += d; });
+    const status = await new Promise(res => child.on('exit', res));
+    server.close();
+    const r = { status, stderr };
+    assert.equal(r.status, 1);
+    assert.match(r.stderr, /Token noto'g'ri yoki bekor qilingan/);
+    assert.ok(!r.stderr.includes(token), 'token logda');
     assert.doesNotMatch(r.stderr, /at .*\.mjs:\d+/);
   });
 
