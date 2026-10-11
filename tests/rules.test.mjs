@@ -130,6 +130,7 @@ test("Maosh: agentlik to'lovi (kirillda ham) maosh emas; '$600-850' oralig'i to'
   assert.deepEqual([fee.salary.min, fee.salary.max], [7.6, 10.7]);
   assert.equal(analyze("Oylik 5 mln so'm, to'lov har oyning 10-sanasida").salary.max, 5);
   assert.equal(analyze("Xizmat narxi 2 mln so'm. Oylik maosh 1500$").salary.max, 18.9);
+  assert.equal(analyze('Корея визаси кафолатланган, хужжатлар учун 1000$ олдиндан').salary, null, "kirillcha 'учун 1000$' — to'lov");
 });
 
 test("Ko'nikmalar: 'леса монтаж' — video montaj emas; Instagram havolasi — SMM emas", () => {

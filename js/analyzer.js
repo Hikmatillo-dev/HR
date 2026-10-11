@@ -84,7 +84,7 @@
     },
     {
       id: 'abroad', weight: 10, label: 'Xorijga ish taklifi',
-      detail: "Xorijdagi ish takliflarida firibgarlik ko'p uchraydi. Agentlik litsenziyasini Tashqi mehnat migratsiyasi agentligi orqali tekshiring.",
+      detail: "Xorijdagi ish takliflarida firibgarlik ko'p uchraydi. Agentlik litsenziyasini rasmiy davlat manbasida (Migratsiya agentligi, avvalgi nomi — Tashqi mehnat migratsiyasi agentligi) tekshiring.",
       re: ABROAD_RE
     },
     {
@@ -247,7 +247,7 @@
     // "XIZMAT NARXI 9 600 000 so'm (... 4 000 000 so'm shartnoma tuzganda ...)"
     const isFee = idx => {
       const before = t.slice(Math.max(0, idx - 150), idx);
-      if (/(to'lov|puli?|uchun|narxi|xizmat\s+haqi|depozit|garov|оплат|предоплат|взнос|залог)[^.\n]{0,12}$/.test(before.slice(-30))) return true;
+      if (/(to'lov|puli?|uchun|narxi|xizmat\s+haqi|depozit|garov|учун|тўлов|тулов|пули?|нархи|депозит|гаров|оплат|предоплат|взнос|залог)[^.\n]{0,12}$/.test(before.slice(-30))) return true;
       return lastIndex(FEE_WORD, before) > lastIndex(PAY_WORD, before);
     };
     let m;
