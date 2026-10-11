@@ -101,17 +101,17 @@
     {
       id: 'age', label: 'Yosh cheklovi',
       fix: "Yosh chegarasini olib tashlang. Buning o'rniga kerakli tajriba yoki ko'nikmani yozing.",
-      re: /\d{2}\s*[-–]\s*\d{2}\s*(yosh|лет)(?!li\s+(o'quvchi|bola|talaba|o'smir|guruh))|\d{2}\s*yosh(gacha|dan\s+kichik)|yosh\w*\s*:?\s*\d{2}\s*[-–]\s*\d{2}|\d{2}\s*dan\s*\d{2}\s*yosh|до\s*\d{2}\s*лет|не\s+старше\s+\d{2}|возраст\w*\s*:?\s*(от\s*)?\d{2}\s*[-–]/
+      re: /\d{2}\s*[-–]\s*\d{2}\s*(yosh|лет)(?!li\s+(o'quvchi|bola|talaba|o'smir|guruh))|\d{2}\s*yosh(gacha|dan\s+kichik)|yosh\w*\s*:?\s*\d{2}\s*[-–]\s*\d{2}|\d{2}\s*dan\s*\d{2}\s*yosh|(?<![\d.:\-–/])(1[6-9]|2\d)\s*[-–]\s*([2-5]\d)(?=\s*([,.;)]|$))|до\s*\d{2}\s*лет|не\s+старше\s+\d{2}|возраст\w*\s*:?\s*(от\s*)?\d{2}\s*[-–]/
     },
     {
       id: 'gender', label: "Jins bo'yicha cheklov",
       fix: "\"Qizlar kerak\" o'rniga \"xodim kerak\" deb yozing. Ishni erkak ham, ayol ham bajara oladi.",
-      re: /fa[qk]at(gina)?\s+(qiz|ayol|erkak|yigit|o'?g'?il\s+bola)\w*|jins\w*\s*:?\s*#?(qiz|ayol|erkak|yigit)|#(qizlar|ayollar|ayoli|erkaklar|yigitlar)\b|(erkak|ayol|qiz|yigit)\w*\s*\(\s*\d{2}\s*[-–]|\d{2}\s*yosh\w*\s+(\S+\s+)?(qiz|ayol|erkak|yigit|o'?g'?il\s+bola)|(qizlar|yigitlar|erkaklar|ayollar)\s*(kerak|afzal|bo'lishi|[,.]|$)|chiroyli\s+qiz|qiz\s+bola\s+kerak|только\s+(девушк|мужчин|женщин|парн)\w*|требу\w+\s+(девушк|мужчин|женщин|парн)|для\s+девуш|девушк\w*\s+(до|от)\s+\d/
+      re: /ofitsiantka|официантк|продавщиц|секретарш|sekretarsha|fa[qk]at(gina)?\s+(qiz|ayol|erkak|yigit|o'?g'?il\s+bola)\w*|jins\w*\s*:?\s*#?(qiz|ayol|erkak|yigit)|#(qizlar|ayollar|ayoli|erkaklar|yigitlar)\b|(erkak|ayol|qiz|yigit)\w*\s*\(\s*\d{2}\s*[-–]|\d{2}\s*yosh\w*\s+(\S+\s+)?(qiz|ayol|erkak|yigit|o'?g'?il\s+bola)|(qizlar|yigitlar|erkaklar|ayollar)\s*(kerak|afzal|bo'lishi|[,.]|$)|chiroyli\s+qiz|qiz\s+bola\s+kerak|только\s+(девушк|мужчин|женщин|парн)\w*|требу\w+\s+(девушк|мужчин|женщин|парн)|для\s+девуш|девушк\w*\s+(до|от)\s+\d/
     },
     {
       id: 'appearance', label: "Tashqi ko'rinish talabi",
       fix: "Tashqi ko'rinish o'rniga \"xushmuomala\" yoki \"ozoda\" kabi kasbiy sifatlarni yozing.",
-      re: /chiroyli|ko'rinishi\s+(yoqimli|chiroyli)|tashqi\s+ko'rinish|bo'yi\s+\d|приятн\w+\s+внешн|внешност|рост\s+от/
+      re: /chiroyli(?!\s+(ofis|bino|joy|sharoit|interyer|xona|zal|mebel|manzara|shahar))|ko'rinishi\s+(yoqimli|chiroyli)|tashqi\s+ko'rinish|bo'yi\s+\d|приятн\w+\s+внешн|внешност|рост\s+от/
     },
     {
       id: 'marital', label: 'Oilaviy holat talabi',
@@ -335,6 +335,13 @@
       discrimination.push({ id: rule.id, label: rule.label, fix: rule.fix, match: m[0] });
     }
 
+    // Xorijga ish + tashqi ko'rinish talabi (ko'pincha yosh ayollar) — odam savdosida ma'lum jalb qilish usuli
+    if (scam.some(r => r.id === 'abroad') && discrimination.some(d => d.id === 'appearance')) {
+      scam.push({ id: 'lure', weight: 30, label: "Xorijga tashqi ko'rinishi bo'yicha xodim chaqirilmoqda",
+        detail: "Xorijga \"chiroyli\", \"yosh qizlar\" chaqirilishi odam savdosida ko'p uchraydigan jalb qilish usuli. Ish beruvchi va agentlik litsenziyasini albatta tekshiring.",
+        match: discrimination.find(d => d.id === 'appearance').match });
+    }
+
     const skills = SKILLS.filter(s => s[2].test(t)).map(s => ({ name: s[0], digital: s[1] }));
 
     const hasPhone = /\+?998[\s-]?\(?\d{2}\)?[\s-]?\d{3}|\+?\d{2}[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}/.test(t);
@@ -365,10 +372,10 @@
     if (critical) score = Math.max(score, CRITICAL_FLOOR);
     const level = score >= 50 ? 'high' : score >= 25 ? 'medium' : 'low';
 
-    // Odam savdosi belgisi: pasportni olib qolish, qarz qulligi yoki xorijga ish + to'lov / "kafolatlangan viza" /
+    // Odam savdosi belgisi: pasportni olib qolish, qarz qulligi, xorijga tashqi ko'rinish bo'yicha chaqirish yoki xorijga ish + to'lov / "kafolatlangan viza" /
     // ko'ngilochar soha / noqonuniy ishlash
     const has = id => scam.some(r => r.id === id);
-    const trafficking = has('passport') || has('debt') ||
+    const trafficking = has('passport') || has('debt') || has('lure') ||
       (has('abroad') && (has('prepay') || has('visa') || has('entertain') || has('illegal')));
 
     return {

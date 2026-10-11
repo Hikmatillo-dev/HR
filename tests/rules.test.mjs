@@ -102,4 +102,19 @@ test("Rus tilida 'oson pul' va yashirin ish: 'от 500 000 сум в день', 
   has(t, 'easy'); has(t, 'vague'); assert.notEqual(analyze(t).level, 'low');
 });
 
+test("Xorijga 'chiroyli' ofitsiantka chaqirish — odam savdosi xavfi; 'yosh' so'zisiz '18-25,' yosh cheklovi", () => {
+  const t = 'Ofitsiantka kerak, chiroyli, 18-25, Dubayda restoranga, viza tekin';
+  const r = analyze(t);
+  assert.ok(r.trafficking, 'odam savdosi belgisi'); assert.notEqual(r.level, 'low');
+  for (const id of ['disc:age', 'disc:gender', 'disc:appearance', 'lure']) has(t, id);
+  hasNot('Chiroyli qizlar kerak, Toshkent, kafe', 'lure');
+});
+
+test("Raqamlar oralig'i yosh emas: maosh, ish vaqti, smena, sana; 'chiroyli ofis' — tashqi ko'rinish talabi emas", () => {
+  for (const t of ["Oylik 18-25 mln so'm, dasturchi", 'Ish vaqti 10-18. Sotuvchi', 'Smena 20-08, qorovul', 'Sana: 2025-07-18, sotuvchi']) hasNot(t, 'disc:age');
+  hasNot('Chiroyli ofis, Toshkent, administrator', 'disc:appearance');
+  has('Официантка в кафе, Ташкент, график 2/2', 'disc:gender');
+  hasNot('Ofitsiant kerak, Toshkent', 'disc:gender');
+});
+
 console.log(`\n${passed} ta qoida testi o'tdi${process.exitCode ? ', xatolar bor' : ''}\n`);
