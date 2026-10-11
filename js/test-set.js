@@ -148,7 +148,7 @@
       "Ishga kirish uchun предоплата 200 000 so'm. Kuryer, kuniga 50$. Yozing."),
 
     // --- Odam savdosi belgilari ---
-    T('v2-23', 'trafficking', 'high', ['passport', 'abroad', 'trafficking'], "Pasport ish beruvchida saqlanadi",
+    T('v2-23', 'trafficking', 'high', ['passport', 'abroad', 'trafficking', 'disc:gender'], "Pasport ish beruvchida saqlanadi",
       "Dubayga ofitsiantkalar kerak. Yo'l chiptasi bepul. Pasportingiz ish beruvchida saqlanadi. Oyiga 1500$."),
     T('v2-24', 'trafficking', 'high', ['passport', 'visa', 'prepay', 'abroad', 'trafficking'], "Pasportni topshirish + kafolat + to'lov",
       "Turkiyaga tikuvchilar kerak. Viza va ish 100% kafolat. Pasportni bizga topshirasiz, keyin hujjatlar tayyorlanadi. Hujjat uchun to'lov 400$."),
