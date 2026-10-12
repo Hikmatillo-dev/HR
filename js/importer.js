@@ -36,6 +36,10 @@
 
   // Bitta fayldan "xom" yozuvlar: { text, date, channel }
   function rawRecords(name, content) {
+    // Telegram Desktop'ning HTML eksporti (messages.html) — matn sifatida o'qilsa, teglar e'lon bo'lib ketadi
+    if (/\.html?$/i.test(name) || /^\s*<(!doctype|html|head|body|div)\b/i.test(content)) {
+      throw new Error(`${name}: bu HTML eksport. Telegram Desktop → Export chat history oynasida Format: "Machine-readable JSON" ni tanlang`);
+    }
     if (/\.json$/i.test(name)) {
       let data;
       try { data = JSON.parse(content); } catch (e) { throw new Error(`${name}: JSON fayl buzilgan yoki Telegram eksporti emas`); }

@@ -66,7 +66,7 @@
       <p class="lead">Istalgan vakansiya matnini joylang: o'zbek (lotin yoki kirill) yoki rus tilida. Tizim xavf darajasi va shaffoflik indeksini hisoblaydi hamda har bir baho uchun <b>sababini</b> ko'rsatadi.</p>
       <div class="checker">
         <div>
-          <textarea id="input" placeholder="Masalan: KOREYAGA ISH! Viza 100% kafolat! Hujjat uchun to'lov 500$..."></textarea>
+          <textarea id="input" aria-label="Tekshiriladigan vakansiya matni" placeholder="Masalan: KOREYAGA ISH! Viza 100% kafolat! Hujjat uchun to'lov 500$..."></textarea>
           <div class="btns">
             <button class="primary" id="btnCheck">Tekshirish</button>
             <button data-example="scam" class="small">Misol: firibgar</button>
@@ -115,8 +115,8 @@
       <div class="needs-data">
       <div class="kpis" id="kpis"></div>
       <div class="grid">
-        <div class="chart-box"><h3>Xavf darajalari</h3><div class="cv"><canvas id="chLevels"></canvas></div></div>
-        <div class="chart-box"><h3>Eng ko'p uchraydigan firibgarlik belgilari</h3><div class="cv"><canvas id="chSignals"></canvas></div></div>
+        <div class="chart-box"><h3>Xavf darajalari</h3><div class="cv"><canvas id="chLevels" role="img" aria-label="Xavf darajalari bo'yicha e'lonlar ulushi. Raqamlar yuqoridagi ko'rsatkichlarda va avtomatik xulosalarda."></canvas></div></div>
+        <div class="chart-box"><h3>Eng ko'p uchraydigan firibgarlik belgilari</h3><div class="cv"><canvas id="chSignals" role="img" aria-label="Eng ko'p uchraydigan firibgarlik belgilari: har bir belgi necha e'londa topilgani. Xulosa pastdagi avtomatik xulosalarda."></canvas></div></div>
         <div class="chart-box wide">
           <h3>Hududlar xaritasi</h3>
           <div class="map-ctrl" id="mapCtrl">
@@ -129,9 +129,9 @@
           <div class="legend-ramp" id="mapLegend"></div>
           <p class="hint">Hududni bossangiz, vakansiyalar bazasi shu hudud bo'yicha filtrlanadi.</p>
         </div>
-        <div class="chart-box wide"><h3>Sanalar bo'yicha dinamika (oxirgi 30 ta sana)</h3><div class="cv"><canvas id="chDaily"></canvas></div></div>
-        <div class="chart-box"><h3>Kamsitish turlari</h3><div class="cv"><canvas id="chDisc"></canvas></div></div>
-        <div class="chart-box"><h3>Shaffoflik: e'lonlarda nima yetishmaydi</h3><div class="cv"><canvas id="chTransp"></canvas></div></div>
+        <div class="chart-box wide"><h3>Sanalar bo'yicha dinamika (oxirgi 30 ta sana)</h3><div class="cv"><canvas id="chDaily" role="img" aria-label="Sanalar bo'yicha jami va yuqori xavfli e'lonlar soni."></canvas></div></div>
+        <div class="chart-box"><h3>Kamsitish turlari</h3><div class="cv"><canvas id="chDisc" role="img" aria-label="Kamsitish turlari bo'yicha e'lonlar soni."></canvas></div></div>
+        <div class="chart-box"><h3>Shaffoflik: e'lonlarda nima yetishmaydi</h3><div class="cv"><canvas id="chTransp" role="img" aria-label="E'lonlarda qaysi ma'lumot ko'proq yetishmaydi: shaffoflik mezonlari bo'yicha ulush."></canvas></div></div>
       </div>
       <div class="insights" id="insights"></div>
       </div>
@@ -157,8 +157,8 @@
           <details class="block"><summary>Jadval ko'rinishida</summary>
             <div class="table-wrap" style="margin-top:8px"><table><thead><tr><th>Kasb</th><th class="num">E'lonlar</th><th class="num">O'rtacha maosh, mln so'm</th></tr></thead><tbody id="bubbleTable"></tbody></table></div>
           </details></div>
-        <div class="chart-box"><h3>Eng ko'p so'raladigan ko'nikmalar</h3><div class="cv tall"><canvas id="chSkills"></canvas></div></div>
-        <div class="chart-box"><h3>O'rtacha maosh sohalar bo'yicha (mln so'm)</h3><div class="cv tall"><canvas id="chSalary"></canvas></div></div>
+        <div class="chart-box"><h3>Eng ko'p so'raladigan ko'nikmalar</h3><div class="cv tall"><canvas id="chSkills" role="img" aria-label="Ishonchli e'lonlarda eng ko'p so'raladigan ko'nikmalar. Xulosa grafik ostida."></canvas></div></div>
+        <div class="chart-box"><h3>O'rtacha maosh sohalar bo'yicha (mln so'm)</h3><div class="cv tall"><canvas id="chSalary" role="img" aria-label="Sohalar bo'yicha o'rtacha maosh, mln so'm."></canvas></div></div>
       </div>
       <div class="insights" id="skillInsights"></div>
       </div>
@@ -185,15 +185,15 @@
       <p class="empty-note">Ma'lumot yuklanmagan. 2-bo'limda Telegram eksportini yuklang yoki <b>Demo</b> rejimini yoqing.</p>
       <div class="needs-data">
       <div class="filters">
-        <input id="fSearch" placeholder="Qidirish: kasb, kanal, so'z...">
-        <select id="fLevel">
+        <input id="fSearch" type="search" aria-label="Vakansiyalar bazasidan qidirish" placeholder="Qidirish: kasb, kanal, so'z...">
+        <select id="fLevel" aria-label="Xavf darajasi bo'yicha filtr">
           <option value="">Barcha darajalar</option>
           <option value="high">🔴 Yuqori xavf</option>
           <option value="medium">🟡 O'rtacha xavf</option>
           <option value="low">🟢 Past xavf</option>
         </select>
-        <select id="fRegion"><option value="">Barcha hududlar</option></select>
-        <select id="fCategory"><option value="">Barcha sohalar</option></select>
+        <select id="fRegion" aria-label="Hudud bo'yicha filtr"><option value="">Barcha hududlar</option></select>
+        <select id="fCategory" aria-label="Soha bo'yicha filtr"><option value="">Barcha sohalar</option></select>
         <label class="chk"><input type="checkbox" id="fDisc"> Kamsituvchi</label>
       </div>
       <div class="table-wrap">

@@ -201,6 +201,22 @@ for (const [width, height, menu] of [[320, 640, true], [768, 1024, true], [844, 
   });
 }
 
+await test("Accessibility: barcha ko'rinadigan input/select nomlangan, grafiklarda role=img va tavsif, sarlavhalar tartibi buzilmagan", async () => {
+  const { page } = await open();
+  const r = await page.evaluate(() => {
+    const vis = e => e.offsetParent !== null;
+    const unlabeled = [...document.querySelectorAll('input:not([type=hidden]),select,textarea')]
+      .filter(e => vis(e) && !(e.labels?.length || e.getAttribute('aria-label') || e.getAttribute('aria-labelledby'))).map(e => e.id || e.name);
+    const charts = [...document.querySelectorAll('canvas')].filter(c => c.getAttribute('role') !== 'img' || !c.getAttribute('aria-label')).map(c => c.id);
+    const heads = [...document.querySelectorAll('h1,h2,h3,h4,h5,h6')].filter(vis).map(h => +h.tagName[1]);
+    const skips = heads.filter((l, i) => i && l > heads[i - 1] + 1);
+    const ids = {}; document.querySelectorAll('[id]').forEach(e => { ids[e.id] = (ids[e.id] || 0) + 1; });
+    return { unlabeled, charts, skips, dup: Object.keys(ids).filter(k => ids[k] > 1), h1: document.querySelectorAll('h1').length };
+  });
+  assert.deepEqual(r, { unlabeled: [], charts: [], skips: [], dup: [], h1: 1 });
+  await page.close();
+});
+
 await test("Chop etish (PDF hisobot): sarlavha, sana va manba; tekshiruv va hero chiqmaydi", async () => {
   const { page } = await open({ demo: false });
   await page.emulateMedia({ media: 'print' });

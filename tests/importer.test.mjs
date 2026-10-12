@@ -64,6 +64,12 @@ test("Buzilgan JSON — tushunarli xato", () => {
   assert.throws(() => importFiles([{ name: 'x.json', content: '{oops' }]), /JSON fayl buzilgan/);
 });
 
+test("Telegram HTML eksporti — e'lon sifatida o'qilmaydi, JSON tanlash kerakligi aytiladi", () => {
+  const html = '<!DOCTYPE html><html><body><div class="message"><div class="text">Sotuvchi kerak, oylik 4 mln</div></div></body></html>';
+  assert.throws(() => importFiles([{ name: 'messages.html', content: html }]), /HTML eksport.*Machine-readable JSON/);
+  assert.throws(() => importFiles([{ name: 'kanal.txt', content: html }]), /HTML eksport/);
+});
+
 test("Xabarsiz JSON — tushunarli xato", () => {
   assert.throws(() => importFiles([{ name: 'x.json', content: '{"name":"a"}' }]), /xabarlar topilmadi/);
 });
