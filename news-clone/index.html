@@ -2,8 +2,13 @@
 <html lang="uz">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Xabarnoma — yangiliklar</title>
+<title>Xabarnoma — so'nggi yangiliklar</title>
+<meta name="description" content="Xabarnoma: O'zbekiston va dunyo yangiliklari. O'quv loyihasi.">
+<meta property="og:title" content="Xabarnoma — so'nggi yangiliklar">
+<meta name="theme-color" content="#0b63ce">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230b63ce'/><text x='16' y='23' font-size='20' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'>X</text></svg>">
 <link rel="stylesheet" href="style.css">
+<script>(function(){try{var m=JSON.parse(localStorage.getItem("theme"));if(m)document.documentElement.dataset.theme=m}catch(e){}})()</script>
 </head>
 <body>
 <main class="wrap layout" id="app"></main>
@@ -11,28 +16,53 @@
 <script src="layout.js"></script>
 <script>
 renderChrome();
-const cat = params.get("cat"), q = (params.get("q") || "").toLowerCase();
+const cat = params.get("cat"), tag = params.get("tag"), q = (params.get("q") || "").trim().toLowerCase(), video = params.get("video");
+const PAGE = 6;
 let html;
-if (cat || q) {
-  const list = NEWS.filter((n) => (!cat || n.cat === cat) && (!q || (n.title + n.lead).toLowerCase().includes(q)));
-  const title = cat ? catName(cat) : `Qidiruv: "${params.get("q")}"`;
-  html = `<section><div class="section-title">${title}</div>
-    ${list.length ? `<div class="grid3">${list.map(cardHTML).join("")}</div>` : `<div class="card empty">Hech narsa topilmadi</div>`}</section>`;
+
+if (cat || tag || q || video) {
+  const list = byTime.filter((n) =>
+    (!cat || n.cat === cat) && (!tag || n.tags.includes(tag)) && (!video || n.video) &&
+    (!q || [n.title, n.lead, ...n.body, ...n.tags].join(" ").toLowerCase().includes(q)));
+  const title = cat ? catName(cat) : tag ? `# ${tx(tag)}` : video ? `▶ ${t("video")}` : `${t("found")}: «${esc(params.get("q"))}»`;
+  document.title = title.replace(/<[^>]+>/g, "") + " — Xabarnoma";
+  html = `<section><nav class="crumbs"><a href="index.html">${t("home")}</a> / <span>${title}</span></nav>
+    <h1 class="page-title">${title} <small>${list.length}</small></h1>
+    ${list.length ? `<div class="rows" id="list"></div><button class="more" id="more">${t("more")}</button>`
+      : `<div class="card empty">🔍 ${t("nothing")}</div>`}</section>`;
+  document.getElementById("app").innerHTML = html + sidebar();
+  let shown = 0;
+  const more = document.getElementById("more");
+  const step = () => {
+    document.getElementById("list").insertAdjacentHTML("beforeend", list.slice(shown, shown + PAGE).map(rowHTML).join(""));
+    shown += PAGE;
+    if (shown >= list.length) more.remove();
+  };
+  if (list.length) { step(); more && (more.onclick = step); }
 } else {
-  const [top, ...rest] = [NEWS.find((n) => n.top), ...NEWS.filter((n) => !n.top)];
+  const top = byTime.find((n) => n.top) || byTime[0];
+  const rest = byTime.filter((n) => n !== top);
+  const videos = byTime.filter((n) => n.video).slice(0, 3);
+  const block = (c) => {
+    const items = byTime.filter((n) => n.cat === c.id).slice(0, 3);
+    return items.length ? `<div class="section-title"><h2>${catName(c.id)}</h2><a href="index.html?cat=${c.id}">${t("all")} →</a></div>
+      <div class="grid3">${items.map(cardHTML).join("")}</div>` : "";
+  };
   html = `<section>
+    <h1 class="sr">Xabarnoma</h1>
     <div class="hero">
-      <a class="card big" href="article.html?id=${top.id}">${imgTag(top.id, 800, 450)}
-        <div class="txt">${meta(top)}<h1>${top.title}</h1><p>${top.lead}</p></div></a>
+      <article class="card big"><a href="article.html?id=${top.id}" class="imgwrap">${imgTag(top.id, 900, 506)}</a>
+        <div class="txt">${meta(top)}<h2><a href="article.html?id=${top.id}">${esc(tx(top.title))}</a></h2><p>${esc(tx(top.lead))}</p></div></article>
       <div class="small-list">${rest.slice(0, 2).map(cardHTML).join("")}</div>
     </div>
-    ${CATEGORIES.map((c) => {
-      const items = NEWS.filter((n) => n.cat === c.id).slice(0, 3);
-      return items.length ? `<div class="section-title">${c.name}<a href="index.html?cat=${c.id}">Barchasi →</a></div><div class="grid3">${items.map(cardHTML).join("")}</div>` : "";
-    }).join("")}
+    <div class="grid3 mt">${rest.slice(2, 5).map(cardHTML).join("")}</div>
+    ${CATEGORIES.slice(0, 3).map(block).join("")}
+    ${videos.length ? `<div class="video-band"><div class="section-title"><h2>▶ ${t("video")}</h2><a href="index.html?video=1">${t("all")} →</a></div>
+      <div class="grid3">${videos.map(cardHTML).join("")}</div></div>` : ""}
+    ${CATEGORIES.slice(3).map(block).join("")}
   </section>`;
+  document.getElementById("app").innerHTML = html + sidebar();
 }
-document.getElementById("app").innerHTML = html + sidebar();
 </script>
 </body>
 </html>

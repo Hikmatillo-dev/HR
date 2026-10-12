@@ -2,35 +2,98 @@
 <html lang="uz">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Xabarnoma — maqola</title>
+<title>Xabarnoma</title>
+<meta name="theme-color" content="#0b63ce">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230b63ce'/><text x='16' y='23' font-size='20' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'>X</text></svg>">
 <link rel="stylesheet" href="style.css">
+<script>(function(){try{var m=JSON.parse(localStorage.getItem("theme"));if(m)document.documentElement.dataset.theme=m}catch(e){}})()</script>
 </head>
 <body>
+<div class="progress" id="progress"></div>
 <main class="wrap layout" id="app"></main>
 <script src="data.js"></script>
 <script src="layout.js"></script>
 <script>
 renderChrome();
 const n = NEWS.find((x) => x.id === Number(params.get("id")));
-let html;
+const app = document.getElementById("app");
+
 if (!n) {
-  html = `<section class="card empty">Maqola topilmadi. <a href="index.html" style="color:var(--accent)">Bosh sahifa</a></section>`;
+  app.innerHTML = `<section class="card empty"><div class="big404">404</div>${t("notFound")}<br><br><a class="more" href="index.html">${t("home")}</a></section>` + sidebar();
 } else {
-  document.title = n.title + " — Xabarnoma";
-  const related = NEWS.filter((x) => x.cat === n.cat && x.id !== n.id).slice(0, 3);
-  const url = encodeURIComponent(location.href);
-  html = `<section>
-    <article class="card full">${meta(n)}<h1>${n.title}</h1>
-      ${imgTag(n.id, 1000, 560)}
-      <p class="lead">${n.lead}</p>${n.body.map((p) => `<p>${p}</p>`).join("")}
-      <div class="share"><a target="_blank" href="https://t.me/share/url?url=${url}">Telegram</a>
-        <a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=${url}">Facebook</a>
-        <a href="#" onclick="navigator.clipboard.writeText(location.href);this.textContent='Nusxalandi ✓';return false">Havolani nusxalash</a></div>
+  // ko'rishlar soni shu brauzerda oshadi
+  const v = store.get("views", {}); v[n.id] = (v[n.id] || 0) + 1; store.set("views", v);
+  document.title = tx(n.title) + " — Xabarnoma";
+  const related = byTime.filter((x) => x.id !== n.id && (x.cat === n.cat || x.tags.some((g) => n.tags.includes(g)))).slice(0, 3);
+  const idx = byTime.indexOf(n), prev = byTime[idx + 1], next = byTime[idx - 1];
+  const url = encodeURIComponent(location.href), title = encodeURIComponent(tx(n.title));
+  const fsize = store.get("fsize", 18);
+
+  app.innerHTML = `<section>
+    <nav class="crumbs"><a href="index.html">${t("home")}</a> / <a href="index.html?cat=${n.cat}">${catName(n.cat)}</a></nav>
+    <article class="card full" id="art" style="--fs:${fsize}px">
+      ${meta(n)}
+      <h1>${esc(tx(n.title))}</h1>
+      <div class="byline"><span class="avatar">${author(n)[0]}</span><div><b>${tx(author(n))}</b><small>${t("author")} · ⏱ ${readMin(n)} ${t("minRead")}</small></div>
+        <div class="tools"><button class="iconbtn" data-fs="-1" aria-label="${t("font")} -">A−</button><button class="iconbtn" data-fs="1" aria-label="${t("font")} +">A+</button>
+          <button class="iconbtn" onclick="print()" aria-label="${t("print")}">🖨</button></div></div>
+      <figure class="imgwrap">${imgTag(n.id, 1000, 560)}${n.video ? `<span class="play big">▶</span>` : ""}</figure>
+      <p class="lead">${esc(tx(n.lead))}</p>
+      ${n.body.map((p) => `<p>${esc(tx(p))}</p>`).join("")}
+      <div class="tags">${n.tags.map((g) => `<a href="index.html?tag=${encodeURIComponent(g)}">#${esc(tx(g))}</a>`).join("")}</div>
+      <div class="share">
+        <a class="s-tg" target="_blank" rel="noopener" href="https://t.me/share/url?url=${url}&text=${title}">Telegram</a>
+        <a class="s-fb" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=${url}">Facebook</a>
+        <a class="s-x" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?url=${url}&text=${title}">X</a>
+        <button id="copy">🔗 ${t("copy")}</button>
+      </div>
     </article>
-    ${related.length ? `<div class="section-title">Mavzuga oid</div><div class="grid3">${related.map(cardHTML).join("")}</div>` : ""}
-  </section>`;
+    <div class="prevnext">
+      ${prev ? `<a class="card" href="article.html?id=${prev.id}"><small>←</small>${esc(tx(prev.title))}</a>` : "<span></span>"}
+      ${next ? `<a class="card" href="article.html?id=${next.id}"><small>→</small>${esc(tx(next.title))}</a>` : "<span></span>"}
+    </div>
+    <div class="card comments"><h2>💬 ${t("comments")} <small id="ccount"></small></h2>
+      <form id="cform"><input id="cname" required maxlength="40" placeholder="${t("name")}"><textarea id="ctext" required maxlength="1000" rows="3" placeholder="${t("write")}"></textarea>
+        <button class="more" type="submit">${t("send")}</button></form>
+      <div id="clist"></div></div>
+    ${related.length ? `<div class="section-title"><h2>${t("related")}</h2></div><div class="grid3">${related.map(cardHTML).join("")}</div>` : ""}
+  </section>` + sidebar(n.id);
+
+  // shrift o'lchami
+  document.querySelectorAll("[data-fs]").forEach((b) => (b.onclick = () => {
+    const s = Math.min(24, Math.max(14, store.get("fsize", 18) + Number(b.dataset.fs)));
+    store.set("fsize", s); document.getElementById("art").style.setProperty("--fs", s + "px");
+  }));
+  // havolani nusxalash
+  document.getElementById("copy").onclick = async (e) => {
+    try { await navigator.clipboard.writeText(location.href); } catch {}
+    e.target.textContent = t("copied");
+  };
+  // izohlar (shu brauzerda saqlanadi)
+  const key = "comments-" + n.id;
+  const renderComments = () => {
+    const list = store.get(key, []);
+    document.getElementById("ccount").textContent = list.length || "";
+    document.getElementById("clist").innerHTML = list.length ? list.map((c) =>
+      `<div class="comment"><span class="avatar sm">${esc(c.name[0] || "?")}</span><div><b>${esc(c.name)}</b> <small>${new Date(c.ts).toLocaleString("ru-RU")}</small><p>${esc(c.text)}</p></div></div>`).join("")
+      : `<p class="muted">${t("noComments")}</p>`;
+  };
+  document.getElementById("cform").onsubmit = (e) => {
+    e.preventDefault();
+    const name = document.getElementById("cname").value.trim(), text = document.getElementById("ctext").value.trim();
+    if (!name || !text) return;
+    store.set(key, [{ name, text, ts: Date.now() }, ...store.get(key, [])]);
+    document.getElementById("ctext").value = "";
+    renderComments();
+  };
+  renderComments();
+  // o'qish progressi
+  const bar = document.getElementById("progress"), art = document.getElementById("art");
+  addEventListener("scroll", () => {
+    const r = art.getBoundingClientRect();
+    bar.style.width = Math.min(100, Math.max(0, (-r.top / (r.height - innerHeight)) * 100)) + "%";
+  }, { passive: true });
 }
-document.getElementById("app").innerHTML = html + sidebar();
 </script>
 </body>
 </html>
