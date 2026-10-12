@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Xabarnoma — maqola</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="wrap layout" id="app"></main>
+<script src="data.js"></script>
+<script src="layout.js"></script>
+<script>
+renderChrome();
+const n = NEWS.find((x) => x.id === Number(params.get("id")));
+let html;
+if (!n) {
+  html = `<section class="card empty">Maqola topilmadi. <a href="index.html" style="color:var(--accent)">Bosh sahifa</a></section>`;
+} else {
+  document.title = n.title + " — Xabarnoma";
+  const related = NEWS.filter((x) => x.cat === n.cat && x.id !== n.id).slice(0, 3);
+  const url = encodeURIComponent(location.href);
+  html = `<section>
+    <article class="card full">${meta(n)}<h1>${n.title}</h1>
+      ${imgTag(n.id, 1000, 560)}
+      <p class="lead">${n.lead}</p>${n.body.map((p) => `<p>${p}</p>`).join("")}
+      <div class="share"><a target="_blank" href="https://t.me/share/url?url=${url}">Telegram</a>
+        <a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=${url}">Facebook</a>
+        <a href="#" onclick="navigator.clipboard.writeText(location.href);this.textContent='Nusxalandi ✓';return false">Havolani nusxalash</a></div>
+    </article>
+    ${related.length ? `<div class="section-title">Mavzuga oid</div><div class="grid3">${related.map(cardHTML).join("")}</div>` : ""}
+  </section>`;
+}
+document.getElementById("app").innerHTML = html + sidebar();
+</script>
+</body>
+</html>

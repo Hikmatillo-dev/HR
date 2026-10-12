@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Xabarnoma — yangiliklar</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="wrap layout" id="app"></main>
+<script src="data.js"></script>
+<script src="layout.js"></script>
+<script>
+renderChrome();
+const cat = params.get("cat"), q = (params.get("q") || "").toLowerCase();
+let html;
+if (cat || q) {
+  const list = NEWS.filter((n) => (!cat || n.cat === cat) && (!q || (n.title + n.lead).toLowerCase().includes(q)));
+  const title = cat ? catName(cat) : `Qidiruv: "${params.get("q")}"`;
+  html = `<section><div class="section-title">${title}</div>
+    ${list.length ? `<div class="grid3">${list.map(cardHTML).join("")}</div>` : `<div class="card empty">Hech narsa topilmadi</div>`}</section>`;
+} else {
+  const [top, ...rest] = [NEWS.find((n) => n.top), ...NEWS.filter((n) => !n.top)];
+  html = `<section>
+    <div class="hero">
+      <a class="card big" href="article.html?id=${top.id}">${imgTag(top.id, 800, 450)}
+        <div class="txt">${meta(top)}<h1>${top.title}</h1><p>${top.lead}</p></div></a>
+      <div class="small-list">${rest.slice(0, 2).map(cardHTML).join("")}</div>
+    </div>
+    ${CATEGORIES.map((c) => {
+      const items = NEWS.filter((n) => n.cat === c.id).slice(0, 3);
+      return items.length ? `<div class="section-title">${c.name}<a href="index.html?cat=${c.id}">Barchasi →</a></div><div class="grid3">${items.map(cardHTML).join("")}</div>` : "";
+    }).join("")}
+  </section>`;
+}
+document.getElementById("app").innerHTML = html + sidebar();
+</script>
+</body>
+</html>
