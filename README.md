@@ -11,6 +11,8 @@ Telegram'dagi ish e'lonlarini **firibgarlik**, **odam savdosi belgilari** va **k
 | **Real ma'lumot** | 5 ta Telegram kanalidan 34 ta e'lon qo'lda belgilandi. Ularning **50%** ida yosh yoki jins cheklovi bor. Qoidalar o'zgartirilmasdan olingan natija: aniqlik 70.6%, xavfli e'lonni topish 16.7%. Tuzatilgandan keyin: 91.2% / 75.0%, halol e'lonni xavfli deyish 0%. |
 | **Qo'shimcha** | Telegram eksportini yuklab, kanal bo'yicha bozor tahlili (hududlar, kasblar, ko'nikmalar, kanallar reytingi); Claude AI orqali chuqur tahlil va kamsitishsiz e'lon matni; Telegram bot; shaxsiy ma'lumotni avtomatik yashirish. |
 
+<p><img src="docs/demo.gif" alt="19 soniyalik demo: jonli misol, kirillcha Koreya firibgarligini tekshirish (yuqori xavf, odam savdosi belgisi, 2 ta kamsitish), kanallar reytingi" width="760"></p>
+
 <p>
   <img src="docs/screenshots/2-tekshiruv.png" alt="Kirillcha firibgar e'lon tekshiruvi: firibgarlik xavfi yuqori, odam savdosi belgisi, 2 ta kamsitish" width="640">
   <img src="docs/screenshots/4-telefon.png" alt="Telefonda: firibgarlik xavfi past, lekin 3 ta kamsituvchi talab" width="220">
