@@ -21,13 +21,14 @@
   // explicit: foydalanuvchi "Tekshirish" ni bosdi (yozish paytidagi avtomatik yangilanish emas)
   function render(text, explicit) {
     const box = $('#result');
-    if (!text.trim() && !explicit) {
+    // Bo'sh, juda qisqa yoki mazmunsiz matn — xavf bahosi chiqarilmaydi (js/validate-posting.js).
+    // Yozish paytida (avtomatik yangilanish) xato ko'rsatilmaydi: u har pauzada ekran o'quvchiga qayta e'lon qilinardi
+    const valid = window.IQValidate.check(text);
+    if (!valid.ok && !explicit) {
       box.className = 'result empty';
       box.innerHTML = 'Natija shu yerda chiqadi.<br>Matn yozilishi bilan tahlil avtomatik yangilanadi.';
       last = null; return;
     }
-    // Bo'sh, juda qisqa yoki mazmunsiz matn — xavf bahosi chiqarilmaydi (js/validate-posting.js)
-    const valid = window.IQValidate.check(text);
     if (!valid.ok) {
       box.className = 'result empty invalid';
       box.innerHTML = `<p class="invalid-msg" role="alert">⚠️ ${esc(valid.message)}</p>`;
@@ -201,11 +202,11 @@
     }
   }
 
-  IQ.check = text => { $('#input').value = text; render(text); };
-
+  // Kutib turgan avtomatik yangilanish bekor qilinadi: aks holda u "Tekshirish" natijasi yoki xabari ustidan yozib yuboradi
   let timer;
+  IQ.check = text => { clearTimeout(timer); $('#input').value = text; render(text); };
   $('#input').addEventListener('input', e => { clearTimeout(timer); timer = setTimeout(() => render(e.target.value), 250); });
-  $('#btnCheck').addEventListener('click', () => render($('#input').value, true));
+  $('#btnCheck').addEventListener('click', () => { clearTimeout(timer); render($('#input').value, true); });
   $('#btnClear').addEventListener('click', () => IQ.check(''));
   IQ.$$('[data-example]').forEach(b => b.addEventListener('click', () => IQ.check(EXAMPLES[b.dataset.example])));
   $('#result').addEventListener('click', e => {

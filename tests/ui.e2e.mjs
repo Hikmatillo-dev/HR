@@ -421,6 +421,29 @@ for (const scheme of ['light', 'dark']) {
   });
 }
 
+// M10 (bug-hunt): yozish paytida xato xabari (role="alert") chiqmasligi — faqat "Tekshirish" bosilganda
+await test("Yozish paytida qisqa matn: xato xabari va role=alert chiqmaydi; 'Tekshirish' bosilganda chiqadi", async () => {
+  const { page, errors } = await open({ demo: false });
+  await page.focus('#input');
+  await page.keyboard.type('ab', { delay: 40 }); await page.waitForTimeout(450);
+  assert.equal(await page.locator('#result [role="alert"]').count(), 0, 'yozish paytida role=alert chiqdi');
+  assert.equal(await page.locator('#result .lvl').count(), 0, 'qisqa matnga baho chiqmasligi kerak');
+  assert.match(await page.textContent('#result'), /Natija shu yerda chiqadi/);
+  // Avval to'g'ri natija bo'lsa ham, matn qisqartirilganda eski baho qolmaydi
+  await page.fill('#input', "Koreyaga ish! Hujjat uchun to'lov 500$."); await page.waitForTimeout(400);
+  assert.equal(await page.locator('#result .lvl').count(), 1);
+  await page.fill('#input', 'Kor'); await page.waitForTimeout(400);
+  assert.equal(await page.locator('#result .lvl').count(), 0, 'eski baho qolib ketdi');
+  assert.equal(await page.locator('#result [role="alert"]').count(), 0);
+  await page.click('#btnCheck'); await page.waitForTimeout(150);
+  assert.equal(await page.locator('#result [role="alert"]').count(), 1, "'Tekshirish' bosilganda xabar chiqishi kerak");
+  // Yozib bo'lgach darhol (250 ms ichida) bosilsa ham, kechikkan avtomatik yangilanish xabarni o'chirmaydi
+  await page.fill('#input', 'abc'); await page.click('#btnCheck'); await page.waitForTimeout(500);
+  assert.equal(await page.locator('#result [role="alert"]').count(), 1, 'kechikkan avtomatik yangilanish xabarni o\'chirdi');
+  assert.deepEqual(errors, []);
+  await page.close();
+});
+
 // ---------- H2: kirillcha iqtiboslar asl matnda ----------
 const KIRILL_RISK = "Кореяга иш! Виза 100% кафолатланган. Ҳужжатлар учун олдиндан 500$ тўлов қиласиз, паспортингизни бизга топширасиз. Тез ёзинг, жойлар чекланган!";
 async function checkText(page, text) {
