@@ -103,6 +103,27 @@ nav a:hover { background: var(--surface-2); color: var(--text); }
 .hero-cta a:focus-visible { outline: 3px solid #fde68a; outline-offset: 3px; }
 .nav-key { font-weight: 600; color: var(--text) !important; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+/* ---------- Klaviatura: "Asosiy tarkibga o'tish" ---------- */
+/* Sahifadagi birinchi fokus. Ko'rinmaydi, Tab bosilganda chiqadi; ranglar ikkala rejimda bir xil (kontrast 13:1) */
+.skip-link { position: absolute; top: 8px; left: 8px; z-index: 100; transform: translateY(-160%); background: #12306b; color: #fff;
+  font-weight: 600; text-decoration: none; padding: 12px 18px; min-height: 44px; border-radius: 10px; box-shadow: 0 6px 18px rgb(0 0 0 / .3); }
+.skip-link:focus { transform: none; outline: 3px solid #fde68a; outline-offset: 2px; }
+@media (prefers-reduced-motion: no-preference) { .skip-link { transition: transform .15s; } }
+/* Skip-link yoki CTA bilan kelinganda bo'lim fokus oladi (keyingi Tab — matn maydoni); karta atrofida ramka chizilmaydi */
+#tekshir:focus { outline: none; }
+
+/* ---------- Telefon va planshet: asosiy amallar kamida 44×44px ---------- */
+/* Faqat asosiy foydalanuvchi yo'li; grafik boshqaruvlari va mayda belgilar o'zgarmaydi */
+@media (max-width: 980px) {
+  .hero-cta a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; }
+  #btnCheck, #btnClear, #btnUpload, #btnUploadEmpty, #btnSampleUpload, #btnCareersUpload, .demo-next, .mode-switch button { min-height: 44px; }
+  #menuBtn, #themeBtn { min-width: 44px; min-height: 44px; }
+  .filters select, .filters input[type="search"], #vakansiyalar select, #vakansiyalar input[type="search"] { min-height: 44px; }
+  .topbar nav { top: 100%; }
+  /* Qatordagi mayda tugmalar (misollar) 44px li tugma yonida cho'zilib ketmasin */
+  .checker .btns { align-items: center; }
+}
 .hero-stats { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
 .hero-stats div { background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); border-radius: 12px; padding: 10px 16px; min-width: 150px; }
 .hero-stats b { display: block; font-size: 1.35rem; }
@@ -296,7 +317,7 @@ td.text div { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: v
 .print-head { display: none; }
 @media print {
   .topbar, .hero, #tekshir, #vakansiyalar, #ishberuvchi, #xavfsizlik, #haqida, .source-bar button, .source-bar label, .foot, .map-ctrl,
-  .sample-cta, #btnCareersUpload, .skip-print { display: none !important; }
+  .sample-cta, #btnCareersUpload, .skip-print, .skip-link { display: none !important; }
   body { background: #fff; }
   /* Butun bo'lim bir sahifadan uzun — uni bo'lmaslikka majburlash bo'sh sahifa qoldiradi; faqat kichik bloklar bo'linmaydi */
   .card { border: none; box-shadow: none; break-inside: auto; padding: 0; margin: 0 0 12px; }

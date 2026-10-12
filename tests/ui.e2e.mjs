@@ -378,7 +378,7 @@ for (const [width, scheme] of [[390, 'light'], [390, 'dark'], [1280, 'light']]) 
   });
 }
 
-const CONTRAST_SELECTORS = ['.lvl-high', '.lvl-medium', '.lvl-low', '.lvl-disc', '#demoBadge', '.tag.high', '.tag.low', '.tag.disc', '.badge-warn',
+const CONTRAST_SELECTORS = ['.skip-link', '.lvl-high', '.lvl-medium', '.lvl-low', '.lvl-disc', '#demoBadge', '.tag.high', '.tag.low', '.tag.disc', '.badge-warn',
   '.kpi span', '.data-note', '.muted', '.hint', '.reasons small', 'mark', '.grade', '.tile', '.mode-switch button[aria-pressed="true"]',
   'nav a', 'button.primary', '.map-ctrl button.on', '.src-text',
   '.hero h1', '.hero h1 span', '.hero-lead', '.hero-values b', '.hero-values span', '.hero-cta a', '.hero-source', '.hero-stats div',
@@ -420,6 +420,93 @@ for (const scheme of ['light', 'dark']) {
     await page.close();
   });
 }
+
+// ---------- P0-5: klaviatura va sensorli ekran ----------
+// Bo'lim sarlavhasi yopishqoq yuqori panel ostida qolmay, ekran tepasida turganini kutadi
+async function waitSectionTop(page, id, label) {
+  try {
+    await page.waitForFunction(id => { const t = document.getElementById(id).getBoundingClientRect().top; return t >= document.querySelector('.topbar').getBoundingClientRect().bottom - 1 && t < 140; }, id, { timeout: 5000 });
+  } catch {
+    const st = await page.evaluate(id => ({ top: Math.round(document.getElementById(id).getBoundingClientRect().top), bar: Math.round(document.querySelector('.topbar').getBoundingClientRect().bottom), y: Math.round(scrollY) }), id);
+    throw new Error(`${label}: #${id} ${JSON.stringify(st)}`);
+  }
+}
+
+for (const [width, scheme] of [[1366, 'light'], [390, 'dark']]) {
+  await test(`Skip-link ${width}px ${scheme}: birinchi Tab — "Asosiy tarkibga o'tish" ko'rinadi va aniq ramkali; Enter — tekshiruv bo'limi, keyingi Tab — matn maydoni`, async () => {
+    const { page, errors } = await open({ demo: false, width, scheme });
+    const link = page.locator('.skip-link');
+    const box0 = await link.boundingBox();
+    assert.ok(box0.y + box0.height <= 0, 'fokussiz holatda ko\'rinib turibdi');
+    await page.keyboard.press('Tab');
+    assert.equal(await page.evaluate(() => document.activeElement.className), 'skip-link', 'birinchi fokus skip-link emas');
+    assert.equal((await link.textContent()).trim(), "Asosiy tarkibga o'tish");
+    await page.waitForTimeout(250);
+    const box = await link.boundingBox();
+    assert.ok(box.y >= 0 && box.x >= 0 && box.x + box.width <= width, 'fokusda ekranda emas');
+    assert.ok(box.height >= 44, `balandligi ${box.height}`);
+    const style = await link.evaluate(e => { const c = getComputedStyle(e); return { w: parseFloat(c.outlineWidth), s: c.outlineStyle, z: +c.zIndex }; });
+    assert.ok(style.w >= 2 && style.s === 'solid', 'fokus ramkasi yo\'q');
+    await page.keyboard.press('Enter');
+    await page.waitForFunction(() => document.activeElement?.id === 'tekshir', null, { timeout: 2000 });
+    assert.equal(await page.evaluate(() => location.hash), '#tekshir');
+    await waitSectionTop(page, 'tekshir', 'skip-link');
+    await page.keyboard.press('Tab');
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'input', 'Tab matn maydoniga o\'tmadi');
+    assert.deepEqual(errors, []);
+    await page.close();
+  });
+}
+
+const PRIMARY_TARGETS = [['.hero-cta a[href="#tekshir"]', 'Vakansiyani tekshirish'], ['.hero-cta a[href="#kasblar"]', "Zamonaviy kasblarni ko'rish"],
+  ['#btnCheck', 'Tekshirish'], ['#btnClear', 'Tozalash'], ['#btnUpload', 'Telegram eksportini yuklash'], ['#btnSampleUpload', "O'z kanalingiz eksportini yuklang"],
+  ['#menuBtn', 'Menyu', true], ['#themeBtn', 'Rejim', true], ['#heroDemo .demo-next', "Boshqasini ko'rish"],
+  ['[data-mode="real"]', "Real ma'lumot"], ['[data-mode="demo"]', 'Demo'],
+  ['#fSearch', 'Qidirish'], ['#fLevel', 'Xavf filtri'], ['#fRegion', 'Hudud filtri'], ['#fCategory', 'Soha filtri']];
+for (const [width, scheme] of [[390, 'light'], [390, 'dark'], [768, 'light']]) {
+  await test(`Touch target ${width}px ${scheme}: asosiy amallar ≥ 44px (menyu va rejim tugmasi 44×44), mayda misol tugmalari o'zgarmagan, gorizontal scroll yo'q`, async () => {
+    const { page } = await open({ demo: false, width, scheme });
+    await page.waitForTimeout(300);
+    const small = [];
+    for (const [sel, name, square] of PRIMARY_TARGETS) {
+      const box = await page.locator(sel).first().boundingBox();
+      if (!box) { small.push(`${name}: ko'rinmaydi`); continue; }
+      if (box.height < 44 || (square && box.width < 44)) small.push(`${name} ${Math.round(box.width)}×${Math.round(box.height)}`);
+    }
+    assert.deepEqual(small, []);
+    if (width === 390) {
+      const ex = await page.locator('#tekshir [data-example="disc"]').boundingBox();
+      assert.ok(ex.height < 44, "misol tugmalari majburan 44px qilinmasligi kerak");
+    }
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), width);
+    await page.close();
+  });
+}
+
+await test("390px: ☰ menyu, 🌓 rejim va ikkala CTA 44px bilan ham oldingidek ishlaydi; bo'lim sarlavhasi yuqori panel ostida qolmaydi", async () => {
+  const { page, errors } = await open({ demo: false, width: 390 });
+  // Telefonda jonli misol hero ichida: animatsiya (~4 s) davomida hero balandligi o'sadi, shuning uchun tugashini kutamiz
+  await page.waitForSelector('#heroDemo[data-state="done"]', { timeout: 8000 });
+  await page.click('#themeBtn');
+  assert.equal(await page.evaluate(() => document.documentElement.dataset.theme), 'dark');
+  await page.click('#themeBtn');
+  assert.equal(await page.evaluate(() => document.documentElement.dataset.theme), 'light');
+  await page.click('#menuBtn');
+  assert.equal(await page.getAttribute('#menuBtn', 'aria-expanded'), 'true');
+  const nav = await page.locator('#mainNav').boundingBox(), bar = await page.locator('.topbar').boundingBox();
+  assert.ok(Math.abs(nav.y - (bar.y + bar.height)) <= 2, 'menyu yuqori panelga yopishmagan');
+  await page.click('#mainNav a[href="#kasblar"]');
+  await waitSectionTop(page, 'kasblar', 'menyu');
+  for (const [href, id] of [['#tekshir', 'tekshir'], ['#kasblar', 'kasblar']]) {
+    // Tepaga darhol qaytamiz (smooth scroll tugashini kutmaslik uchun), keyin CTA bosiladi
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' })); await page.waitForTimeout(200);
+    await page.click(`.hero-cta a[href="${href}"]`);
+    await waitSectionTop(page, id, `CTA ${href}`);
+  }
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), 390);
+  assert.deepEqual(errors, []);
+  await page.close();
+});
 
 await test("npm run demo:local: kalitsiz server, e'lon tekshiriladi, '🤖 AI chuqur tahlil' o'chiq va sababi yozilgan", async () => {
   const port = await new Promise(res => { const s = net.createServer(); s.listen(0, '127.0.0.1', () => { const p = s.address().port; s.close(() => res(p)); }); });
