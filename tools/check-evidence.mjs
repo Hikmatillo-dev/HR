@@ -24,6 +24,10 @@ const { evaluate } = globalThis.IQEval;
 
 const DOCS = { 'README.md': null, 'docs/JARAYON.md': null, 'docs/TAQDIMOT.md': null };
 for (const f of Object.keys(DOCS)) DOCS[f] = readFileSync(P(f), 'utf8');
+// Topshirish manifestlari: yo'llar, buyruqlar, foizlar, demo e'lonlari va sintetik belgisi shular uchun ham tekshiriladi
+const EXTRA = { 'docs/SCREENSHOTS.md': null, 'docs/VIDEO_DEMO.md': null };
+for (const f of Object.keys(EXTRA)) EXTRA[f] = readFileSync(P(f), 'utf8');
+const ALL = { ...DOCS, ...EXTRA };
 const pkg = JSON.parse(readFileSync(P('package.json'), 'utf8'));
 
 let passed = 0;
@@ -35,6 +39,7 @@ function check(name, fn) {
   else { passed++; console.log(`  ✓ ${name}`); }
 }
 const each = fn => Object.entries(DOCS).forEach(([f, t]) => fn(f, t));
+const eachAll = fn => Object.entries(ALL).forEach(([f, t]) => fn(f, t));
 const pct = x => `${(x * 100).toFixed(1)}%`;
 
 // ---------- Repozitoriydan olingan faktlar ----------
@@ -71,7 +76,7 @@ check("README 'Hakam uchun 1 daqiqa' bilan boshlanadi va kerakli bandlar bor", e
 check('Eskirgan yozuvlar qolmagan (2 kunlik reja, 5–7 daqiqa, eski test sonlari va raqamlar)', err => {
   const stale = [/2 kunlik/i, /5[–-]7 daqiqa/i, /hozircha bo'sh\b(?!.*real-data)/, /hali real ma'lumot bilan sinalmagan/,
     /\((?:7|8|13) test\)/, /48 ta yangi e'londa aniqlik 85%/, /Dashboard hali/];
-  each((f, t) => stale.forEach(re => { if (re.test(t)) err(`${f}: ${re}`); }));
+  eachAll((f, t) => stale.forEach(re => { if (re.test(t)) err(`${f}: ${re}`); }));
 });
 
 check(`Real e'lonlar: ${F.v3n} ta, ${F.channels} ta kanal, ${F.risky} ta xavfli, ${F.ageGender} tasida yosh/jins cheklovi`, err => {
@@ -96,8 +101,8 @@ check('Aniqlik foizlari faqat o\'lchangan natijalardan; 91.2% har doim boshlang\
   for (const r of [v3now, v12now]) add(r.risk.accuracy, r.risk.recall, r.risk.precision, r.risk.fpr, r.discrimination.recall, r.flagRecall, r.exactLevel);
   add(v2base.accuracy, v2base.riskRecall, v2base.riskPrecision, v2base.fpr, v2base.discRecall, v2base.discPrecision, v2base.traffRecall, v2base.flagRecall);
   const now = pct(v3now.risk.accuracy), base = pct(m3.accuracy);
+  eachAll((f, t) => { for (const m of t.matchAll(/\d+\.\d%/g)) if (!allowed.has(m[0])) err(`${f}: ${m[0]} hech qaysi o'lchovda yo'q`); });
   each((f, t) => {
-    for (const m of t.matchAll(/\d+\.\d%/g)) if (!allowed.has(m[0])) err(`${f}: ${m[0]} hech qaysi o'lchovda yo'q`);
     if (t.includes(now) && !(t.includes(base) && /optimistik/.test(t))) err(`${f}: ${now} bor, lekin ${base} yoki "optimistik" yo'q`);
     if (!t.includes(now)) err(`${f}: hozirgi v3 natija ${now} ko'rsatilmagan`);
     if (!t.includes(base)) err(`${f}: boshlang'ich v3 natija ${base} ko'rsatilmagan`);
@@ -108,7 +113,8 @@ check('Aniqlik foizlari faqat o\'lchangan natijalardan; 91.2% har doim boshlang\
 
 check('AI va bot holati uchala hujjatda bir xil va qarama-qarshi da\'vo yo\'q', err => {
   const status = ['Claude API: real kalit bilan sinalmagan', "Gemini API: real kalit bilan faqat qo'lda sinalgan", 'Telegram bot: real token bilan sinalmagan'];
-  each((f, t) => {
+  eachAll((f, t) => {
+    if (!(f in DOCS)) return;
     status.forEach(s => {
       if (!t.includes(s)) err(`${f}: "${s}" yo'q`);
       // Har bir "Claude API: real kalit bilan …" aynan holat bilan davom etishi kerak
@@ -137,8 +143,9 @@ check('Commit xeshlari repozitoriyda bor va nomlari to\'g\'ri', err => {
 
 check("Hujjatdagi fayl yo'llari va npm buyruqlari mavjud", err => {
   // .env va data/ git'ga tushmaydi; k1/result.json — README dagi buyruq misoli
-  const ignore = /^(\.env|data\/|tests\/results\/archive\/|k\d\/)/;
-  each((f, t) => {
+  // docs/screenshots/*.png va docs/video/*.mp4 — hali olinmagan rejadagi fayllar: ularni npm run preflight tekshiradi
+  const ignore = /^(\.env|data\/|tests\/results\/archive\/|k\d\/|docs\/screenshots\/[\w.-]+\.png$|docs\/video\/[\w.-]+\.mp4$)/;
+  eachAll((f, t) => {
     for (const m of t.matchAll(/`([\w.-]+(?:\/[\w.-]+)+\/?)`/g)) {
       const p = m[1];
       if (ignore.test(p) || /^(?:text|application|image)\/[\w.+-]+$/.test(p)) continue; // MIME turi, fayl emas
@@ -148,10 +155,12 @@ check("Hujjatdagi fayl yo'llari va npm buyruqlari mavjud", err => {
   });
 });
 
-check("TAQDIMOT dagi demo e'lonlari aytilgan natijani beradi", err => {
+check("Demo e'lonlari (TAQDIMOT, SCREENSHOTS, VIDEO_DEMO) aytilgan natijani beradi", err => {
   const t = DOCS['docs/TAQDIMOT.md'];
-  const blocks = [...t.matchAll(/<!-- evidence:(\w+)([^>]*)-->\s*```text\n([\s\S]*?)\n```/g)];
-  if (blocks.length < 3) err(`kamida 3 ta demo bloki kerak, topildi ${blocks.length}`);
+  const blocks = Object.values(ALL).flatMap(d => [...d.matchAll(/<!-- evidence:(\w+)([^>]*)-->\s*```text\n([\s\S]*?)\n```/g)]);
+  const per = Object.entries(ALL).map(([f, d]) => [f, (d.match(/<!-- evidence:/g) || []).length]);
+  if ((per.find(([f]) => f === 'docs/TAQDIMOT.md')[1]) < 3) err('TAQDIMOT da kamida 3 ta demo bloki kerak');
+  for (const f of ['docs/SCREENSHOTS.md', 'docs/VIDEO_DEMO.md']) if (!per.find(([g]) => g === f)[1]) err(`${f}: demo e'loni evidence bloki yo'q`);
   for (const [, kind, attrs, text] of blocks) {
     if (kind === 'invalid') { if (globalThis.IQValidate.check(text).ok) err(`"${text}" validatsiyadan o'tib ketdi`); continue; }
     const want = Object.fromEntries([...attrs.matchAll(/(\w+)=([\w,]*)/g)].map(m => [m[1], m[2]]));
@@ -166,6 +175,32 @@ check("TAQDIMOT dagi demo e'lonlari aytilgan natijani beradi", err => {
   const { stats } = globalThis.IQImporter.importFiles([{ name: 'result.json', content: readFileSync(P('namuna/telegram-export-namuna.json'), 'utf8') }]);
   const s = `${stats.messages} ta xabar, ${stats.duplicates} ta takror, ${stats.unique} ta noyob e'lon`;
   if (!t.includes(s)) err(`namunaviy eksport natijasi hujjatda "${s}" bo'lishi kerak`);
+  const phones = items => items.reduce((n, it) => n + globalThis.IQPII.redact(it.text).counts.phoneUz, 0);
+  const { items } = globalThis.IQImporter.importFiles([{ name: 'result.json', content: readFileSync(P('namuna/telegram-export-namuna.json'), 'utf8') }]);
+  const sh = EXTRA['docs/SCREENSHOTS.md'], vd = EXTRA['docs/VIDEO_DEMO.md'];
+  for (const need of [`${stats.messages} ta xabar`, `${stats.duplicates} ta takror`, `${stats.unique} ta noyob e'lon`, `${phones(items)} telefon raqami`]) if (!sh.includes(need)) err(`docs/SCREENSHOTS.md: "${need}" yo'q`);
+  for (const need of [`${stats.messages} ta xabar`, `${stats.duplicates} ta takror`]) if (!vd.includes(need)) err(`docs/VIDEO_DEMO.md: "${need}" yo'q`);
+});
+
+check("Demo eksport (namuna/telegram-export-namuna.json) tilga olingan har bir qatorda 'sintetik' deyilgan", err => {
+  eachAll((f, t) => t.split('\n').forEach((line, i) => {
+    if (line.includes('telegram-export-namuna.json') && !/sintetik/i.test(line)) err(`${f}:${i + 1}: ${line.trim().slice(0, 90)}`);
+  }));
+});
+
+check('docs/SCREENSHOTS.md: aynan 5 ta screenshot, har birida 9 ta maydon; video yo\'riqnomasi to\'liq', err => {
+  const sh = EXTRA['docs/SCREENSHOTS.md'];
+  const parts = sh.split(/^## \d\. /m).slice(1);
+  if (parts.length !== 5) err(`${parts.length} ta bo'lim (5 ta kerak)`);
+  const FIELDS = ['Fayl', 'Viewport', 'Rejim', 'Qanday kelish', "Ko'rinishi shart", "Ma'lumot", 'Caption', 'PII', 'Mezon'];
+  parts.forEach((p, i) => FIELDS.forEach(k => { if (!new RegExp(`^\\| \\*\\*${k}\\*\\* \\| .+ \\|$`, 'm').test(p)) err(`${i + 1}-screenshot: "${k}" yo'q`); }));
+  const files = parts.map(p => (p.match(/`(docs\/screenshots\/[\w.-]+\.png)`/) || [])[1]);
+  if (new Set(files).size !== 5 || files.includes(undefined)) err(`fayl nomlari: ${files.join(', ')}`);
+  const vd = EXTRA['docs/VIDEO_DEMO.md'];
+  for (const s of ['npm install', 'npm test', 'npm run test:ui', 'npm run demo:local', 'OBS', 'GNOME', 'Game Bar', 'majburiy emas', 'sintetik', 'docs/video/ishqalqon-demo-offline.mp4']) if (!vd.includes(s)) err(`docs/VIDEO_DEMO.md: "${s}" yo'q`);
+  const rows = [...vd.matchAll(/^\| (\d):(\d\d)–(\d):(\d\d) \|/gm)];
+  const end = rows.length ? +rows.at(-1)[3] * 60 + +rows.at(-1)[4] : 0;
+  if (end < 90 || end > 120) err(`video ssenariysi ${end} soniyada tugaydi (90–120 kerak)`);
 });
 
 // ---------- Test sonlari ----------

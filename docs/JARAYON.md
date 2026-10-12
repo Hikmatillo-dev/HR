@@ -19,8 +19,8 @@ Bu hujjat loyiha qanday qurilganini, qaysi texnologiya nima uchun tanlanganini v
 |---|---|---|
 | **JavaScript** (brauzer va Node.js) | Bitta til bilan sayt, server, bot va testlar; tahlil yadrosi hamma joyda bir xil | `js/analyzer.js`, `server.mjs`, `bot.mjs` |
 | **Git** | Har bir o'zgarish alohida commit; boshlang'ich natija qaysi commitda olinganini isbotlash | `git log`, `tests/results/v3-baseline.json` dagi commit va SHA-256 xeshlar |
-| **Node testlari** (`node:assert`, framework'siz) | Tez (`npm test` ~13 soniya), dependency'siz | `tests/*.test.mjs`, `tests/run.mjs` |
-| **Playwright** | Haqiqiy brauzerda mobil ko'rinish, klaviatura, kontrast va eksportni tekshirish | `tests/ui.e2e.mjs` (30 ta brauzer testi). Loyiha dependency'si emas: o'rnatilmagan bo'lsa test o'tkazib yuboriladi |
+| **Node testlari** (`node:assert`, framework'siz) | Tez (`npm test` ~17 soniya), dependency'siz | `tests/*.test.mjs`, `tests/run.mjs` |
+| **Playwright** | Haqiqiy brauzerda mobil ko'rinish, klaviatura, kontrast va eksportni tekshirish | `tests/ui.e2e.mjs` (31 ta brauzer testi). Loyiha dependency'si emas: o'rnatilmagan bo'lsa test o'tkazib yuboriladi |
 | **Chart.js 4.4.1** | Xarita, dinamika va kasblar grafigi; lokal nusxa, oflayn ishlaydi | `vendor/chart.umd.js` |
 | **GitHub Actions** | Har bir push'da `npm test` | `.github/workflows/test.yml` (brauzer testlari CI'da yo'q, lokal ishga tushiriladi) |
 | **Python** (ixtiyoriy) | Eksportni doimiy faylga aylantirish skripti; JS bilan bir xil yashirish | `tools/telegram_export.py`, `tests/redact-parity.test.mjs` |
@@ -64,7 +64,7 @@ Ish tartibi: har bir vazifa uchun AI avval reja yozadi, muallif tasdiqlaydi, key
 
 ### 4.3. Telegram import filtri firibgar e'lonni tashlab yuborardi
 - **Muammo:** "vakansiyaga o'xshash" filtri "KOREYAGA ISH", "uydan daromad" kabi firibgar e'lonlarni reklama deb tashlab yuborardi. Natijada eng xavfli e'lonlar tahlilga umuman kirmasdi.
-- **Topish usuli:** namunaviy eksportni (`namuna/telegram-export-namuna.json`) yuklab, import hisobotini e'lonlar bilan solishtirish.
+- **Topish usuli:** sintetik namunaviy eksportni (`namuna/telegram-export-namuna.json`) yuklab, import hisobotini e'lonlar bilan solishtirish.
 - **Test:** `tests/importer.test.mjs` → "Namunaviy Telegram eksporti: firibgar e'lonlar ham olinadi, reklama tashlanadi" (lotin va kirill).
 - **Tuzatish:** import mantiqi `js/importer.js` ga ajratildi. Filtr kengaytirildi: "kerak" so'zi bo'lmasa ham "ish", "daromad", "viza", "oyiga" va ularning kirillcha shakllari bor xabar vakansiya deb olinadi.
 - **Commit:** `79a07f7` («feat: real-data mode»).
@@ -123,8 +123,8 @@ Ish tartibi: har bir vazifa uchun AI avval reja yozadi, muallif tasdiqlaydi, key
 
 ## 6. Testlar va sifat
 
-- `npm test`: 12 ta test fayli (147 ta unit test) va `tests/run.mjs` (v1, v2, v3 aniqligi, 10 ta sifat chegarasi). Taxminan 13 soniya.
-- `npm run test:ui`: 30 ta brauzer testi. Ular 320, 390, 768, 844, 1280 va 1366px kengliklarni, ☰ menyuni, Tab bilan boshqarishni, `aria-live` va yorug' hamda qorong'i rejimda WCAG AA kontrastni tekshiradi. Shuningdek "harakatni kamaytirish" sozlamasi, CSV himoyasi va kanallar reytingi tekshiriladi.
+- `npm test`: 14 ta test fayli (162 ta unit test) va `tests/run.mjs` (v1, v2, v3 aniqligi, 10 ta sifat chegarasi). Taxminan 17 soniya.
+- `npm run test:ui`: 31 ta brauzer testi. Ular 320, 390, 768, 844, 1280 va 1366px kengliklarni, ☰ menyuni, Tab bilan boshqarishni, `aria-live` va yorug' hamda qorong'i rejimda WCAG AA kontrastni tekshiradi. Shuningdek "harakatni kamaytirish" sozlamasi, CSV himoyasi, kanallar reytingi va `npm run demo:local` da AI tugmasi o'chiqligi tekshiriladi.
 - **CI:** GitHub Actions har bir push'da `npm test` ni Node 22 da ishga tushiradi.
 - **Gate:** v3 natijasi boshlang'ich natijadan pasaysa yoki v2 natijasi 5 punktdan ko'p tushsa, `npm test` xato beradi. Shuning uchun qoidalarni tuzatish real e'lonlardagi natijani yashirincha yomonlashtira olmaydi.
 - **Dalillar mosligi:** `npm run check:evidence` README, `docs/JARAYON.md` va `docs/TAQDIMOT.md` dagi test sonlari, aniqlik foizlari, real e'lonlar soni, commitlar va AI/bot holatini repozitoriy bilan solishtiradi. Tez qismi (`--static`) `npm test` ichida ishlaydi.
@@ -137,6 +137,8 @@ Ish tartibi: har bir vazifa uchun AI avval reja yozadi, muallif tasdiqlaydi, key
 - **CSV injection:** 4.2-holat.
 - **AI limitlari:** IP bo'yicha daqiqasiga 10 ta, kunlik 200 ta (sozlanadi); botda foydalanuvchi uchun soatiga 5 ta; matn 20–6000 belgi; vaqt chegarasi 45 soniya.
 - **Server:** sukut bo'yicha faqat `127.0.0.1`; faqat `application/json`; begona `Origin` → 403.
+- **Topshirish oldidan:** `npm run preflight` quyidagilarni tekshiradi: `.env`, `data/`, qoralama fayllari, `node_modules/` va Telegram eksportlari git'da yo'qligi; haqiqiy formatdagi Anthropic, Gemini va Telegram kalitlari kuzatilayotgan fayllarda, yangi fayllarda va butun git tarixida yo'qligi; `.gitignore` to'liqligi; hujjatlar va barcha testlar. Topilgan kalitning o'zi chiqarilmaydi. Bu xatolarni ushlashi `tests/preflight.test.mjs` da soxta kalitlar bilan isbotlangan.
+- **Lokal demo:** `npm run demo:local` `.env` ni o'qimaydi va muhitdagi kalitlarni serverga bermaydi (`tests/demo-local.test.mjs`).
 
 ## 8. Real eksport bilan lokal demo: reja (kod emas)
 

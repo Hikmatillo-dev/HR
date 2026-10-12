@@ -15,15 +15,17 @@ Zamonaviy kasblar bozori, hududlar va maoshlar tahlili hamda ish e'lonlarini fir
 
 **Demo oqimi (3 qadam):**
 1. **E'lon tekshirish.** "1. Tekshirish" bo'limiga e'lon matnini qo'ying yoki "Misol" tugmasini bosing → **Tekshirish**.
-2. **Telegram eksport.** "2. Bozor tahlili" → **📂 Telegram eksportini yuklash** → Telegram Desktop'dan olingan `result.json`. Sinash uchun: `namuna/telegram-export-namuna.json`.
+2. **Telegram eksport.** "2. Bozor tahlili" → **📂 Telegram eksportini yuklash** → Telegram Desktop'dan olingan `result.json`. Sinash uchun **sintetik** namunaviy fayl: `namuna/telegram-export-namuna.json` (real kanal emas).
 3. **Kasblar, ko'nikmalar, hududlar.** Xarita, "3. Kasblar" va "4. Kanallar" reytingi yuklangan ma'lumot asosida yangilanadi.
 
 **Ishga tushirish va testlar:**
 ```bash
 npm install
-npm start          # http://localhost:3000
-npm test           # 147 ta unit test + aniqlik o'lchovi (v1, v2, v3) va sifat chegaralari
-npm run test:ui    # 30 ta brauzer testi (Playwright): mobil, klaviatura, kontrast
+npm start          # http://localhost:3000 (.env dagi AI kaliti bo'lsa, AI ham yoqiladi)
+npm run demo:local # http://127.0.0.1:3000 — oflayn demo, kalit kerak emas, AI tugmasi o'chiq
+npm test           # 162 ta unit test + aniqlik o'lchovi (v1, v2, v3) va sifat chegaralari
+npm run test:ui    # 31 ta brauzer testi (Playwright): mobil, klaviatura, kontrast
+npm run preflight  # topshirishdan oldin: kalitlar, taqiqlangan fayllar, hujjatlar va barcha testlar
 ```
 
 **AI'siz ham ishlaydi.** Asosiy tahlil — tushuntiriladigan qoidalar. Ular brauzerda, internetsiz va bepul ishlaydi. AI (Claude yoki Gemini) faqat **ixtiyoriy chuqur tahlil qatlami**: u kalit bilan `npm start` orqali yoqiladi va qoidaviy natijaning o'rnini bosmaydi.
@@ -52,7 +54,7 @@ To'liq ro'yxat: [Cheklovlar](#cheklovlar). Qanday qurilgani va qarorlar: [`docs/
 ![Tizim aniqligi: boshlang'ich va hozirgi natija](docs/screenshots/5-aniqlik.png)
 </details>
 
-Eslatma: skrinshotlar va GIF P0-2 dagi yangi bosh sahifa matnidan oldin olingan. Bosh sahifaning hozirgi ko'rinishi saytning o'zida.
+Eslatma: bu skrinshotlar va GIF yangi bosh sahifa matnidan oldin olingan. Yangi 5 ta screenshot ro'yxati va olish tartibi: [`docs/SCREENSHOTS.md`](docs/SCREENSHOTS.md). Oflayn demo video: [`docs/VIDEO_DEMO.md`](docs/VIDEO_DEMO.md).
 
 ## Muammo
 
@@ -120,6 +122,8 @@ Bu o'zgarishlar `js/analyzer.js` ga tegadi, shuning uchun alohida qaror bilan qi
 ### 1. Saytni ochish (eng oddiy usul)
 `index.html` ni brauzerda oching. Internet va o'rnatish kerak emas: Chart.js ham `vendor/` ichida. AI'dan boshqa hamma narsa ishlaydi.
 
+**Lokal oflayn demo (taqdimot va video uchun):** `npm run demo:local` → http://127.0.0.1:3000. Server faqat shu kompyuterda ochiladi, `.env` o'qilmaydi va muhitdagi AI kalitlari serverga berilmaydi. "🤖 AI chuqur tahlil" tugmasi o'chiq turadi va yonida sababi yoziladi. Demo uchun eksport: `namuna/telegram-export-namuna.json` — **sintetik** fayl, real kanal emas.
+
 ### 2. Real Telegram eksportini yuklash
 1. **Telegram Desktop** → ish kanali → ⋮ → **Export chat history**
 2. Formatni **"Machine-readable JSON"** qilib tanlang. Rasm va videolarni belgilamang.
@@ -127,7 +131,7 @@ Bu o'zgarishlar `js/analyzer.js` ga tegadi, shuning uchun alohida qaror bilan qi
 4. Saytda **2. Bozor tahlili → 📂 Telegram eksportini yuklash** tugmasini bosing. Bir nechta `result.json` ni birdaniga tanlash mumkin.
 5. Import hisobotini tekshiring: nechta xabar o'qildi, nechta takror olib tashlandi, nechta e'lon tahlil qilindi.
 
-Fayl **faqat brauzerda** o'qiladi va serverga yuborilmaydi. Telefon, karta, JSHSHIR, pasport, email, `t.me` va `@username` tahlil va `localStorage` ga saqlashdan **oldin** yashiriladi. Niqob formatni saqlaydi (`+998 00 000 00 00`), shuning uchun shaffoflik bahosi o'zgarmaydi. O'chirish uchun "🗑️ Saqlangan ma'lumotni o'chirish" tugmasini bosing. Sinash uchun namunaviy fayl: `namuna/telegram-export-namuna.json`.
+Fayl **faqat brauzerda** o'qiladi va serverga yuborilmaydi. Telefon, karta, JSHSHIR, pasport, email, `t.me` va `@username` tahlil va `localStorage` ga saqlashdan **oldin** yashiriladi. Niqob formatni saqlaydi (`+998 00 000 00 00`), shuning uchun shaffoflik bahosi o'zgarmaydi. O'chirish uchun "🗑️ Saqlangan ma'lumotni o'chirish" tugmasini bosing. Sinash uchun sintetik namunaviy fayl (real kanal emas): `namuna/telegram-export-namuna.json`.
 
 Ma'lumotni doimiy fayl sifatida saqlash uchun: `python3 tools/telegram_export.py k1/result.json k2/result.json` → `js/real-data.js`. Skript ham xuddi shu qoidalar bilan yashiradi. Ismlar haqida ogohlantirish beradi: faylni commit qilishdan oldin uni qo'lda tekshiring.
 
@@ -210,10 +214,12 @@ npm run bot                   # .env dagi token avtomatik o'qiladi
 
 ### 5. Testlar
 ```bash
-npm test                 # 12 ta test fayli (147 ta unit test) + tests/run.mjs (aniqlik va sifat chegaralari)
-npm run test:ui          # 30 ta brauzer testi (Playwright o'rnatilmagan bo'lsa o'tkazib yuboriladi)
+npm test                 # 14 ta test fayli (162 ta unit test) + tests/run.mjs (aniqlik va sifat chegaralari)
+npm run test:ui          # 31 ta brauzer testi (Playwright o'rnatilmagan bo'lsa o'tkazib yuboriladi)
 npm run check:evidence   # README va docs dagi raqamlar repozitoriy dalillariga mosligi (testlarni ham sanaydi)
+npm run preflight        # topshirish oldidan: .env/data/qoralama git'da yo'qligi, kalitlar (fayllar va git tarixi), hujjatlar, testlar
 ```
+`npm run preflight -- --no-tests` testlarsiz tez ishlaydi; `-- --final` screenshot va video yo'qligini ham xato deb hisoblaydi. Topilgan kalitning o'zi chiqarilmaydi, faqat turi, joyi va uzunligi yoziladi.
 | Test fayli | Nimani tekshiradi | Soni |
 |---|---|---|
 | `tests/importer.test.mjs` | Telegram JSON, CSV, TXT o'qilishi; firibgar e'lonlar ham olinishi; takrorlar; buzilgan va HTML eksport | 9 |
@@ -228,8 +234,10 @@ npm run check:evidence   # README va docs dagi raqamlar repozitoriy dalillariga 
 | `tests/rules.test.mjs` | Har bir qoida umumiy naqshni topishi va noto'g'ri signal bermasligi (lotin, kirill, rus) | 20 |
 | `tests/validate.test.mjs` | Bo'sh va mazmunsiz matn bloklanishi; loyihadagi barcha real va namunaviy e'lonlar o'tishi | 8 |
 | `tests/demo-examples.test.mjs` | Bosh sahifadagi sintetik misollar va ularning iqtiboslari analizator natijasiga mosligi | 7 |
+| `tests/demo-local.test.mjs` | `npm run demo:local`: faqat `127.0.0.1`, muhitdagi AI kalitlari berilmaydi, `/api/ai` → 503, `.env` va server fayllari ochilmaydi, loglarda kalit yo'q | 5 |
+| `tests/preflight.test.mjs` | Vaqtinchalik git repolarda: `.env`, `data/`, qoralama va `result.json` commit qilinsa, soxta Anthropic/Gemini/Telegram kalitlari faylda, git tarixida yoki yangi faylda bo'lsa, `.gitignore` to'liq bo'lmasa preflight xato beradi va kalitni chiqarmaydi | 10 |
 | `tests/run.mjs` | v1, v2, v3 aniqligi, format tekshiruvi, sifat chegaralari | 10 chegara |
-| `tests/ui.e2e.mjs` | Brauzerda: 320–1366px ekranlarda gorizontal scroll yo'qligi, menyu, klaviatura, `aria-live`, validatsiya, hero va CTA, CSV formula himoyasi, kanallar reytingi, chop etish, yorug' va qorong'i rejimda WCAG AA kontrast | 30 |
+| `tests/ui.e2e.mjs` | Brauzerda: 320–1366px ekranlarda gorizontal scroll yo'qligi, menyu, klaviatura, `aria-live`, validatsiya, hero va CTA, CSV formula himoyasi, kanallar reytingi, chop etish, `demo:local` da AI tugmasi o'chiqligi, yorug' va qorong'i rejimda WCAG AA kontrast | 31 |
 
 ## Tuzilishi
 
@@ -251,6 +259,8 @@ js/ui-*.js, js/app.js       interfeys modullari, real/demo rejimlari
 tools/redact.mjs            shaxsiy ma'lumotni yashirish va v3 qoralamasi
 tools/eval-v3-baseline.mjs  v3 boshlang'ich natijani yozish
 tools/check-evidence.mjs    README va docs dagi raqamlarni repozitoriy bilan solishtirish
+tools/preflight-submission.mjs  topshirish oldidan kalitlar, taqiqlangan fayllar, hujjatlar va testlar
+tools/demo-local.mjs        kalitsiz lokal oflayn demo serveri (127.0.0.1)
 tools/telegram_export.py    eksportni js/real-data.js ga aylantirish
 config/                     valyuta kurslari va rasmiy manbalar
 prompts/analysis.mjs        AI promti va javob sxemasi (Claude va Gemini uchun bitta)
@@ -262,7 +272,7 @@ lib/safe-log.mjs            kalit, token va PII'siz xato logi
 lib/env.mjs                 .env faylini o'qish
 server.mjs, bot.mjs         veb-server va Telegram bot
 tests/                      testlar; tests/results/ — boshlang'ich natijalar va xatolar tahlili
-docs/                       JARAYON.md, TAQDIMOT.md, demo GIF va skrinshotlar
+docs/                       JARAYON.md, TAQDIMOT.md, SCREENSHOTS.md, VIDEO_DEMO.md, demo GIF va skrinshotlar
 ```
 
 ## Tahlil qanday ishlaydi
@@ -279,6 +289,8 @@ docs/                       JARAYON.md, TAQDIMOT.md, demo GIF va skrinshotlar
 
 - [`docs/JARAYON.md`](docs/JARAYON.md) — texnologiya tanlovi, AI qanday ishlatilgani, muammo → test → tuzatish → commit holatlari, xavfsizlik va cheklovlar.
 - [`docs/TAQDIMOT.md`](docs/TAQDIMOT.md) — 5 daqiqalik nutq, 5 daqiqalik jonli demo ssenariysi, 15 ta hakam savoliga javob va oflayn zaxira reja.
+- [`docs/SCREENSHOTS.md`](docs/SCREENSHOTS.md) — topshirish uchun 5 ta screenshot: o'lcham, rejim, nima ko'rinishi, ma'lumot turi, caption, PII tekshiruvi.
+- [`docs/VIDEO_DEMO.md`](docs/VIDEO_DEMO.md) — 90–120 soniyalik oflayn demo video ssenariysi va ekranni yozib olish yo'riqnomasi.
 
 ## v3 boshlang'ich natija (avtomatik yoziladi)
 

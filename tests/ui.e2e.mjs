@@ -2,7 +2,8 @@
 // Accessibility, mobil ko'rinish va kontrast (WCAG AA) — yorug' va qorong'i rejimda.
 // Playwright o'rnatilmagan bo'lsa test o'tkazib yuboriladi (npm test'ga kirmaydi).
 import assert from 'node:assert/strict';
-import { execSync } from 'node:child_process';
+import { execSync, spawn } from 'node:child_process';
+import net from 'node:net';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
@@ -419,6 +420,27 @@ for (const scheme of ['light', 'dark']) {
     await page.close();
   });
 }
+
+await test("npm run demo:local: kalitsiz server, e'lon tekshiriladi, '🤖 AI chuqur tahlil' o'chiq va sababi yozilgan", async () => {
+  const port = await new Promise(res => { const s = net.createServer(); s.listen(0, '127.0.0.1', () => { const p = s.address().port; s.close(() => res(p)); }); });
+  const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+  const child = spawn(process.execPath, ['tools/demo-local.mjs'], { cwd: ROOT, env: { PATH: process.env.PATH, PORT: String(port), GEMINI_API_KEY: 'AIza-test-NOT-REAL' } });
+  try {
+    let log = ''; child.stdout.on('data', d => { log += d; });
+    for (let i = 0; i < 100 && !log.includes('IshQalqon: http'); i++) await new Promise(r => setTimeout(r, 50));
+    const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+    const errors = []; page.on('pageerror', e => errors.push(e.message));
+    await page.goto(`http://127.0.0.1:${port}/`);
+    await page.fill('#input', "Koreyaga ish! Viza 100% kafolatlangan. Hujjatlar uchun oldindan 500$ to'lov qilasiz.");
+    await page.click('#btnCheck');
+    await page.waitForFunction(() => /faollashtirilmagan/.test(document.querySelector('#aiStatus')?.textContent || ''), null, { timeout: 5000 });
+    assert.match(await page.textContent('#result'), /Firibgarlik xavfi: yuqori/);
+    assert.equal(await page.isDisabled('#btnAi'), true);
+    assert.equal(await page.textContent('#aiStatus'), 'AI tahlil faollashtirilmagan: ANTHROPIC_API_KEY yoki GEMINI_API_KEY sozlanmagan.');
+    assert.deepEqual(errors, []);
+    await page.close();
+  } finally { child.kill('SIGINT'); }
+});
 
 await browser.close();
 console.log(`\n${passed} ta UI testi o'tdi${process.exitCode ? ', xatolar bor' : ''}\n`);

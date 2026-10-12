@@ -7,3 +7,17 @@ data/
 __pycache__/
 *.pyc
 !docs/screenshots/*.png
+# Real e'lonlarning ishchi qoralamalari va belgilash fayllari (PII bo'lishi mumkin)
+qoralama*.js
+belgilangan*.js
+hammasi.js
+v3-qoralama*.js
+# Telegram eksportlari (real ma'lumot) — namuna/ dagi sintetik fayldan tashqari
+result.json
+**/ChatExport*/
+
+# Demo video: lokal nusxa, git tarixiga qo'shilmaydi (docs/VIDEO_DEMO.md)
+docs/video/*.mp4
+docs/video/*.webm
+docs/video/*.mov
+docs/video/*.mkv
