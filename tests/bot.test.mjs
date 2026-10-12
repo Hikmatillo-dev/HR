@@ -126,7 +126,8 @@ try {
     const keys = Object.keys(JSON.parse(raw));
     assert.equal(keys.length, 1);
     assert.match(keys[0], /^[0-9a-f]{64}$/);
-    assert.ok(!/"42"|:\s*42\b/.test(raw), "user_id ochiq saqlangan");
+    // ":42" vaqt yozuvida ham bo'lishi mumkin ("…T19:42:07.123Z") — u user_id emas
+    assert.ok(!/"42"|:\s*42(?![\d:.])/.test(raw), "user_id ochiq saqlangan");
     assert.ok(!raw.includes('KOREYAGA') && !raw.includes('Kassir'), "e'lon matni saqlangan");
     const salt = readFileSync(path.join(dir, 'bot-salt'), 'utf8').trim();
     assert.equal(salt.length, 64);
