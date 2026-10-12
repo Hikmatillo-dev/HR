@@ -1,15 +1,42 @@
 # 🛡️ IshQalqon
 
-Telegram'dagi ish e'lonlarini **firibgarlik**, **odam savdosi belgilari** va **kamsitish** bo'yicha tekshiruvchi hamda mehnat bozorini tahlil qiluvchi platforma.
+Zamonaviy kasblar bozori, hududlar va maoshlar tahlili hamda ish e'lonlarini firibgarlik, odam savdosi belgilari va kamsitishga tekshirish.
 
-**🌐 Onlayn versiya:** https://hikmatillo-dev.github.io/HR/ — e'lon tekshiruvi va bozor tahlili to'liq brauzerda ishlaydi. AI chuqur tahlil va Telegram bot uchun loyihani o'z kompyuteringizda ishga tushiring (pastda).
+**🌐 Onlayn versiya:** https://hikmatillo-dev.github.io/HR/ (GitHub Pages). Agar manzil ochilmasa, `index.html` ni brauzerda oching: sayt internetsiz ham ishlaydi.
 
-| | |
-|---|---|
-| **Muammo** | O'zbekistonda ish e'lonlarining katta qismi Telegram kanallarida. U yerda oldindan pul so'rash, "kafolatlangan viza", pasportni olib qolish va yosh/jins bo'yicha kamsitish odatiy hol, lekin ularni hech kim tizimli tekshirmaydi. |
-| **Yechim** | E'lon matnini 15 dan ortiq firibgarlik va odam savdosi belgisi, 5 turdagi kamsitish va 7 mezonli shaffoflik indeksi bo'yicha baholaydi. Har bir baho **sababi** va maslahati bilan beriladi. O'zbek (lotin, kirill) va rus tilida ishlaydi. |
-| **Real ma'lumot** | 5 ta Telegram kanalidan 34 ta e'lon qo'lda belgilandi. Ularning **50%** ida yosh yoki jins cheklovi bor. Qoidalar o'zgartirilmasdan olingan natija: aniqlik 70.6%, xavfli e'lonni topish 16.7%. Tuzatilgandan keyin: 91.2% / 75.0%, halol e'lonni xavfli deyish 0%. |
-| **Qo'shimcha** | Telegram eksportini yuklab, kanal bo'yicha bozor tahlili (hududlar, kasblar, ko'nikmalar, kanallar reytingi); Claude AI orqali chuqur tahlil va kamsitishsiz e'lon matni; Telegram bot; shaxsiy ma'lumotni avtomatik yashirish. |
+## Hakam uchun 1 daqiqa
+
+**Bir jumlada:** IshQalqon yoshlarni zamonaviy kasblar bozoriga xavfsiz kirishga yordam beradigan platforma.
+
+**Nima beradi:**
+1. **Kasblar va ko'nikmalar.** Telegram'dagi ish e'lonlaridan qaysi kasb va ko'nikmalar so'ralayotganini ko'rsatadi: raqamli va an'anaviy ko'nikmalar, sohalar.
+2. **Hudud va maosh.** Qaysi hududda qancha e'lon borligini va maosh oralig'ini ko'rsatadi. Xarita, dinamika va sohalar bo'yicha maosh bor.
+3. **Xavfsiz vakansiyalar.** Har bir e'lonni firibgarlik, odam savdosi belgilari va kamsitishga tekshiradi. Baho **sababi va matndagi aniq iqtibos** bilan beriladi.
+
+**Demo oqimi (3 qadam):**
+1. **E'lon tekshirish.** "1. Tekshirish" bo'limiga e'lon matnini qo'ying yoki "Misol" tugmasini bosing → **Tekshirish**.
+2. **Telegram eksport.** "2. Bozor tahlili" → **📂 Telegram eksportini yuklash** → Telegram Desktop'dan olingan `result.json`. Sinash uchun: `namuna/telegram-export-namuna.json`.
+3. **Kasblar, ko'nikmalar, hududlar.** Xarita, "3. Kasblar" va "4. Kanallar" reytingi yuklangan ma'lumot asosida yangilanadi.
+
+**Ishga tushirish va testlar:**
+```bash
+npm install
+npm start          # http://localhost:3000
+npm test           # 147 ta unit test + aniqlik o'lchovi (v1, v2, v3) va sifat chegaralari
+npm run test:ui    # 30 ta brauzer testi (Playwright): mobil, klaviatura, kontrast
+```
+
+**AI'siz ham ishlaydi.** Asosiy tahlil — tushuntiriladigan qoidalar. Ular brauzerda, internetsiz va bepul ishlaydi. AI (Claude yoki Gemini) faqat **ixtiyoriy chuqur tahlil qatlami**: u kalit bilan `npm start` orqali yoqiladi va qoidaviy natijaning o'rnini bosmaydi.
+
+**Halol cheklovlar (qisqa):**
+- Real to'plam kichik: 5 ta Telegram kanalidan 34 ta e'lon. Qoidalar shu xatolar asosida tuzatilgani uchun hozirgi 91.2% natija optimistik. Halol ko'rsatkich — qoidalar o'zgartirilmasdan olingan boshlang'ich natija: 70.6% aniqlik, xavfli e'lonni topish 16.7%.
+- v3 da 6 ta e'lon hali noto'g'ri baholanadi. Yangi so'z bilan yozilgan firibgarlikni qoidalar o'tkazib yuborishi mumkin.
+- Claude API: real kalit bilan sinalmagan (faqat mock testlar).
+- Gemini API: real kalit bilan faqat qo'lda sinalgan (avtomatik test mock bilan).
+- Telegram bot: real token bilan sinalmagan (faqat soxta Telegram server bilan).
+- Valyuta kurslari taxminiy, rasmiy idoralar ro'yxati `verified: false`.
+
+To'liq ro'yxat: [Cheklovlar](#cheklovlar). Qanday qurilgani va qarorlar: [`docs/JARAYON.md`](docs/JARAYON.md). Taqdimot va savol-javoblar: [`docs/TAQDIMOT.md`](docs/TAQDIMOT.md).
 
 <p><img src="docs/demo.gif" alt="19 soniyalik demo: jonli misol, kirillcha Koreya firibgarligini tekshirish (yuqori xavf, odam savdosi belgisi, 2 ta kamsitish), kanallar reytingi" width="760"></p>
 
@@ -25,89 +52,73 @@ Telegram'dagi ish e'lonlarini **firibgarlik**, **odam savdosi belgilari** va **k
 ![Tizim aniqligi: boshlang'ich va hozirgi natija](docs/screenshots/5-aniqlik.png)
 </details>
 
-## Current limitations (hozirgi cheklovlar)
+Eslatma: skrinshotlar va GIF P0-2 dagi yangi bosh sahifa matnidan oldin olingan. Bosh sahifaning hozirgi ko'rinishi saytning o'zida.
 
-Hakamlar va foydalanuvchilar uchun halol holat (2026-10-11):
+## Muammo
 
-- **Dashboard hali real ma'lumot bilan sinalmagan.** Sukut bo'yicha sayt "Real ma'lumot yuklanmagan" holatini ko'rsatadi. 600 ta sintetik e'lon faqat **Demo** rejimida, har bir bo'limda "DEMO" belgisi bilan ko'rinadi. Real raqamlar uchun Telegram eksportini yuklash kerak.
-- **Real ma'lumotdagi sifat o'lchandi, lekin to'plam kichik.** v3: 5 ta kanaldan 34 ta real e'lon. Qoidalar o'zgartirilmasdan olingan boshlang'ich natija: aniqlik **70.6%**, xavfli e'lonlarni topish **16.7%**. Qoidalar shu xatolar asosida tuzatilgach: aniqlik **91.2%**, xavfli topish **75.0%**, FPR **0%**, kamsitish **100%**. Bu natija optimistik, chunki qoidalar aynan shu e'lonlarga qarab tuzatilgan. Mustaqil tekshiruv uchun hali ko'rilmagan e'lonlar (v4) kerak.
-- **v3 da 6 ta e'lon hali to'g'ri baholanmaydi:** v3-003, v3-028 ("high" kutilgan, "medium" chiqadi); v3-007, v3-011, v3-033 (qoidalar ish va talab mos kelmasligini sezmaydi); v3-034 (tizim "xorijga ish + to'lov" ni odam savdosi belgisi deydi, inson belgisida bu yo'q — qaror kutilmoqda).
-- **Test to'plami kichik va qo'lda tayyorlangan.** 87 ta e'lonni loyiha muallifi yozgan, ular real Telegram e'lonlari emas. Qoidalar 49 ta yangi e'lonni ko'rmasdan oldingi natija: aniqlik **85%**, xavfli e'lonlarni topish **65%**, odam savdosi belgilarini topish **50%**. Hozirgi 100% natija optimistik, chunki qoidalar aynan shu xatolar asosida tuzatilgan.
-- **Claude API real kalit bilan hali sinovdan o'tmagan.** U faqat soxta (mock) API bilan 11 ta avtomatik testdan o'tgan.
-- **Telegram bot real token bilan hali ishga tushirilmagan.** `/start`, `/help`, `/check` va `/stats` soxta Telegram server bilan 14 ta testdan o'tgan.
-- **Valyuta kurslari taxminiy:** 1 USD = 12 600, 1 EUR = 13 700, 1 RUB = 150 so'm. Kurslar `config/currency.js` da va `.env` orqali almashtiriladi; UI'da "Kurslar taxminiy" belgisi chiqadi. Lekin `js/analyzer.js` hali config'ga ulanmagan (pastdagi "Kutilayotgan ishlar"ga qarang). Kurslar faqat maosh baholashga ta'sir qiladi.
-- **Rasmiy idoralar tasdiqlanmagan.** `config/official-sources.js` dagi ikkala manba `verified: false`: ular veb-qidiruvda topilgan, lekin `gov.uz` sahifalari ishlab chiqish muhitidan ochilmadi. Qidiruv natijalariga ko'ra "Tashqi mehnat migratsiyasi agentligi" endi "Vazirlar Mahkamasi huzuridagi Migratsiya agentligi" deb ataladi. UI'da "tekshirilmagan" belgisi chiqadi.
-- **Ma'lum xato holatlar:** qoidalar kalit so'zlarga tayanadi. `tests/rules.test.mjs` dagi 31 ta turli sun'iy e'lon (oddiy firibgarlik, rus va kirill yozuvi, halol e'lonlar) to'g'ri ajratiladi, lekin bu ham qo'lda yozilgan to'plam. Yangi so'z yoki imlo bilan yozilgan firibgarlikni o'tkazib yuborishi mumkin. Ikkala jinsga murojaat kabi kutilmagan iboralarni esa noto'g'ri belgilashi mumkin. Har bir topilgan xato `js/test-set.js` ga qo'shiladi.
+O'zbekistonda ko'p ish e'lonlari Telegram kanallarida joylanadi. Yosh odam u yerda zamonaviy kasblar haqida ham, xavfli takliflar haqida ham bir oqimda o'qiydi. Oldindan pul so'rash, "kafolatlangan viza", pasportni olib qolish va yosh yoki jins bo'yicha cheklov uchraydi, lekin ularni tizimli tekshiradigan vosita yo'q. Real namunamizdagi 34 ta e'londan 17 tasida (50%) yosh yoki jins cheklovi bor (inson belgilagan).
 
-## Evaluation (sifatni o'lchash)
+## Natijalar: halol raqamlar
 
-| To'plam | Fayl | Manba | Hajm | Vazifasi |
-|---|---|---|---|---|
-| **v1** | `js/test-set.js` | qo'lda yozilgan | 38 | Qoidalar shu e'lonlar asosida yozilgan (regressiya testi) |
-| **v2** | `js/test-set.js` | qo'lda yozilgan, qiyin holatlar | 49 | Boshlang'ich natija: aniqlik 85.4%, xavfli topish 64.7%, FPR 3.2%, kamsitish 72.7%, odam savdosi 50% |
-| **v3** | `js/test-set-v3.js` | **real Telegram e'lonlari** (5 kanal) | 34 | Boshlang'ich natija: aniqlik 70.6%, xavfli topish 16.7%. Hozir: 91.2% / 75.0% |
-| qoida testlari | `tests/rules.test.mjs` | sun'iy, turli yozilish | 20 test, shu jumladan 31 ta e'lon | Har bir qoida umumiy naqshni topishi va noto'g'ri signal bermasligi |
+| To'plam | Fayl | Manba | Hajm | Boshlang'ich natija (qoidalar ko'rmasdan) | Hozirgi natija |
+|---|---|---|---|---|---|
+| **v1** | `js/test-set.js` | qo'lda yozilgan | 38 | — (qoidalar shu e'lonlar asosida yozilgan) | regressiya testi |
+| **v2** | `js/test-set.js` | qo'lda yozilgan, qiyin holatlar | 49 | aniqlik 85.4%, xavfli topish 64.7%, FPR 3.2% (48 ta e'londa) | v1+v2: 100.0% (optimistik) |
+| **v3** | `js/test-set-v3.js` | **real Telegram e'lonlari**, 5 kanal | 34 | aniqlik 70.6%, xavfli topish 16.7% (2/12) | aniqlik 91.2%, xavfli topish 75.0% (9/12), FPR 0.0% (0/22) |
 
-`npm test` uchala to'plamni alohida hisoblaydi. U formatni tekshiradi va quyidagi hollarda xato beradi:
+**91.2% nimani bildiradi:** 34 ta real e'londan 31 tasida tizim "xavfli yoki xavfsiz" degan qarorni inson belgisi bilan bir xil chiqaradi. Qoidalar aynan shu 34 ta e'londagi xatolar asosida umumiy holatga keltirib tuzatilgan. Shuning uchun bu yakuniy real aniqlik emas, optimistik natija. Mustaqil tekshiruv uchun hali ko'rilmagan e'lonlar (v4) kerak. `npm test` v3 natijasi boshlang'ich natijadan pasaysa xato beradi.
+
+`npm test` uchala to'plamni alohida hisoblaydi va quyidagi hollarda xato beradi:
+- test e'lonlarining formati buzilsa yoki ularda yashirilmagan raqam qolsa;
+- v1+v2 sifat chegaralari buzilsa (xavfli topish ≥ 90%, FPR ≤ 10%, kamsitish ≥ 85%, odam savdosi ≥ 80%);
 - v2 natijasi `tests/results/v2-reference.json` dagidan 5 punktdan ko'p pasaysa;
 - v3 natijasi boshlang'ich natijadan yomonlashsa.
 
-### v3 ni to'ldirish tartibi
-1. **Qoralama:** `node tools/redact.mjs --from-export result.json --channel @kanal --limit 50 > v3-qoralama.js`. Telefon (UZ va RU), karta, JSHSHIR, pasport raqami, email, `t.me` va `@username` yashiriladi. STIR o'zgarmaydi, tizim bahosi ko'rsatilmaydi. "Dilnoza opa" kabi ismlar avtomatik yashirilmaydi: qoralamada `⚠️` izohi chiqadi, ularni qo'lda tekshiring.
-2. **Belgilash:** har bir `TODO` ni e'lonni o'qib, **tizimga qaramasdan** to'ldiring (format: `js/test-set-v3.js` boshidagi izoh).
-3. **Qo'shish:** e'lonlarni `js/test-set-v3.js` dagi massivga qo'shing va `npm test` ishga tushiring. Format xatosi yoki yashirilmagan raqam bo'lsa, test aniq xabar beradi.
-4. **Commit:** `git commit -m "test: add v3 real postings"`.
-5. **Boshlang'ich natija:** `npm run eval:v3-baseline`. `analyzer.js` ga tegmang. Natija `tests/results/v3-baseline.json` ga, quyidagi blokka va "Loyiha haqida" bo'limiga yoziladi. Keyin uni commit qiling.
-6. **Xatolar tahlili:** `tests/results/v3-errors.md` dagi har bir xato uchun sabab va umumiy tuzatishni yozing. So'ng qoidalarni tuzating va `npm test` ishga tushiring.
+Batafsil xatolar ro'yxati: `node tests/run.mjs --verbose`.
 
-**Boshlang'ich natija himoyasi:**
-- Birinchi yozishda `js/` va `tools/` toza bo'lishi kerak: `analyzer.js`, `evaluate.js` va `test-set-v3.js` commit qilingan, yangi fayllar ham yo'q.
-- Natijaga git commit, sana, e'lonlar soni hamda `analyzer.js`, `evaluate.js` va `test-set-v3.js` ning SHA-256 xeshlari yoziladi. Shu orqali natija aynan qaysi qoidalar, metrikalar va e'lonlar bilan olinganini isbotlash mumkin.
-- Qayta o'lchash `npm run eval:v3-baseline -- --force` bilan bajariladi. U faqat butun repozitoriy toza bo'lganda ishlaydi, eski natija esa `tests/results/archive/` ga vaqt belgisi bilan ko'chiriladi.
+<a id="cheklovlar"></a>
+## Cheklovlar
 
-<!-- v3-baseline:start -->
-**v3 boshlang'ich natija** (real e'lonlar, qoidalar o'zgartirilmasdan): 2026-10-11, 34 ta e'lon, commit `ac296f1`
+Hakamlar va foydalanuvchilar uchun halol holat:
 
-SHA-256: `analyzer.js` `38ceba487377…` · `evaluate.js` `369f131cab8a…` · `test-set-v3.js` `758f4a6fe878…`
+- **Real to'plam kichik.** v3: 5 ta kanaldan 34 ta e'lon. Boshlang'ich natija: aniqlik 70.6%, xavfli topish 16.7%. Tuzatilgandan keyin: 91.2% / 75.0%, FPR 0.0%, kamsitish 100.0%. Bu natija optimistik (yuqoriga qarang).
+- **v3 da 6 ta e'lon hali to'g'ri baholanmaydi:** v3-003, v3-028 (xavfli, lekin ba'zi belgilar topilmaydi); v3-007, v3-011, v3-033 (qoidalar ish va talab mos kelmasligini sezmaydi); v3-034 (tizim "xorijga ish + to'lov" ni odam savdosi belgisi deydi, inson belgisida bu yo'q — qaror kutilmoqda).
+- **Qoidalar kalit so'zlarga tayanadi.** `tests/rules.test.mjs` dagi sun'iy e'lonlar to'g'ri ajratiladi, lekin bu ham qo'lda yozilgan to'plam. Yangi so'z yoki imlo bilan yozilgan firibgarlikni o'tkazib yuborishi, kutilmagan iborani noto'g'ri belgilashi mumkin.
+- **Bozor tahlili kichik namunada.** Sukut bo'yicha sayt 34 ta real e'lonni ko'rsatadi. Kasblar bo'limi 30 tadan kam ishonchli e'londa grafik o'rniga "Ma'lumot yetarli emas" deydi. 600 ta sintetik e'lon faqat **Demo** rejimida, "DEMO" belgisi bilan ko'rinadi. Bosh sahifadagi jonli misollar ham sintetik va "Demo misol" deb belgilangan.
+- **Claude API: real kalit bilan sinalmagan.** Xato holatlari soxta (mock) API bilan 14 ta avtomatik testda tekshirilgan.
+- **Gemini API: real kalit bilan faqat qo'lda sinalgan.** Muallif bepul kalit bilan lokal ishlatib ko'rgan. Avtomatik testlar (13 ta) mock API bilan.
+- **Telegram bot: real token bilan sinalmagan.** `/start`, `/help`, `/check` va `/stats` soxta Telegram server bilan 21 ta testdan o'tgan.
+- **GitHub Pages** uchun repozitoriy tayyor (`.nojekyll`, nisbiy yo'llar), lekin onlayn manzil ishlab chiqish muhitidan ochib tekshirilmagan.
+- **CI** (GitHub Actions) faqat `npm test` ni ishga tushiradi. Brauzer testlari (`npm run test:ui`) lokal ishga tushiriladi.
+- **Valyuta kurslari taxminiy:** 1 USD = 12 600, 1 EUR = 13 700, 1 RUB = 150 so'm. Kurslar `config/currency.js` da va `.env` orqali almashtiriladi, UI'da "Kurslar taxminiy" belgisi chiqadi. Lekin `js/analyzer.js` hali config'ga ulanmagan (pastga qarang). Kurslar faqat maosh baholashga ta'sir qiladi.
+- **Rasmiy idoralar tasdiqlanmagan.** `config/official-sources.js` dagi manbalar `verified: false`: ular veb-qidiruvda topilgan, lekin `gov.uz` sahifalari ishlab chiqish muhitidan ochilmadi. UI'da "tekshirilmagan" belgisi chiqadi.
+- **Brauzerlar:** UI testlari Chromium'da ishlaydi. Safari va Firefox, shuningdek ekran o'quvchi bilan qo'lda tekshiruv qilinmagan.
 
-| Ko'rsatkich | Natija |
-|---|---|
-| Umumiy aniqlik | 70.6% |
-| Xavfli e'lonlarni topish (recall) | 16.7% (2/12) |
-| "Xavfli" deganida to'g'ri bo'lishi (precision) | 100.0% |
-| Halol e'lonni xavfli deyish (FPR) | 0.0% (0/22) |
-| Kamsitishni topish | 70.6% |
-| Odam savdosini topish | — |
-| Sabablar aniqligi (kutilgan belgilar topildi) | 28.6% |
-
-Xato bo'lgan testlar (25): v3-001, v3-002, v3-003, v3-004, v3-005, v3-006, v3-007, v3-008, v3-009, v3-010, v3-011, v3-012, v3-013, v3-014, v3-015, v3-016, v3-017, v3-027, v3-028, v3-029, v3-030, v3-031, v3-032, v3-033, v3-034. Tahlil: `tests/results/v3-errors.md`.
-<!-- v3-baseline:end -->
-
-## Kutilayotgan ishlar (v3 baseline yozilgandan keyin)
-
-Bu o'zgarishlar `js/analyzer.js` ga tegadi. v3 boshlang'ich natija o'zgartirilmagan qoidalar bilan olinishi uchun ular keyinga qoldirilgan.
-1. **`js/analyzer.js` ni `config/currency.js` ga ulash.** O'zgarmaslar o'rniga `IQCurrency.rates` ishlatiladi. Shundan keyin `.env` dagi `IQ_RATE_*` maosh hisobiga ham ta'sir qiladi. Hozircha `tests/config.test.mjs` ikkala joydagi qiymat bir xilligini tekshiradi, server esa `.env` da kurs berilganda ogohlantiradi.
-2. **Agentlik nomini rasmiy manbadan tasdiqlash.** "Xorijga ish" maslahati endi "Migratsiya agentligi (avvalgi nomi — Tashqi mehnat migratsiyasi agentligi)" deydi. `config/official-sources.js` dagi manbalar tasdiqlangach, `verified: true` qilinadi.
+### Kutilayotgan ishlar
+Bu o'zgarishlar `js/analyzer.js` ga tegadi, shuning uchun alohida qaror bilan qilinadi.
+1. **`js/analyzer.js` ni `config/currency.js` ga ulash.** Shundan keyin `.env` dagi `IQ_RATE_*` maosh hisobiga ham ta'sir qiladi. Hozircha `tests/config.test.mjs` ikkala joydagi qiymat bir xilligini tekshiradi.
+2. **Agentlik nomini rasmiy manbadan tasdiqlash** va `config/official-sources.js` da `verified: true` qilish.
 
 ## Imkoniyatlar
 
 | Bo'lim | Nima qiladi |
 |---|---|
-| **1. Tekshirish** | Xavf bali (0–100) va shaffoflik indeksi (0–100). Har bir belgi uchun sabab va matndagi aniq ibora ko'rsatiladi. Odam savdosi belgisi alohida chiqadi. O'zbek (lotin, kirill) va rus tili hamda aralash yozuv qo'llab-quvvatlanadi. |
-| **2. Bozor tahlili** | Real / Demo rejimlari va import hisoboti: xabarlar, vakansiyaga o'xshash, takroriy, noyob, xavf taqsimoti. Ko'rsatkichlar, hududlar xaritasi, dinamika, avtomatik xulosalar, CSV va PDF. |
-| **3. Kasblar** | Talab va maosh xaritasi, ko'nikmalar (raqamli va an'anaviy), sohalar bo'yicha maosh. |
-| **4. Kanallar** | Telegram kanallarga A–F reyting. |
+| **Bosh sahifa** | "Zamonaviy kasblar bozoriga xavfsiz kiring": 3 ta qiymat, 2 ta asosiy harakat (tekshirish, kasblar), real namuna raqamlari va ularning manbasi, sintetik jonli misol. |
+| **1. Tekshirish** | Xavf bali (0–100) va shaffoflik indeksi (0–100). Har bir belgi uchun sabab va matndagi aniq ibora. Firibgarlik xavfi va kamsitish alohida, odam savdosi belgisi alohida ko'rsatiladi. Bo'sh yoki mazmunsiz matnga ("abc") baho berilmaydi. O'zbek (lotin, kirill) va rus tili. |
+| **2. Bozor tahlili** | Real / Demo rejimlari va import hisoboti: xabarlar, vakansiyaga o'xshash, takroriy, noyob, xavf taqsimoti. Ko'rsatkichlar, hududlar xaritasi, dinamika, avtomatik xulosalar, CSV va PDF (chop etish). |
+| **3. Kasblar** | Talab va maosh xaritasi, ko'nikmalar (raqamli va an'anaviy), sohalar bo'yicha maosh. Ma'lumot kam bo'lsa — "Ma'lumot yetarli emas". |
+| **4. Kanallar** | Telegram kanallarga A–F reyting: yuqori xavf to'liq, o'rtacha xavf va kamsitish yarim og'irlik bilan. |
 | **5. Baza** | Filtrlash va qidirish mumkin bo'lgan vakansiyalar ro'yxati. |
 | **6. Ish beruvchilar** | Halol va kamsitishsiz vakansiya yaratuvchi. |
 | **7. Xavfsizlik** | 10 ta qoida va xorijga ketishdan oldingi tekshiruv ro'yxati. |
 | **8. Loyiha** | Aniqlik ko'rsatkichlari: boshlang'ich (notanish e'lonlar) va hozirgi natija alohida. |
-| **AI (ixtiyoriy)** | Claude orqali xulosa, iqtiboslar bilan sabablar, odam savdosi belgilari, yetishmayotgan ma'lumotlar, ish beruvchiga beriladigan savollar va kamsitishsiz variant. |
-| **Telegram bot** | E'lonni yuborish yoki forward qilish orqali tekshirish. |
+| **AI (ixtiyoriy)** | Claude yoki Gemini orqali xulosa, iqtiboslar bilan sabablar, odam savdosi belgilari, yetishmayotgan ma'lumotlar, ish beruvchiga beriladigan savollar va kamsitishsiz variant. |
+| **Telegram bot** | E'lonni `/check` bilan yuborish yoki forward qilish orqali tekshirish; `/stats`. |
 
 ## Ishga tushirish
 
 ### 1. Saytni ochish (eng oddiy usul)
-`index.html` ni brauzerda oching. Internet va o'rnatish kerak emas. AI'dan boshqa hamma narsa ishlaydi.
+`index.html` ni brauzerda oching. Internet va o'rnatish kerak emas: Chart.js ham `vendor/` ichida. AI'dan boshqa hamma narsa ishlaydi.
 
 ### 2. Real Telegram eksportini yuklash
 1. **Telegram Desktop** → ish kanali → ⋮ → **Export chat history**
@@ -196,94 +207,97 @@ npm run bot                   # .env dagi token avtomatik o'qiladi
 - `config/currency.js`: kurslar, ularning sanasi va manbasi. `.env` dagi `IQ_RATE_USD`, `IQ_RATE_EUR`, `IQ_RATE_RUB`, `IQ_RATES_UPDATED` va `IQ_RATES_SOURCE` bu qiymatlarni almashtiradi. Sana ko'rsatilmasa yoki u 30 kundan eski bo'lsa, UI'da "Kurslar taxminiy" belgisi chiqadi.
 - `config/official-sources.js`: rasmiy idoralar ro'yxati. Har biri uchun nom, havola, `verified` holati, tekshirilgan sana va dalil yoziladi. Manbani tekshirganingizdan keyin `verified: true` qiling.
 
+
 ### 5. Testlar
 ```bash
-npm test
+npm test                 # 12 ta test fayli (147 ta unit test) + tests/run.mjs (aniqlik va sifat chegaralari)
+npm run test:ui          # 30 ta brauzer testi (Playwright o'rnatilmagan bo'lsa o'tkazib yuboriladi)
+npm run check:evidence   # README va docs dagi raqamlar repozitoriy dalillariga mosligi (testlarni ham sanaydi)
 ```
-| Test fayli | Nimani tekshiradi |
-|---|---|
-| `tests/importer.test.mjs` | Telegram JSON, CSV, TXT o'qilishi, takrorlar, buzilgan fayllar (8 test) |
-| `tests/ai-gemini.test.mjs` | Gemini provayderi mock API bilan: so'rov formati (kalit sarlavhada), sxema mosligi, prompt injection, thought qismlari, buzilgan JSON, SAFETY/bloklangan, MAX_TOKENS, noto'g'ri kalit, 429+retry, 503+retry, timeout, to'qilgan iqtibos, provayder tanlash (13 test) |
-| `tests/ai.test.mjs` | AI xato holatlari mock API bilan: buzilgan JSON, sxema, ortiqcha maydon, refusal, 401, 429, 500+retry, timeout, bo‘sh/uzun matn, kalitsiz rejim; prompt injection (`</posting>` neytrallanishi); to‘qilgan iqtibosni aniqlash (14 test) |
-| `tests/redact.test.mjs` | Telefon (UZ, RU), karta, JSHSHIR, pasport, email, `t.me`, `@username` yashirilishi; STIR saqlanishi; validator; analyzer natijasi o'zgarmasligi; import va REPL'da yiqilmaslik; v3 qoralamasi (14 test) |
-| `tests/redact-parity.test.mjs` | `js/pii.js` va `tools/telegram_export.py` bir xil yashirishi (10 holat; Python bo'lmasa o'tkazib yuboriladi) |
-| `tests/baseline.test.mjs` | Boshlang'ich natija skripti: qayta yozish taqiqi, `--force` va git tekshiruvi, arxivlash; commit qilinmagan `analyzer.js`, `evaluate.js`, `test-set-v3.js` va yangi fayllar; uchala SHA-256 xesh va `evaluate.js` o'zgarganda yangi xesh (11 test) |
-| `tests/bot.test.mjs` | Bot: 4 buyruq, HTML escape, bo'laklash va 4096 chegarasi, disclaimer, `/stats` va xeshlangan `user_id`; AI faqat `/check`, foydalanuvchi va kunlik AI limiti; guruh qoidalari; xavfsiz log; tokensiz va 401 holatlari; soxta Telegram server bilan to'liq oqim (21 test) |
-| `tests/config.test.mjs` | Config va `analyzer.js` kurslari bir xilligi, `.env` orqali almashtirish, eskirgan kurs, rasmiy manbalar formati, server orqali uzatish (6 test) |
-| `tests/ui.e2e.mjs` (`npm run test:ui`) | Brauzerda (Playwright): xaritani klaviatura bilan boshqarish, `aria-live`, 390px va 1280px ekranda kasb nomlari ustma-ust tushmasligi, gorizontal scroll yo'qligi, yorug' va qorong'i rejimda WCAG AA kontrast (7 test). Playwright o'rnatilmagan bo'lsa o'tkazib yuboriladi |
-| `tests/server-security.test.mjs` | `/api/ai`: Content-Type (415), Origin (403), faqat `127.0.0.1`, kunlik va IP limiti, `X-Forwarded-For` ni soxtalashtirish, `IQ_TRUST_PROXY`, loglarda kalit va PII yo'qligi (13 test, haqiqiy `server.mjs` + mock API) |
-| `tests/run.mjs` | v1, v2, v3 bo'yicha aniqlik, xavfli topish, FPR, kamsitish, odam savdosi, sabablar; format tekshiruvi; v2 regressiya chegarasi |
-
-Batafsil xatolar ro'yxati: `node tests/run.mjs --verbose`.
+| Test fayli | Nimani tekshiradi | Soni |
+|---|---|---|
+| `tests/importer.test.mjs` | Telegram JSON, CSV, TXT o'qilishi; firibgar e'lonlar ham olinishi; takrorlar; buzilgan va HTML eksport | 9 |
+| `tests/redact.test.mjs` | Telefon (UZ, RU), karta, JSHSHIR, pasport, email, `t.me`, `@username` yashirilishi; STIR saqlanishi; validator; v3 qoralamasi | 14 |
+| `tests/redact-parity.test.mjs` | `js/pii.js` va `tools/telegram_export.py` bir xil yashirishi (Python bo'lmasa o'tkazib yuboriladi) | 10 |
+| `tests/ai.test.mjs` | Claude yo'li mock API bilan: buzilgan JSON, sxema, ortiqcha maydon, refusal, 401, 429, 500+retry, timeout, kalitsiz rejim, prompt injection, to'qilgan iqtibos | 14 |
+| `tests/ai-gemini.test.mjs` | Gemini yo'li mock API bilan: kalit sarlavhada, sxema mosligi, prompt injection, SAFETY, MAX_TOKENS, 429+retry, timeout, provayder tanlash | 13 |
+| `tests/baseline.test.mjs` | Boshlang'ich natija skripti: qayta yozish taqiqi, `--force` va git tekshiruvi, arxivlash, SHA-256 xeshlar | 11 |
+| `tests/bot.test.mjs` | Bot: 4 buyruq, HTML escape, bo'laklash, disclaimer, `/stats` va xeshlangan `user_id`, AI limitlari, guruh qoidalari, soxta Telegram server bilan to'liq oqim | 21 |
+| `tests/server-security.test.mjs` | `/api/ai`: Content-Type (415), Origin (403), faqat `127.0.0.1`, kunlik va IP limiti, `X-Forwarded-For`, loglarda kalit va PII yo'qligi | 14 |
+| `tests/config.test.mjs` | Config va `analyzer.js` kurslari bir xilligi, `.env` orqali almashtirish, rasmiy manbalar formati | 6 |
+| `tests/rules.test.mjs` | Har bir qoida umumiy naqshni topishi va noto'g'ri signal bermasligi (lotin, kirill, rus) | 20 |
+| `tests/validate.test.mjs` | Bo'sh va mazmunsiz matn bloklanishi; loyihadagi barcha real va namunaviy e'lonlar o'tishi | 8 |
+| `tests/demo-examples.test.mjs` | Bosh sahifadagi sintetik misollar va ularning iqtiboslari analizator natijasiga mosligi | 7 |
+| `tests/run.mjs` | v1, v2, v3 aniqligi, format tekshiruvi, sifat chegaralari | 10 chegara |
+| `tests/ui.e2e.mjs` | Brauzerda: 320–1366px ekranlarda gorizontal scroll yo'qligi, menyu, klaviatura, `aria-live`, validatsiya, hero va CTA, CSV formula himoyasi, kanallar reytingi, chop etish, yorug' va qorong'i rejimda WCAG AA kontrast | 30 |
 
 ## Tuzilishi
 
 ```
-index.html, css/            sahifa va dizayn
+index.html, css/, assets/   sahifa, dizayn, logotip
+vendor/chart.umd.js         Chart.js 4.4.1 (lokal nusxa, internet kerak emas)
 js/analyzer.js              TAHLIL YADROSI: qoidalar, maosh, hudud, kasb, shaffoflik, odam savdosi
+js/validate-posting.js      bo'sh va mazmunsiz matnni tahlildan oldin to'xtatish
 js/importer.js              Telegram JSON / CSV / TXT importi va takrorlarni aniqlash
 js/pii.js                   shaxsiy ma'lumotni topish va yashirish (yagona manba)
 js/evaluate.js              aniqlik metrikalari (brauzer va testlar uchun bitta modul)
-js/test-set.js              qo'lda belgilangan test to'plami + boshlang'ich natija
-js/test-set-v3.js           REAL Telegram e'lonlari (v3), hozircha bo'sh
+js/test-set.js              qo'lda belgilangan test to'plami (v1, v2) + v2 boshlang'ich natija
+js/test-set-v3.js           REAL Telegram e'lonlari (v3): 34 ta, shaxsiy ma'lumot yashirilgan
 js/results-v3-baseline.js   v3 boshlang'ich natija (brauzer uchun, avtomatik)
+js/sample-data.js           600 ta SINTETIK e'lon (faqat Demo rejimi)
+js/demo-examples.js         bosh sahifadagi SINTETIK jonli misollar
+js/real-data.js             ixtiyoriy doimiy real ma'lumot (hozir bo'sh)
+js/ui-*.js, js/app.js       interfeys modullari, real/demo rejimlari
 tools/redact.mjs            shaxsiy ma'lumotni yashirish va v3 qoralamasi
 tools/eval-v3-baseline.mjs  v3 boshlang'ich natijani yozish
-config/currency.js          valyuta kurslari (.env orqali almashtiriladi)
-config/official-sources.js  rasmiy idoralar va havolalar (tekshirilgan holati bilan)
-tests/results/              v2-reference.json, v3-baseline.json, v3-errors.md, archive/
-js/ui-*.js, js/app.js       interfeys modullari, real/demo rejimlari
-js/sample-data.js           600 ta SINTETIK e'lon (faqat Demo rejimi)
-prompts/analysis.mjs        Claude promti va javob sxemasi
-lib/ai.mjs                  Claude API chaqiruvi va xatolarni boshqarish
-server.mjs, bot.mjs         veb-server va Telegram bot (Telegram bilan aloqa)
-lib/bot-core.mjs            bot buyruqlari, formatlash, bo'laklash (testlanadi)
+tools/check-evidence.mjs    README va docs dagi raqamlarni repozitoriy bilan solishtirish
+tools/telegram_export.py    eksportni js/real-data.js ga aylantirish
+config/                     valyuta kurslari va rasmiy manbalar
+prompts/analysis.mjs        AI promti va javob sxemasi (Claude va Gemini uchun bitta)
+lib/ai.mjs                  Claude va Gemini chaqiruvi, xatolarni boshqarish
+lib/bot-core.mjs            bot buyruqlari, formatlash, bo'laklash
 lib/bot-store.mjs           /stats: tuzli SHA-256 bilan anonim statistika
 lib/ai-quota.mjs            AI kunlik va oyna (IP / foydalanuvchi) limitlari
 lib/safe-log.mjs            kalit, token va PII'siz xato logi
-tools/telegram_export.py    eksportni js/real-data.js ga aylantirish
+lib/env.mjs                 .env faylini o'qish
+server.mjs, bot.mjs         veb-server va Telegram bot
+tests/                      testlar; tests/results/ — boshlang'ich natijalar va xatolar tahlili
+docs/                       JARAYON.md, TAQDIMOT.md, demo GIF va skrinshotlar
 ```
 
 ## Tahlil qanday ishlaydi
 
-- **Firibgarlik (14 belgi):** oldindan to'lov, karta yoki SMS kod so'rash, pasportni olib qolish, qarz evaziga ishlash, hujjatsiz ishlash, kafolatlangan viza, piramida, "oson pul", shubhali havola, xorij, ko'ngilochar soha, shoshiltirish, yashirin ma'lumot, real bo'lmagan maosh.
+- **Firibgarlik (15 qoida + real bo'lmagan maosh):** oldindan to'lov, karta yoki SMS kod so'rash, pasportni olib qolish, pasport nusxasi, qarz evaziga ishlash, hujjatsiz ishlash, kafolatlangan viza, piramida va referal sxema, topshiriq firibgarligi, "oson pul", shubhali havola, xorij, ko'ngilochar soha, shoshiltirish, yashirin ish mazmuni.
 - **Kritik belgilar:** pul, karta yoki SMS kod, pasport yoki qarz so'ralsa, e'lon kamida "yuqori xavf" deb baholanadi.
 - **Inkor tushuniladi:** "depozit yo'q", "garov talab qilinmaydi" kabi iboralar xavf belgisi hisoblanmaydi.
 - **Odam savdosi:** pasportni olib qolish yoki qarz qulligi; yoxud xorijga ish bilan birga to'lov, kafolatlangan viza, ko'ngilochar soha yoki hujjatsiz ishlash.
 - **Kamsitish (5 tur):** yosh, jins, tashqi ko'rinish, oilaviy holat, millat yoki propiska. Har biri uchun qanday tuzatish kerakligi aytiladi.
 - **Ishonch belgilari** (STIR, MChJ, rasmiy ishga joylashtirish, manzil) xavfni kamaytiradi. Kritik belgi bo'lsa, ular xavfni kamaytirmaydi.
+- **Kirill va rus yozuvi:** qoidalar Unicode rejimida ishlaydi, kirillcha matn lotinga transliteratsiya qilinib ham tekshiriladi.
 
-## Hakamlarga cheklovlarni qanday tushuntirish kerak
+## Hujjatlar
 
-> "Tizim qoidalarga asoslangan va har bir bahoni tushuntiradi. Biz uni o'zimiz yozgan 87 ta e'londa sinadik. Eng muhimi, qoidalar ko'rmagan 48 ta yangi e'londa aniqlik 85% chiqdi, lekin xavfli e'lonlarning faqat 65 foizi topildi. Topilmaganlarini tahlil qilib, qoidalarni tuzatdik. Real Telegram e'lonlarida natija pastroq bo'lishi mumkin, shuning uchun har bir xatoni test to'plamiga qo'shib boramiz. Tizim hukm chiqarmaydi: u xavf darajasi va sabablarini ko'rsatadi, qaror foydalanuvchida qoladi."
+- [`docs/JARAYON.md`](docs/JARAYON.md) — texnologiya tanlovi, AI qanday ishlatilgani, muammo → test → tuzatish → commit holatlari, xavfsizlik va cheklovlar.
+- [`docs/TAQDIMOT.md`](docs/TAQDIMOT.md) — 5 daqiqalik nutq, 5 daqiqalik jonli demo ssenariysi, 15 ta hakam savoliga javob va oflayn zaxira reja.
 
-Kuchli tomon sifatida ko'rsating: o'lchanadigan sifat, ochiq hujjatlashtirilgan xatolar, maxfiylik (fayl serverga yuborilmaydi) va AI'siz ham ishlashi.
+## v3 boshlang'ich natija (avtomatik yoziladi)
 
-## 2 kunlik yakuniy reja
+Bu blokni `npm run eval:v3-baseline` yozadi; qo'lda o'zgartirilmaydi. Tartib: real e'lonlar `tools/redact.mjs` bilan yashiriladi → tizimga qaramasdan qo'lda belgilanadi → `js/test-set-v3.js` ga qo'shiladi va commit qilinadi → boshlang'ich natija `analyzer.js` ga tegmasdan yoziladi. Natijaga git commit, sana va `analyzer.js`, `evaluate.js`, `test-set-v3.js` ning SHA-256 xeshlari qo'shiladi. Qayta o'lchash `--force` bilan faqat toza repozitoriyda, eski natijani `tests/results/archive/` ga ko'chirib bajariladi.
 
-| Qachon | Nima qilinadi | Qanday tekshiriladi |
-|---|---|---|
-| **1-kun, ertalab** | 8–15 ta kanalni JSON qilib eksport qiling va saytga yuklang | Import hisobotida xabarlar soni > 0, takrorlar olib tashlangan, xavf taqsimoti ko'rinadi |
-| **1-kun, tushlik** | Real e'lonlardan 50 tasini o'qib, qo'lda belgilang (xavfli / xavfsiz / kamsituvchi) va `js/test-set.js` ga `v3-xx` qilib qo'shing | `npm test` → **v3 natijasini qoidalarga tegmasdan yozib oling.** Bu real ma'lumotdagi birinchi halol ko'rsatkich |
-| **1-kun, kechqurun** | v3 xatolarini `js/analyzer.js` da tuzating | `npm test` o'tadi; FPR ≤ 10% |
-| **1-kun, kechqurun** | API kalit oling, `.env` ga yozing, `npm start`, 5 ta e'londa AI'ni sinang | Javoblarda iqtiboslar e'lon matnida haqiqatan bor; o'zbekcha tushunarli |
-| **2-kun, ertalab** | Bot tokenini oling va botni ishga tushiring, telefondan 5 ta e'lon yuboring | Javob 5 soniyadan tez keladi, disclaimer bor |
-| **2-kun, ertalab** | Saytni internetga chiqaring (GitHub Pages yoki Netlify; AI uchun Node server) | Telefondan ochib, yuklash va tekshirishni sinang |
-| **2-kun, tushlik** | Valyuta kurslari va idoralar nomlarini rasmiy manbadan tekshiring | README cheklovlar bo'limini yangilang |
-| **2-kun, kechqurun** | Slaydlar, 2 daqiqalik zaxira video, 3 marta mashq | Taqdimot 7 daqiqadan oshmaydi |
+<!-- v3-baseline:start -->
+**v3 boshlang'ich natija** (real e'lonlar, qoidalar o'zgartirilmasdan): 2026-10-11, 34 ta e'lon, commit `ac296f1`
 
-## Taqdimot (5–7 daqiqa)
+SHA-256: `analyzer.js` `38ceba487377…` · `evaluate.js` `369f131cab8a…` · `test-set-v3.js` `758f4a6fe878…`
 
-1. **Hikoya (30 soniya).** "Tanishim Koreyaga ish deb 500 dollar to'ladi..."
-2. **Muammo (1 daqiqa).** **Real** import hisobotidagi raqamlar: "N ta kanal, M ta e'lon, X% xavfli".
-3. **Demo (3 daqiqa).** Odam savdosi misoli → kirill misoli → real ma'lumot bilan xarita va kanallar reytingi → AI tahlil → ish beruvchi uchun vosita → hakam bergan e'lonni tekshirish.
-4. **Sifat va halollik (1 daqiqa).** 8-bo'lim: boshlang'ich va hozirgi natija, cheklovlar.
-5. **Kelajak (30 soniya).** Avtomatik monitoring, real ma'lumotda o'qitilgan model, litsenziyalar bazasi bilan integratsiya.
+| Ko'rsatkich | Natija |
+|---|---|
+| Umumiy aniqlik | 70.6% |
+| Xavfli e'lonlarni topish (recall) | 16.7% (2/12) |
+| "Xavfli" deganida to'g'ri bo'lishi (precision) | 100.0% |
+| Halol e'lonni xavfli deyish (FPR) | 0.0% (0/22) |
+| Kamsitishni topish | 70.6% |
+| Odam savdosini topish | — |
+| Sabablar aniqligi (kutilgan belgilar topildi) | 28.6% |
 
-## Hakamlar savollariga javoblar
-
-- **"Bu sun'iy intellektmi?"** Ikki qatlamli tizim. Birinchisi tushuntiriladigan qoidalar: tez, bepul, internetsiz ishlaydi. Ikkinchisi Claude bilan chuqur tahlil: kontekstni tushunadi, iqtibos keltiradi va savollar tavsiya qiladi.
-- **"Aniqligi qanday?"** Yuqoridagi tushuntirishga qarang. Asosiy raqam — notanish e'lonlardagi boshlang'ich natija, 100% emas.
-- **"Xato qilsa-chi?"** Tizim yakuniy hukm chiqarmaydi, sabablarni ko'rsatadi. Har bir xato test to'plamiga qo'shiladi.
-- **"Shaxsiy ma'lumotlar?"** Yuklangan fayl brauzerdan chiqmaydi. AI tahlil faqat foydalanuvchi tugmani bosganda, bitta e'lon uchun ishlaydi.
-- **"Pulni qanday topasiz?"** Kompaniyalarga "tasdiqlangan ish beruvchi" belgisi, kanallarga moderatsiya xizmati, davlat va xalqaro tashkilotlarga analitik hisobotlar.
+Xato bo'lgan testlar (25): v3-001, v3-002, v3-003, v3-004, v3-005, v3-006, v3-007, v3-008, v3-009, v3-010, v3-011, v3-012, v3-013, v3-014, v3-015, v3-016, v3-017, v3-027, v3-028, v3-029, v3-030, v3-031, v3-032, v3-033, v3-034. Tahlil: `tests/results/v3-errors.md`.
+<!-- v3-baseline:end -->

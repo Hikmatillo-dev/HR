@@ -117,6 +117,50 @@ await test("Kasblar: kichik eksport (5 ta ishonchli e'lon) — grafik o'rniga 'M
   await page.close();
 });
 
+// Regressiya (79a07f7, 6f70853): CSV formula injection va "oson pul" kanalining reytingi
+const exportOf = (name, texts) => JSON.stringify({
+  name, type: 'public_channel',
+  messages: texts.map((text, i) => ({ id: i + 1, type: 'message', date: `2026-10-0${i + 1}T10:00:00`, text }))
+});
+const EASY_MONEY = [
+  "Uydan turib kuniga 500 000 so'm daromad! Telefon bo'lsa yetarli, tajriba shart emas. Lichkaga yozing.",
+  "Oson pul! Kuniga 2-3 soat ishlab oyiga 10 mln. Faqat telefon kerak, batafsil lichkada.",
+  "Onlayn ish, uyda o'tirib kuniga 300 000 so'm topish mumkin. Yoshi 18+ hamma uchun, batafsil lichkada."
+];
+
+await test("CSV eksport: = + - @ bilan boshlangan katak formula bo'lib bajarilmaydi (oldiga ' qo'yiladi), UTF-8 BOM bor", async () => {
+  const { page, errors } = await open({ demo: false });
+  await page.setInputFiles('#fileInput', { name: 'csv.json', mimeType: 'application/json', buffer: Buffer.from(exportOf('=Kanal', [
+    "=HYPERLINK(\"http://x.uz\",\"bos\") Sotuvchi kerak, Toshkent, oylik 4 mln so'm, 5/2 grafik.",
+    "@kanal: Haydovchi kerak, B toifa. Oylik 6 mln so'm, Samarqand, mehnat shartnomasi asosida."
+  ])) });
+  await page.waitForTimeout(600);
+  const csv = await page.evaluate(async () => {
+    let blob; const orig = URL.createObjectURL;
+    URL.createObjectURL = b => { blob = b; return orig.call(URL, b); };
+    window.IQ.exportCsv();
+    URL.createObjectURL = orig;
+    const bytes = new Uint8Array(await blob.arrayBuffer());
+    return { bom: [...bytes.slice(0, 3)], text: new TextDecoder().decode(bytes) };
+  }).then(r => { assert.deepEqual(r.bom, [0xEF, 0xBB, 0xBF], "UTF-8 BOM yo'q"); return r.text; });
+  assert.ok(csv.includes(`"'=HYPERLINK(""http://x.uz"",""bos"")`), "formula katagi himoyalanmagan");
+  assert.ok(csv.includes(`"'=Kanal"`), "kanal nomi himoyalanmagan");
+  assert.ok(!/(^|,)"[=+\-@]/m.test(csv), "himoyasiz formula katagi qoldi");
+  assert.deepEqual(errors, []);
+  await page.close();
+});
+
+await test("Kanallar reytingi: faqat o'rtacha xavfli ('oson pul') e'lonlardan iborat kanal 'A' emas, 'F' oladi", async () => {
+  const { page, errors } = await open({ demo: false });
+  await page.setInputFiles('#fileInput', { name: 'oson.json', mimeType: 'application/json', buffer: Buffer.from(exportOf('Oson pul kanali', EASY_MONEY)) });
+  await page.waitForTimeout(600);
+  const row = page.locator('#channelRows tr', { hasText: 'Oson pul kanali' });
+  assert.equal((await row.locator('.grade').textContent()).trim(), 'F');
+  assert.match(await row.textContent(), /100%/);
+  assert.deepEqual(errors, []);
+  await page.close();
+});
+
 await test("Kasblar: real namuna (34 ta, ishonchlilari 30 dan kam) — yetarli emas; demo rejimda — grafik va jadval", async () => {
   const { page } = await open({ demo: false });
   await page.waitForTimeout(300);
