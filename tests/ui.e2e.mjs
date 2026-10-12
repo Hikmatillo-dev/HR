@@ -217,6 +217,32 @@ await test("Accessibility: barcha ko'rinadigan input/select nomlangan, grafiklar
   await page.close();
 });
 
+for (const [width, scheme] of [[1366, 'light'], [390, 'dark']]) {
+  await test(`Validatsiya ${width}px ${scheme}: bo'sh, 'abc', '12345 !!! ???' — baho yo'q, aniq xabar; haqiqiy e'lon — baho bor`, async () => {
+    const { page, errors } = await open({ demo: false, width, scheme });
+    const MSG = "E'lon matni juda qisqa yoki mazmunsiz. Kamida 20 belgi va harfli so'z kiriting.";
+    for (const text of ['', 'abc', '12345 !!! ???']) {
+      await page.fill('#input', text); await page.click('#btnCheck'); await page.waitForTimeout(150);
+      assert.equal(await page.locator('#result .lvl, #result .gauge').count(), 0, `"${text}" uchun baho chiqmasligi kerak`);
+      assert.equal(await page.locator('#btnAi').count(), 0, 'AI tugmasi chiqmasligi kerak');
+      assert.equal((await page.textContent('#result .invalid-msg')).replace('⚠️', '').trim(), MSG);
+      assert.equal(await page.getAttribute('#result .invalid-msg', 'role'), 'alert');
+    }
+    // Yozish paytida (avtomatik yangilanish) ham mazmunsiz matnga baho chiqmaydi
+    await page.fill('#input', '1234567890 1234567890 ....'); await page.waitForTimeout(400);
+    assert.equal(await page.locator('#result .lvl').count(), 0);
+    // Haqiqiy qisqa e'lon bloklanmaydi
+    await page.fill('#input', 'Ish bor. Batafsil lichkada.'); await page.click('#btnCheck'); await page.waitForTimeout(150);
+    assert.equal(await page.locator('#result .lvl').count() > 0, true, "haqiqiy e'longa baho chiqishi kerak");
+    // Tozalash — bo'sh holat (xabar emas)
+    await page.click('#btnClear'); await page.waitForTimeout(100);
+    assert.equal(await page.locator('#result .invalid-msg').count(), 0);
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), width);
+    assert.deepEqual(errors, []);
+    await page.close();
+  });
+}
+
 await test("Chop etish (PDF hisobot): sarlavha, sana va manba; tekshiruv va hero chiqmaydi", async () => {
   const { page } = await open({ demo: false });
   await page.emulateMedia({ media: 'print' });
@@ -258,7 +284,7 @@ for (const [width, scheme] of [[390, 'light'], [390, 'dark'], [1280, 'light']]) 
 const CONTRAST_SELECTORS = ['.lvl-high', '.lvl-medium', '.lvl-low', '.lvl-disc', '#demoBadge', '.tag.high', '.tag.low', '.tag.disc', '.badge-warn',
   '.kpi span', '.data-note', '.muted', '.hint', '.reasons small', 'mark', '.grade', '.tile', '.mode-switch button[aria-pressed="true"]',
   'nav a', 'button.primary', '.map-ctrl button.on', '.src-text',
-  '.careers-thin h3', '.careers-thin p', '.careers-thin p b', '#btnCareersUpload',
+  '.invalid-msg', '.careers-thin h3', '.careers-thin p', '.careers-thin p b', '#btnCareersUpload',
   '.demo-card .demo-badge', '.demo-card h2', '.demo-text', '.demo-reasons b', '.demo-reasons q', '.demo-note', '.demo-foot .small-link'];
 
 for (const scheme of ['light', 'dark']) {
@@ -267,9 +293,11 @@ for (const scheme of ['light', 'dark']) {
     await page.waitForSelector('#heroDemo[data-state="done"]', { timeout: 8000 });
     const fails = [];
     // 'real' — real namuna: "Kasblar" bo'limida "ma'lumot yetarli emas" holati ko'rinadi
-    const examples = ['scam', 'disc', 'ok', null, 'real'];
+    // 'invalid' — mazmunsiz matn uchun ogohlantirish
+    const examples = ['scam', 'disc', 'ok', null, 'real', 'invalid'];
     for (const ex of examples) {
       if (ex === 'real') await page.click('[data-mode="real"]');
+      else if (ex === 'invalid') { await page.fill('#input', 'abc'); await page.click('#btnCheck'); }
       else if (ex) await page.click(`[data-example="${ex}"]`);
       else { await page.fill('#input', "Ish bor! Kuniga 100$ to'lanadi. Faqat bugun ro'yxatdan o'ting: cutt.ly/rabota-uz"); await page.click('#btnCheck'); }
       await page.waitForTimeout(250);

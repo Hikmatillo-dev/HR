@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node server.mjs",
     "bot": "node bot.mjs",
-    "test": "node tests/importer.test.mjs && node tests/redact.test.mjs && node tests/redact-parity.test.mjs && node tests/ai.test.mjs && node tests/ai-gemini.test.mjs && node tests/baseline.test.mjs && node tests/bot.test.mjs && node tests/server-security.test.mjs && node tests/config.test.mjs && node tests/rules.test.mjs && node tests/demo-examples.test.mjs && node tests/run.mjs",
+    "test": "node tests/importer.test.mjs && node tests/redact.test.mjs && node tests/redact-parity.test.mjs && node tests/ai.test.mjs && node tests/ai-gemini.test.mjs && node tests/baseline.test.mjs && node tests/bot.test.mjs && node tests/server-security.test.mjs && node tests/config.test.mjs && node tests/rules.test.mjs && node tests/validate.test.mjs && node tests/demo-examples.test.mjs && node tests/run.mjs",
     "start:env": "node --env-file=.env server.mjs",
     "bot:env": "node --env-file=.env bot.mjs",
     "redact": "node tools/redact.mjs",

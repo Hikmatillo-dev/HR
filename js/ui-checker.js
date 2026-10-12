@@ -18,11 +18,19 @@
     return `<div class="gauge" style="--p:${value};--c:${color}"><span>${value}<small>${label}</small></span></div>`;
   }
 
-  function render(text) {
+  // explicit: foydalanuvchi "Tekshirish" ni bosdi (yozish paytidagi avtomatik yangilanish emas)
+  function render(text, explicit) {
     const box = $('#result');
-    if (!text.trim()) {
+    if (!text.trim() && !explicit) {
       box.className = 'result empty';
       box.innerHTML = 'Natija shu yerda chiqadi.<br>Matn yozilishi bilan tahlil avtomatik yangilanadi.';
+      last = null; return;
+    }
+    // Bo'sh, juda qisqa yoki mazmunsiz matn — xavf bahosi chiqarilmaydi (js/validate-posting.js)
+    const valid = window.IQValidate.check(text);
+    if (!valid.ok) {
+      box.className = 'result empty invalid';
+      box.innerHTML = `<p class="invalid-msg" role="alert">⚠️ ${esc(valid.message)}</p>`;
       last = null; return;
     }
     const a = A.analyze(text);
@@ -190,7 +198,7 @@
 
   let timer;
   $('#input').addEventListener('input', e => { clearTimeout(timer); timer = setTimeout(() => render(e.target.value), 250); });
-  $('#btnCheck').addEventListener('click', () => render($('#input').value));
+  $('#btnCheck').addEventListener('click', () => render($('#input').value, true));
   $('#btnClear').addEventListener('click', () => IQ.check(''));
   IQ.$$('[data-example]').forEach(b => b.addEventListener('click', () => IQ.check(EXAMPLES[b.dataset.example])));
   $('#result').addEventListener('click', e => {

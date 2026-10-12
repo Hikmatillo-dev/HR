@@ -355,3 +355,6 @@ button.primary, .mode-switch button[aria-pressed="true"], .map-ctrl button.on { 
 .careers-thin button { margin-top: 10px; }
 .careers-thin-icon { font-size: 2rem; }
 #kasblar.careers-is-thin .careers-charts { display: none; }
+/* Mazmunsiz matn: baho o'rniga ogohlantirish */
+.result.invalid { border-color: var(--warning); }
+.invalid-msg { margin: 0; color: var(--text); font-weight: 600; max-width: 420px; }
