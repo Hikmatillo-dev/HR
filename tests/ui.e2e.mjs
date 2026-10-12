@@ -444,6 +444,22 @@ await test("Yozish paytida qisqa matn: xato xabari va role=alert chiqmaydi; 'Tek
   await page.close();
 });
 
+// M8 (bug-hunt): tekshiruv natijasi ekran o'quvchiga aria-live orqali e'lon qilinadi (yozish paytida emas)
+await test("Natija ekran o'quvchiga e'lon qilinadi: 'Tekshirish' va misol tugmasi — ha, yozish paytida — yo'q", async () => {
+  const { page } = await open({ demo: false });
+  const live = () => page.textContent('#liveRegion');
+  await page.fill('#input', "Koreyaga ish! Hujjat uchun to'lov 500$. Faqat qizlar 20-25 yosh."); await page.waitForTimeout(400);
+  assert.equal(await live(), '', "yozish paytida e'lon qilinmasligi kerak");
+  await page.click('#btnCheck'); await page.waitForTimeout(200);
+  const msg = await live();
+  assert.match(msg, /Firibgarlik xavfi: yuqori/, msg);
+  assert.match(msg, /\d+ ta sabab/, msg);
+  assert.match(msg, /kamsitish: 2 ta/i, msg);
+  await page.click('[data-example="ok"]'); await page.waitForTimeout(200);
+  assert.match(await live(), /Firibgarlik xavfi: past/);
+  await page.close();
+});
+
 // ---------- H2: kirillcha iqtiboslar asl matnda ----------
 const KIRILL_RISK = "Кореяга иш! Виза 100% кафолатланган. Ҳужжатлар учун олдиндан 500$ тўлов қиласиз, паспортингизни бизга топширасиз. Тез ёзинг, жойлар чекланган!";
 async function checkText(page, text) {

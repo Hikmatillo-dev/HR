@@ -19,7 +19,8 @@
   }
 
   // explicit: foydalanuvchi "Tekshirish" ni bosdi (yozish paytidagi avtomatik yangilanish emas)
-  function render(text, explicit) {
+  // announce: natija ekran o'quvchiga e'lon qilinadi ("Tekshirish" yoki misol tugmasi; yozish paytida emas)
+  function render(text, explicit, announce = explicit) {
     const box = $('#result');
     // Bo'sh, juda qisqa yoki mazmunsiz matn — xavf bahosi chiqarilmaydi (js/validate-posting.js).
     // Yozish paytida (avtomatik yangilanish) xato ko'rsatilmaydi: u har pauzada ekran o'quvchiga qayta e'lon qilinardi
@@ -94,6 +95,10 @@
       <p class="ai-status" id="aiStatus" role="status"></p>
       <div id="aiOut" aria-live="polite"></div>`;
     updateAiButton();
+    if (announce) {
+      const reasons = a.scam.length + a.discrimination.length;
+      IQ.announce(`Natija: ${verdict.replace(/^\S+\s/, '')}. Xavf bali ${a.score} dan 100. ${reasons} ta sabab${a.discrimination.length ? `, shundan kamsitish: ${a.discrimination.length} ta` : ''}${a.trafficking ? ". Odam savdosi belgisi bor" : ''}.`);
+    }
   }
 
   // Iqtibos asl e'londan olinadi (kirill e'londa lotincha transliteratsiya emas); topilmasa — iqtibossiz
@@ -204,7 +209,7 @@
 
   // Kutib turgan avtomatik yangilanish bekor qilinadi: aks holda u "Tekshirish" natijasi yoki xabari ustidan yozib yuboradi
   let timer;
-  IQ.check = text => { clearTimeout(timer); $('#input').value = text; render(text); };
+  IQ.check = text => { clearTimeout(timer); $('#input').value = text; render(text, false, Boolean(text)); };
   $('#input').addEventListener('input', e => { clearTimeout(timer); timer = setTimeout(() => render(e.target.value), 250); });
   $('#btnCheck').addEventListener('click', () => { clearTimeout(timer); render($('#input').value, true); });
   $('#btnClear').addEventListener('click', () => IQ.check(''));
