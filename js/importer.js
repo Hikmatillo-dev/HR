@@ -12,6 +12,7 @@
     'керак', 'маош', 'иш(га|чи|лар)?(?![\\p{L}])', 'ойига', 'даромад', 'тажриба'
   ].join('|'), 'iu');
   const MIN_LENGTH = 40;
+  const WEAK_SIGNALS = new Set(['invest', 'link', 'abroad', 'urgency', 'vague', 'salary']);
 
   function messageText(m) {
     const t = Array.isArray(m.text)
@@ -90,7 +91,14 @@
       for (const r of records) {
         if (!r.text) continue;
         stats.messages++;
-        if (r.text.length < MIN_LENGTH || !VACANCY_RE.test(r.text)) { stats.notVacancy++; continue; }
+        // Vakansiya so'zi bo'lmasa ham, kuchli firibgarlik belgisi bor xabar olinadi: "SMS kodni yuboring, 1 soatda 500 000 so'm
+        // topasiz" kabi e'lonlar "kerak/ish/maosh" demaydi. Zaif belgining o'zi (referal, havola, xorij, shoshiltirish) yetmaydi —
+        // kanal reklamasi ("do'stlaringizni taklif qiling") va salomlashish tashlanadi.
+        const risky = () => {
+          const a = global.IshQalqon && global.IshQalqon.analyze(r.text);
+          return Boolean(a && (a.trafficking || a.scam.some(x => !WEAK_SIGNALS.has(x.id))));
+        };
+        if (r.text.length < MIN_LENGTH || (!VACANCY_RE.test(r.text) && !risky())) { stats.notVacancy++; continue; }
         stats.vacancyLike++;
         const key = fingerprint(r.text);
         if (seen.has(key)) { stats.duplicates++; continue; }

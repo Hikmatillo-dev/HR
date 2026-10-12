@@ -66,7 +66,7 @@ Ish tartibi: har bir vazifa uchun AI avval reja yozadi, muallif tasdiqlaydi, key
 - **Muammo:** "vakansiyaga o'xshash" filtri "KOREYAGA ISH", "uydan daromad" kabi firibgar e'lonlarni reklama deb tashlab yuborardi. Natijada eng xavfli e'lonlar tahlilga umuman kirmasdi.
 - **Topish usuli:** sintetik namunaviy eksportni (`namuna/telegram-export-namuna.json`) yuklab, import hisobotini e'lonlar bilan solishtirish.
 - **Test:** `tests/importer.test.mjs` → "Namunaviy Telegram eksporti: firibgar e'lonlar ham olinadi, reklama tashlanadi" (lotin va kirill).
-- **Tuzatish:** import mantiqi `js/importer.js` ga ajratildi. Filtr kengaytirildi: "kerak" so'zi bo'lmasa ham "ish", "daromad", "viza", "oyiga" va ularning kirillcha shakllari bor xabar vakansiya deb olinadi.
+- **Tuzatish:** import mantiqi `js/importer.js` ga ajratildi. Filtr kengaytirildi: "kerak" so'zi bo'lmasa ham "ish", "daromad", "viza", "oyiga" va ularning kirillcha shakllari bor xabar vakansiya deb olinadi. Keyinroq bug-hunt auditida yana bir bo'shliq topildi: "Kartangiz raqami va SMS kodni yuboring, 1 soatda 500 000 so'm topasiz" kabi xabarlar baribir tushib qolardi. Endi vakansiya so'zi bo'lmasa ham kuchli firibgarlik belgisi bor xabar olinadi (`fix: keep scam messages without job words on import`).
 - **Commit:** `79a07f7` («feat: real-data mode»).
 
 ### 4.4. Kanallar reytingi o'rtacha xavfli e'lonlarni hisoblamasdi
@@ -123,7 +123,7 @@ Ish tartibi: har bir vazifa uchun AI avval reja yozadi, muallif tasdiqlaydi, key
 
 ## 6. Testlar va sifat
 
-- `npm test`: 15 ta test fayli (175 ta unit test) va `tests/run.mjs` (v1, v2, v3 aniqligi, 10 ta sifat chegarasi). Taxminan 17 soniya.
+- `npm test`: 15 ta test fayli (176 ta unit test) va `tests/run.mjs` (v1, v2, v3 aniqligi, 10 ta sifat chegarasi). Taxminan 17 soniya.
 - `npm run test:ui`: 49 ta brauzer testi. Ular 320, 390, 768, 844, 1280 va 1366px kengliklarni, ☰ menyuni, Tab bilan boshqarishni, `aria-live` va yorug' hamda qorong'i rejimda WCAG AA kontrastni tekshiradi. Shuningdek "harakatni kamaytirish" sozlamasi, CSV himoyasi, kanallar reytingi `npm run demo:local` da AI tugmasi o'chiqligi, "Asosiy tarkibga o'tish" havolasi va 390/768px da asosiy amallarning kamida 44px ekani tekshiriladi.
 - **CI:** GitHub Actions har bir push'da `npm test` ni Node 22 da ishga tushiradi.
 - **Gate:** v3 natijasi boshlang'ich natijadan pasaysa yoki v2 natijasi 5 punktdan ko'p tushsa, `npm test` xato beradi. Shuning uchun qoidalarni tuzatish real e'lonlardagi natijani yashirincha yomonlashtira olmaydi.

@@ -32,6 +32,20 @@ test("Sintetik belgisi: namuna faylidagi \"synthetic\": true hisobotga o'tadi; o
   assert.deepEqual(importFiles([{ name: 'result.json', content: plain }]).stats.syntheticFiles, []);
 });
 
+// M3 (bug-hunt): "kerak/ish/maosh" so'zi bo'lmagan firibgar e'lonlar import filtrida tashlab yuborilardi
+test("Vakansiya so'zi yo'q, lekin firibgarlik belgisi bor xabarlar olinadi; oddiy reklama va salomlashish — yo'q", () => {
+  const msgs = ["Kartangiz raqami va SMS kodni yuboring, 1 soatda 500 000 so'm topasiz! Batafsil lichkada.",
+    "Layk bosib pul toping: har bir layk 5000 so'm, avval 100 000 so'm depozit qo'yasiz.",
+    "Dubayga chiroyli qizlar taklif qilinadi, yo'l bepul, 3000$ va'da qilamiz.",
+    "Koreya E-9 vizasi 100% kafolat bilan, narxi 2000$. Yozing!",
+    "Kanalimizga obuna bo'ling va do'stlaringizni taklif qiling, yangiliklar har kuni!",
+    "Assalomu alaykum, aziz obunachilar! Xayrli tong va omadli kun tilaymiz."];
+  const content = JSON.stringify({ name: 'k', messages: msgs.map((text, i) => ({ id: i + 1, type: 'message', date: '2026-10-01T10:00:00', text })) });
+  const { items, stats } = importFiles([{ name: 'result.json', content }]);
+  assert.deepEqual(items.map(i => i.text), msgs.slice(0, 4));
+  assert.equal(stats.notVacancy, 2);
+});
+
 test("Bir xil e'lon boshqa telefon raqami bilan — takror deb hisoblanadi", () => {
   const msg = (id, phone) => ({ id, type: 'message', date: '2026-10-01T10:00:00', text: `Kassir kerak, Toshkent. Maosh 4 mln so'm. Tel ${phone}` });
   const content = JSON.stringify({ name: 'k', messages: [msg(1, '+998 90 111 22 33'), msg(2, '+998 91 444 55 66')] });
