@@ -79,7 +79,7 @@ Ish tartibi: har bir vazifa uchun AI avval reja yozadi, muallif tasdiqlaydi, key
 ### 4.5. Shaxsiy ma'lumotni yashirish (PII redaction)
 - **Muammo:** real e'lonlarda telefon, karta, pasport raqamlari bor. Ular test to'plamiga, `localStorage` ga yoki git'ga tushmasligi kerak. Yashirish bir necha joyda (brauzer, Node skript, Python skript) har xil ishlardi; kirillcha "ИНН 305…" telefon deb yashirilardi.
 - **Topish usuli:** real e'lonlarni qoralamaga aylantirishda natijani qo'lda ko'rib chiqish; JS va Python natijasini solishtirish.
-- **Test:** `tests/redact.test.mjs` (14 ta), `tests/redact-parity.test.mjs` (10 ta holatda JS va Python bir xil). `tests/run.mjs` v3 e'lonlarida yashirilmagan raqam qolsa xato beradi.
+- **Test:** `tests/redact.test.mjs` (15 ta), `tests/redact-parity.test.mjs` (11 ta holatda JS va Python bir xil). `tests/run.mjs` v3 e'lonlarida yashirilmagan raqam qolsa xato beradi.
 - **Tuzatish:** yagona manba `js/pii.js`; niqob formatni saqlaydi (`+998 00 000 00 00`), shuning uchun shaffoflik bahosi o'zgarmaydi; ism uchun ogohlantirish (avtomatik yashirilmaydi).
 - **Commit:** `da6eea2` («feat: redaction tool for real v3 postings»), `f42ab9f` («fix: stronger PII redaction shared by browser, tools and validator»).
 
@@ -123,7 +123,7 @@ Ish tartibi: har bir vazifa uchun AI avval reja yozadi, muallif tasdiqlaydi, key
 
 ## 6. Testlar va sifat
 
-- `npm test`: 15 ta test fayli (173 ta unit test) va `tests/run.mjs` (v1, v2, v3 aniqligi, 10 ta sifat chegarasi). Taxminan 17 soniya.
+- `npm test`: 15 ta test fayli (175 ta unit test) va `tests/run.mjs` (v1, v2, v3 aniqligi, 10 ta sifat chegarasi). Taxminan 17 soniya.
 - `npm run test:ui`: 49 ta brauzer testi. Ular 320, 390, 768, 844, 1280 va 1366px kengliklarni, ☰ menyuni, Tab bilan boshqarishni, `aria-live` va yorug' hamda qorong'i rejimda WCAG AA kontrastni tekshiradi. Shuningdek "harakatni kamaytirish" sozlamasi, CSV himoyasi, kanallar reytingi `npm run demo:local` da AI tugmasi o'chiqligi, "Asosiy tarkibga o'tish" havolasi va 390/768px da asosiy amallarning kamida 44px ekani tekshiriladi.
 - **CI:** GitHub Actions har bir push'da `npm test` ni Node 22 da ishga tushiradi.
 - **Gate:** v3 natijasi boshlang'ich natijadan pasaysa yoki v2 natijasi 5 punktdan ko'p tushsa, `npm test` xato beradi. Shuning uchun qoidalarni tuzatish real e'lonlardagi natijani yashirincha yomonlashtira olmaydi.

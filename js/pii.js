@@ -23,9 +23,11 @@
   const RULES = [
     ['card', /(?<![\d])\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}(?![\d])/g],
     ['pinfl', /(?<![\d])\d{14}(?![\d])/g],
-    ['passport', /(?<![A-Za-z\d])[A-Z]{2}\s?\d{7}(?![\d])/g],
+    // Seriya lotin (AA, AB, KA ...) yoki kirill yozuvdagi o'xshash harflar (АА, АВ, АС, АЕ, КА): "ОТ 5000000" — emas
+    ['passport', /(?<![A-Za-zА-Яа-яЁё\d])(?:[A-Z]{2}|[АК][АВСЕ])\s?\d{7}(?![\d])/g],
     ['email', /[\w.+-]+@[\w-]+\.[A-Za-z.]{2,}/g],
-    ['tme', /(?:https?:\/\/)?(?:t|telegram)\.me\/(?!foydalanuvchi\b)[A-Za-z][\w]{3,31}/g],
+    // Kanal/foydalanuvchi nomi, shuningdek yopiq guruhga taklif havolasi: t.me/+AbCd…, t.me/joinchat/AbCd…
+    ['tme', /(?:https?:\/\/)?(?:t|telegram)\.me\/(?:\+[\w-]{6,}|joinchat\/[\w-]{6,}|(?!foydalanuvchi\b)[A-Za-z][\w]{3,31})/g],
     ['username', /(?<![\w@./])@(?!foydalanuvchi\b)[A-Za-z][\w]{3,31}\b/g],
     ['phoneRu', /(?<![\d+])(?:\+7|8)[\s-]?\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}(?![\d])/g],
     ['phoneUz', /(?<![\d])(?:(?:\+?998)[\s-]?)?\(?\d{2}\)?[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}(?![\d])/g]

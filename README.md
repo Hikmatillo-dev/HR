@@ -23,7 +23,7 @@ Zamonaviy kasblar bozori, hududlar va maoshlar tahlili hamda ish e'lonlarini fir
 npm install
 npm start          # http://localhost:3000 (.env dagi AI kaliti bo'lsa, AI ham yoqiladi)
 npm run demo:local # http://127.0.0.1:3000 — oflayn demo, kalit kerak emas, AI tugmasi o'chiq
-npm test           # 173 ta unit test + aniqlik o'lchovi (v1, v2, v3) va sifat chegaralari
+npm test           # 175 ta unit test + aniqlik o'lchovi (v1, v2, v3) va sifat chegaralari
 npm run test:ui    # 49 ta brauzer testi (Playwright): mobil, klaviatura, kontrast
 npm run preflight  # topshirishdan oldin: kalitlar, taqiqlangan fayllar, hujjatlar va barcha testlar
 ```
@@ -131,7 +131,7 @@ Bu o'zgarishlar `js/analyzer.js` ga tegadi, shuning uchun alohida qaror bilan qi
 4. Saytda **2. Bozor tahlili → 📂 Telegram eksportini yuklash** tugmasini bosing. Bir nechta `result.json` ni birdaniga tanlash mumkin.
 5. Import hisobotini tekshiring: nechta xabar o'qildi, nechta takror olib tashlandi, nechta e'lon tahlil qilindi.
 
-Fayl **faqat brauzerda** o'qiladi va serverga yuborilmaydi. Telefon, karta, JSHSHIR, pasport, email, `t.me` va `@username` tahlil va `localStorage` ga saqlashdan **oldin** yashiriladi. Niqob formatni saqlaydi (`+998 00 000 00 00`), shuning uchun shaffoflik bahosi o'zgarmaydi. O'chirish uchun "🗑️ Saqlangan ma'lumotni o'chirish" tugmasini bosing. Sinash uchun sintetik namunaviy fayl (real kanal emas): `namuna/telegram-export-namuna.json`.
+Fayl **faqat brauzerda** o'qiladi va serverga yuborilmaydi. Telefon, karta, JSHSHIR, pasport (lotin yoki kirill seriya), email, `t.me` havolalari (yopiq guruh taklifi ham) va `@username` tahlil va `localStorage` ga saqlashdan **oldin** yashiriladi. Niqob formatni saqlaydi (`+998 00 000 00 00`), shuning uchun shaffoflik bahosi o'zgarmaydi. O'chirish uchun "🗑️ Saqlangan ma'lumotni o'chirish" tugmasini bosing. Sinash uchun sintetik namunaviy fayl (real kanal emas): `namuna/telegram-export-namuna.json`.
 
 Ma'lumotni doimiy fayl sifatida saqlash uchun: `python3 tools/telegram_export.py k1/result.json k2/result.json` → `js/real-data.js`. Skript ham xuddi shu qoidalar bilan yashiradi. Ismlar haqida ogohlantirish beradi: faylni commit qilishdan oldin uni qo'lda tekshiring.
 
@@ -216,7 +216,7 @@ npm run bot                   # .env dagi token avtomatik o'qiladi
 
 ### 5. Testlar
 ```bash
-npm test                 # 15 ta test fayli (173 ta unit test) + tests/run.mjs (aniqlik va sifat chegaralari)
+npm test                 # 15 ta test fayli (175 ta unit test) + tests/run.mjs (aniqlik va sifat chegaralari)
 npm run test:ui          # 49 ta brauzer testi (Playwright o'rnatilmagan bo'lsa o'tkazib yuboriladi)
 npm run check:evidence   # README va docs dagi raqamlar repozitoriy dalillariga mosligi (testlarni ham sanaydi)
 npm run preflight        # topshirish oldidan: .env/data/qoralama git'da yo'qligi, kalitlar (fayllar va git tarixi), hujjatlar, testlar
@@ -225,8 +225,8 @@ npm run preflight        # topshirish oldidan: .env/data/qoralama git'da yo'qlig
 | Test fayli | Nimani tekshiradi | Soni |
 |---|---|---|
 | `tests/importer.test.mjs` | Telegram JSON, CSV, TXT o'qilishi; firibgar e'lonlar ham olinishi; takrorlar; buzilgan va HTML eksport; sintetik namuna belgisi | 10 |
-| `tests/redact.test.mjs` | Telefon (UZ, RU), karta, JSHSHIR, pasport, email, `t.me`, `@username` yashirilishi; STIR saqlanishi; validator; v3 qoralamasi | 14 |
-| `tests/redact-parity.test.mjs` | `js/pii.js` va `tools/telegram_export.py` bir xil yashirishi (Python bo'lmasa o'tkazib yuboriladi) | 10 |
+| `tests/redact.test.mjs` | Telefon (UZ, RU), karta, JSHSHIR, pasport (lotin va kirill seriya), email, `t.me` (taklif havolasi ham), `@username` yashirilishi; STIR saqlanishi; validator; v3 qoralamasi | 15 |
+| `tests/redact-parity.test.mjs` | `js/pii.js` va `tools/telegram_export.py` bir xil yashirishi (Python bo'lmasa o'tkazib yuboriladi) | 11 |
 | `tests/ai.test.mjs` | Claude yo'li mock API bilan: buzilgan JSON, sxema, ortiqcha maydon, refusal, 401, 429, 500+retry, timeout, kalitsiz rejim, prompt injection, to'qilgan iqtibos | 14 |
 | `tests/ai-gemini.test.mjs` | Gemini yo'li mock API bilan: kalit sarlavhada, sxema mosligi, prompt injection, SAFETY, MAX_TOKENS, 429+retry, timeout, provayder tanlash | 13 |
 | `tests/baseline.test.mjs` | Boshlang'ich natija skripti: qayta yozish taqiqi, `--force` va git tekshiruvi, arxivlash, SHA-256 xeshlar | 11 |

@@ -17,7 +17,8 @@ const CASES = [
   "Maosh 1 500 000 so'm, 2026-10-11, 10:00–18:00, IELTS 7.0, to'lov 500$",
   'Murojaat: Dilnoza opa yoki Aziz aka, Нодира опа',
   'Tel +998 00 000 00 00, +7 000 000 00 00, [pasport], [JSHSHIR], @foydalanuvchi, t.me/foydalanuvchi',
-  'Кореяга иш! Тел: +998 93 555 66 77, @hr_bot_uz'
+  'Кореяга иш! Тел: +998 93 555 66 77, @hr_bot_uz',
+  'Паспорт АА1234567, КА 7654321; t.me/+AbCd_Ef12, https://t.me/joinchat/XyZ12345; ЗП ОТ 5000000 сум'
 ];
 
 console.log('Redaction: JS va Python mosligi');

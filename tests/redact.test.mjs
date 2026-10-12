@@ -37,6 +37,25 @@ test('+7 rus telefon raqami to\'liq yashiriladi (raqam qoldig\'i qolmaydi)', () 
   }
 });
 
+// M2 (bug-hunt): kirill harfli pasport seriyasi va Telegram'ning yopiq taklif havolasi ochiq qolardi
+test("Kirill harfli pasport (АА1234567, АВ 1234567, КА1234567) va t.me/+… , t.me/joinchat/… yashiriladi; 'ОТ 5000000 сум' — yo'q", () => {
+  for (const t of ['Паспорт АА1234567', 'паспорт: АВ 1234567', 'ID-karta КА1234567', 'pasport АС7654321']) {
+    const r = redact(`${t}, Toshkent`);
+    assert.equal(r.counts.passport, 1, t);
+    assert.match(r.text, /\[pasport\]/, t);
+    noPii(r.text);
+  }
+  for (const t of ['https://t.me/+AbCdEf123', 't.me/+Ab-Cd_Ef12', 'https://t.me/joinchat/AbCdEf123456', 'telegram.me/joinchat/XyZ12345']) {
+    const r = redact(`Guruhga qo'shiling: ${t} — ish bor`);
+    assert.equal(r.counts.tme, 1, t);
+    assert.equal(r.text, "Guruhga qo'shiling: t.me/foydalanuvchi — ish bor", t);
+    noPii(r.text);
+  }
+  for (const t of ['ЗП ОТ 5000000 сум', 'Оклад ДО 3000000 руб', 'Smena 2 ГР 1234567 так']) {
+    assert.equal(redact(t).counts.passport, 0, t);
+  }
+});
+
 test('Pasport raqami (AA1234567, AB 1234567) yashiriladi', () => {
   const r = redact('Pasport: AA1234567, ikkinchisi AB 1234567');
   assert.equal(r.text, 'Pasport: [pasport], ikkinchisi [pasport]');

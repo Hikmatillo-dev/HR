@@ -38,9 +38,9 @@ MASK = {
 RULES = [
     ("card", re.compile(r"(?<!\d)\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}(?!\d)", re.ASCII)),
     ("pinfl", re.compile(r"(?<!\d)\d{14}(?!\d)", re.ASCII)),
-    ("passport", re.compile(r"(?<![A-Za-z\d])[A-Z]{2}\s?\d{7}(?!\d)", re.ASCII)),
+    ("passport", re.compile(r"(?<![A-Za-zА-Яа-яЁё\d])(?:[A-Z]{2}|[АК][АВСЕ])\s?\d{7}(?!\d)", re.ASCII)),
     ("email", re.compile(r"[\w.+-]+@[\w-]+\.[A-Za-z.]{2,}", re.ASCII)),
-    ("tme", re.compile(r"(?:https?://)?(?:t|telegram)\.me/(?!foydalanuvchi\b)[A-Za-z]\w{3,31}", re.ASCII)),
+    ("tme", re.compile(r"(?:https?://)?(?:t|telegram)\.me/(?:\+[\w-]{6,}|joinchat/[\w-]{6,}|(?!foydalanuvchi\b)[A-Za-z]\w{3,31})", re.ASCII)),
     ("username", re.compile(r"(?<![\w@./])@(?!foydalanuvchi\b)[A-Za-z]\w{3,31}\b", re.ASCII)),
     ("phoneRu", re.compile(r"(?<![\d+])(?:\+7|8)[\s-]?\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}(?!\d)", re.ASCII)),
     ("phoneUz", re.compile(r"(?<!\d)(?:(?:\+?998)[\s-]?)?\(?\d{2}\)?[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}(?!\d)", re.ASCII)),
