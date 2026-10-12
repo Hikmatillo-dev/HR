@@ -187,6 +187,31 @@ await test("Logotip 390px: sarlavha bir qatorda, logotip ko'rinadi va menyu tugm
   await page.close();
 });
 
+for (const [width, height, menu] of [[320, 640, true], [768, 1024, true], [844, 390, true], [1280, 800, false]]) {
+  await test(`${width}×${height}: gorizontal scroll yo'q; ☰ menyu ${menu ? "ko'rinadi" : "yashirin, havolalar sig'adi"}`, async () => {
+    const page = await browser.newPage({ viewport: { width, height } });
+    await page.goto(PAGE); await page.waitForTimeout(300);
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), width, 'gorizontal scroll bor');
+    assert.equal(await page.isVisible('#menuBtn'), menu);
+    if (!menu) {
+      const last = await page.locator('#mainNav a').last().boundingBox();
+      assert.ok(last.x + last.width <= width, 'oxirgi menyu havolasi ekrandan chiqib ketgan');
+    }
+    await page.close();
+  });
+}
+
+await test("Chop etish (PDF hisobot): sarlavha, sana va manba; tekshiruv va hero chiqmaydi", async () => {
+  const { page } = await open({ demo: false });
+  await page.emulateMedia({ media: 'print' });
+  await page.evaluate(() => window.dispatchEvent(new Event('beforeprint')));
+  assert.equal(await page.isVisible('.print-head'), true);
+  assert.match(await page.textContent('#printMeta'), /Real namuna/);
+  assert.equal(await page.isVisible('#tekshir'), false);
+  assert.equal(await page.isVisible('.hero'), false);
+  await page.close();
+});
+
 for (const [width, scheme] of [[390, 'light'], [390, 'dark'], [1280, 'light']]) {
   await test(`Kasblar grafigi ${width}px ${scheme}: yozuvlar ustma-ust tushmaydi, qisqa, jadval bor, gorizontal scroll yo'q`, async () => {
     const { page, errors } = await open({ width, scheme });

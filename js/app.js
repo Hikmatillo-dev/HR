@@ -145,6 +145,11 @@
   $('#btnCareersUpload').addEventListener('click', () => $('#fileInput').click());
   $('#btnCsv').addEventListener('click', () => IQ.exportCsv());
   $('#btnPrint').addEventListener('click', () => window.print());
+  // Chop etishda: sana va ma'lumot manbai hisobot boshida
+  window.addEventListener('beforeprint', () => {
+    const src = $('#dataNote').textContent.trim();
+    $('#printMeta').textContent = `${new Date().toLocaleString('uz-UZ')} · ${src} · Avtomatik tahlil: yakuniy xulosa uchun e'lonlarni qo'lda tekshiring.`;
+  });
 
   // ---------- Telefon menyusi ----------
   const topbar = document.querySelector('.topbar');
