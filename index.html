@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>IshQalqon</title>
-  <meta name="description" content="Telegram'dagi vakansiyalarni firibgarlik va kamsitishga tekshiruvchi hamda mehnat bozorini tahlil qiluvchi platforma.">
+  <title>IshQalqon — zamonaviy kasblar bozoriga xavfsiz kirish</title>
+  <meta name="description" content="Yoshlar uchun: zamonaviy kasblar va ko'nikmalar talabi, hudud va maosh tahlili hamda Telegram'dagi xavfli yoki kamsituvchi ish e'lonlarini aniqlash.">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/style.css">
   <script>try { const t = localStorage.getItem('iq-theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
@@ -21,8 +21,8 @@
       <button class="icon-btn menu-btn" id="menuBtn" aria-label="Menyu" aria-expanded="false" aria-controls="mainNav">☰</button>
       <nav id="mainNav" aria-label="Bo'limlar">
         <a href="#tekshir">Tekshirish</a>
+        <a href="#kasblar" class="nav-key">Zamonaviy kasblar</a>
         <a href="#tahlil">Bozor tahlili</a>
-        <a href="#kasblar">Kasblar</a>
         <a href="#kanallar">Kanallar</a>
         <a href="#vakansiyalar">Baza</a>
         <a href="#ishberuvchi">Ish beruvchilar</a>
@@ -36,10 +36,19 @@
   <section class="hero">
     <div class="wrap hero-grid">
       <div class="hero-main">
-      <h1>Ish izlayotganlarni <span>firibgarlik</span> va <span>kamsitish</span>dan himoya qilamiz</h1>
-      <p>O'zbekistonda vakansiyalarning katta qismi Telegram kanallarida e'lon qilinadi. U yerda soxta ish takliflari, oldindan pul so'rash va kamsituvchi talablar ko'p uchraydi, lekin bularni hech kim nazorat qilmaydi. IshQalqon har bir e'lonni tekshiradi va mehnat bozorining real manzarasini ko'rsatadi.</p>
+      <h1><span>Zamonaviy kasblar</span> bozoriga xavfsiz kiring</h1>
+      <p class="hero-lead">Kasblar va ko'nikmalar talabini ko'ring, hudud va maoshlarni tahlil qiling, Telegram'dagi xavfli yoki kamsituvchi e'lonlarni aniqlang.</p>
+      <ul class="hero-values" aria-label="IshQalqon nima beradi">
+        <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 6V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5V6M4 7h16v12H4zM4 12h16"/></svg>
+          <b>Kasblar va ko'nikmalar</b><span>Qaysi yo'nalishlarga talab borligini ko'ring</span></li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 21s-6.5-6.2-6.5-11a6.5 6.5 0 0 1 13 0c0 4.8-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></svg>
+          <b>Hudud va maosh</b><span>Qayerda imkoniyat va maosh ko'proq ekanini tahlil qiling</span></li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.8 4.5 5.8v5.6c0 4.7 3.2 8.4 7.5 9.8 4.3-1.4 7.5-5.1 7.5-9.8V5.8z"/><path d="m8.8 12.2 2.3 2.3 4.2-4.4"/></svg>
+          <b>Xavfsiz vakansiyalar</b><span>Firibgarlik, kamsitish va xavfli e'lonlarni aniqlang</span></li>
+      </ul>
+      <div class="hero-cta"><a href="#tekshir">Vakansiyani tekshirish</a><a class="ghost" href="#kasblar">Zamonaviy kasblarni ko'rish</a></div>
       <div class="hero-stats" id="heroStats"></div>
-      <div class="hero-cta"><a href="#tekshir">E'lonni tekshirish</a><a class="ghost" href="#tahlil">Bozor tahlilini ko'rish</a></div>
+      <p class="hero-source" id="heroSource"></p>
       </div>
       <aside class="demo-card" id="heroDemo" aria-labelledby="heroDemoTitle" data-state="idle">
         <div class="demo-head">

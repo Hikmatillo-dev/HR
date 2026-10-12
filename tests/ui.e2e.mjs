@@ -187,7 +187,7 @@ await test("Logotip 390px: sarlavha bir qatorda, logotip ko'rinadi va menyu tugm
   await page.close();
 });
 
-for (const [width, height, menu] of [[320, 640, true], [768, 1024, true], [844, 390, true], [1280, 800, false]]) {
+for (const [width, height, menu] of [[320, 640, true], [390, 844, true], [768, 1024, true], [844, 390, true], [1280, 800, false], [1366, 768, false]]) {
   await test(`${width}×${height}: gorizontal scroll yo'q; ☰ menyu ${menu ? "ko'rinadi" : "yashirin, havolalar sig'adi"}`, async () => {
     const page = await browser.newPage({ viewport: { width, height } });
     await page.goto(PAGE); await page.waitForTimeout(300);
@@ -243,6 +243,58 @@ for (const [width, scheme] of [[1366, 'light'], [390, 'dark']]) {
   });
 }
 
+await test("Hero: 'Zamonaviy kasblar bozoriga xavfsiz kiring', asosiy matn, 3 qiymat, CTA nomlari, ma'lumot manbasi aniq", async () => {
+  const { page } = await open({ demo: false });
+  assert.equal((await page.textContent('.hero h1')).trim(), 'Zamonaviy kasblar bozoriga xavfsiz kiring');
+  assert.equal((await page.textContent('.hero-lead')).trim(),
+    "Kasblar va ko'nikmalar talabini ko'ring, hudud va maoshlarni tahlil qiling, Telegram'dagi xavfli yoki kamsituvchi e'lonlarni aniqlang.");
+  assert.deepEqual(await page.locator('.hero-values b').allTextContents(), ["Kasblar va ko'nikmalar", 'Hudud va maosh', 'Xavfsiz vakansiyalar']);
+  assert.deepEqual((await page.locator('.hero-values span').allTextContents()).map(s => s.trim()),
+    ["Qaysi yo'nalishlarga talab borligini ko'ring", "Qayerda imkoniyat va maosh ko'proq ekanini tahlil qiling", "Firibgarlik, kamsitish va xavfli e'lonlarni aniqlang"]);
+  assert.deepEqual(await page.locator('.hero-cta a').allTextContents(), ['Vakansiyani tekshirish', "Zamonaviy kasblarni ko'rish"]);
+  assert.match(await page.textContent('#heroSource'), /^Manba: real namuna — 5 ta Telegram kanalidan qo'lda tekshirilgan 34 ta e'lon/);
+  assert.equal(await page.isVisible('#heroDemo'), true, "jonli misol saqlanishi kerak");
+  // Demo rejimda bosh sahifa raqamlari va manba yozuvi o'zgarmaydi (sintetik raqam bosh sahifaga chiqmaydi)
+  const before = await page.textContent('#heroStats');
+  await page.click('[data-mode="demo"]'); await page.waitForTimeout(400);
+  assert.equal(await page.textContent('#heroStats'), before);
+  assert.match(await page.textContent('#heroSource'), /real namuna/);
+  await page.close();
+});
+
+await test("Hero CTA'lari: 'Vakansiyani tekshirish' → #tekshir, 'Zamonaviy kasblarni ko'rish' → #kasblar (smooth scroll)", async () => {
+  const { page } = await open({ demo: false, width: 1366 });
+  assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior), 'smooth');
+  for (const [text, id] of [['Vakansiyani tekshirish', 'tekshir'], ["Zamonaviy kasblarni ko'rish", 'kasblar']]) {
+    await page.evaluate(() => window.scrollTo(0, 0)); await page.waitForTimeout(300);
+    await page.click(`.hero-cta a:has-text("${text}")`);
+    await page.waitForFunction(id => { const t = document.getElementById(id).getBoundingClientRect().top; return t >= 0 && t < 120; }, id, { timeout: 4000 });
+    assert.equal(await page.evaluate(() => location.hash), '#' + id);
+  }
+  await page.close();
+});
+
+await test("Menyu: 'Zamonaviy kasblar' kompyuterda ko'rinadi, ☰ mobil menyuda bor va #kasblar ga olib boradi; Tab bilan ham ochiladi", async () => {
+  const { page } = await open({ demo: false, width: 1366 });
+  const desk = page.locator('#mainNav a[href="#kasblar"]');
+  assert.equal((await desk.textContent()).trim(), 'Zamonaviy kasblar');
+  assert.equal(await desk.isVisible(), true);
+  assert.equal(await page.locator('#mainNav a').nth(1).getAttribute('href'), '#kasblar', "menyuda 'Tekshirish' dan keyin turadi");
+  await page.close();
+  const m = await browser.newPage({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
+  await m.goto(PAGE);
+  await m.click('#menuBtn');
+  const link = m.locator('#mainNav a[href="#kasblar"]');
+  assert.equal(await link.isVisible(), true);
+  assert.equal((await link.textContent()).trim(), 'Zamonaviy kasblar');
+  await link.click(); await m.waitForTimeout(200);
+  assert.equal(await m.evaluate(() => location.hash), '#kasblar');
+  assert.equal(await m.getAttribute('#menuBtn', 'aria-expanded'), 'false', 'menyu yopiladi');
+  await m.focus('#menuBtn'); await m.keyboard.press('Enter'); await m.waitForTimeout(100);
+  assert.equal(await m.getAttribute('#menuBtn', 'aria-expanded'), 'true', 'klaviatura bilan ochiladi');
+  await m.close();
+});
+
 await test("Chop etish (PDF hisobot): sarlavha, sana va manba; tekshiruv va hero chiqmaydi", async () => {
   const { page } = await open({ demo: false });
   await page.emulateMedia({ media: 'print' });
@@ -284,6 +336,7 @@ for (const [width, scheme] of [[390, 'light'], [390, 'dark'], [1280, 'light']]) 
 const CONTRAST_SELECTORS = ['.lvl-high', '.lvl-medium', '.lvl-low', '.lvl-disc', '#demoBadge', '.tag.high', '.tag.low', '.tag.disc', '.badge-warn',
   '.kpi span', '.data-note', '.muted', '.hint', '.reasons small', 'mark', '.grade', '.tile', '.mode-switch button[aria-pressed="true"]',
   'nav a', 'button.primary', '.map-ctrl button.on', '.src-text',
+  '.hero h1', '.hero h1 span', '.hero-lead', '.hero-values b', '.hero-values span', '.hero-cta a', '.hero-source', '.hero-stats div',
   '.invalid-msg', '.careers-thin h3', '.careers-thin p', '.careers-thin p b', '#btnCareersUpload',
   '.demo-card .demo-badge', '.demo-card h2', '.demo-text', '.demo-reasons b', '.demo-reasons q', '.demo-note', '.demo-foot .small-link'];
 

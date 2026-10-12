@@ -86,13 +86,26 @@ nav a:hover { background: var(--surface-2); color: var(--text); }
 .icon-btn { background: transparent; border: 1px solid var(--border); border-radius: 10px; padding: 6px 10px; cursor: pointer; color: var(--text); }
 
 /* ---------- Hero ---------- */
-.hero { background: linear-gradient(135deg, #12306b, #1c5cab 55%, #4b3bb0); color: #fff; padding: 44px 0 38px; }
+.hero { background-color: #173f86; background-image: linear-gradient(135deg, #12306b, #1c5cab 55%, #4b3bb0); color: #fff; padding: 44px 0 38px; }
 .hero h1 { font-size: clamp(1.6rem, 4vw, 2.5rem); max-width: 860px; }
 .hero h1 span { color: #fde68a; }
 .hero p { max-width: 780px; opacity: .92; font-size: 1.04rem; }
-.hero-stats { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+.hero .hero-lead { font-size: 1.12rem; opacity: 1; margin: 10px 0 0; }
+/* 3 ta asosiy qiymat */
+.hero-values { list-style: none; padding: 0; margin: 18px 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.hero-values li { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.28); border-radius: 12px; padding: 12px; display: grid; grid-template-columns: 26px 1fr; column-gap: 8px; align-items: start; }
+.hero-values svg { width: 24px; height: 24px; fill: none; stroke: #fde68a; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; grid-row: span 2; }
+.hero-values b { font-size: .98rem; line-height: 1.25; }
+.hero-values span { font-size: .85rem; opacity: .95; line-height: 1.35; }
+@media (max-width: 560px) { .hero-values { grid-template-columns: 1fr; } .hero-cta a { flex: 1 1 100%; text-align: center; } }
+.hero .hero-source { font-size: .8rem; opacity: .9; margin: 8px 0 0; }
+.hero-source:empty { display: none; }
+.hero-cta a:focus-visible { outline: 3px solid #fde68a; outline-offset: 3px; }
+.nav-key { font-weight: 600; color: var(--text) !important; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+.hero-stats { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
 .hero-stats div { background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); border-radius: 12px; padding: 10px 16px; min-width: 150px; }
-.hero-stats b { display: block; font-size: 1.6rem; }
+.hero-stats b { display: block; font-size: 1.35rem; }
 .hero-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: 32px; align-items: center; }
 @media (max-width: 960px) { .hero-grid { grid-template-columns: 1fr; gap: 22px; } }
 /* Jonli misol: oq/qora karta hero gradienti ustida — matn rangi sahifa mavzusidan olinadi */
@@ -100,8 +113,9 @@ nav a:hover { background: var(--surface-2); color: var(--text); }
 .demo-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
 .demo-head h2 { font-size: 1rem; margin: 0; }
 .demo-card .demo-badge { white-space: nowrap; flex: none; }
-.hero-grid .hero-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 460px; }
-.hero-grid .hero-stats div { min-width: 0; }
+.hero-grid .hero-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.hero-grid .hero-stats div { min-width: 0; padding: 8px 12px; font-size: .8rem; line-height: 1.3; }
+@media (max-width: 560px) { .hero-grid .hero-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .demo-card .demo-text { background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; margin: 0 0 10px; font-size: .93rem; min-height: 3.2em; max-width: none; opacity: 1; }
 .demo-verdict { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; margin-bottom: 8px; }
 .demo-verdict .lvl { font-size: 1.2rem; font-weight: 700; } /* asosiy tekshiruv bilan bir xil: katta matn (WCAG) */

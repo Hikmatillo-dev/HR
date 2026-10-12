@@ -93,6 +93,7 @@
       $('#dataNote').textContent = '';
       $('#importReport').hidden = true;
       $('#heroStats').innerHTML = `<div><b>—</b>Real ma'lumot hali yuklanmagan</div><div><b>${A.SCAM_RULES.length + 1}</b>firibgarlik belgisi tekshiriladi</div><div><b>${A.DISCRIMINATION_RULES.length}</b>kamsitish turi aniqlanadi</div>`;
+      $('#heroSource').textContent = '';
       IQ.clearDashboard();
       return;
     }
@@ -104,6 +105,12 @@
         ? `📌 <b>Real namuna:</b> ${real.channels} ta Telegram kanalidan qo'lda tekshirilgan ${data.length} ta haqiqiy e'lon (telefon va shaxsiy ma'lumotlar yashirilgan). Namuna kichik — o'z kanalingiz eksportini yuklasangiz, tahlil shu ma'lumotda qayta quriladi.`
         : `✅ <b>Real ma'lumot:</b> ${esc(real.name)} — ${data.length} ta noyob e'lon. ${real.source === 'storage' ? "Ma'lumot faqat shu brauzerda saqlangan, serverga yuborilmagan." : ''}`;
     renderImportReport(demo ? null : real, data);
+    // Bosh sahifa raqamlari faqat real ma'lumotdan — manbasi aniq yoziladi (demo raqamlari u yerga chiqmaydi)
+    if (!demo) {
+      $('#heroSource').textContent = real.source === 'sample'
+        ? `Manba: real namuna — ${real.channels} ta Telegram kanalidan qo'lda tekshirilgan ${data.length} ta e'lon. Namuna kichik; o'z eksportingizni yuklasangiz, raqamlar yangilanadi.`
+        : `Manba: siz yuklagan Telegram eksporti (${data.length} ta noyob e'lon).`;
+    }
     IQ.renderDashboard(data);
   }
 
