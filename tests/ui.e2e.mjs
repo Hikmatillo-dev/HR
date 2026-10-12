@@ -500,6 +500,20 @@ for (const [width, height] of [[844, 390], [390, 844]]) {
   });
 }
 
+// M4 (bug-hunt): xaritadagi xavf ulushi hero va avtomatik xulosalar bilan bir xil ta'rifda ("xavfli yoki shubhali")
+await test("Xarita: xavf metrikasi 'xavfli yoki shubhali' (yuqori + o'rtacha) — avtomatik xulosadagi hudud foizi bilan bir xil", async () => {
+  const { page } = await open({ demo: false });
+  const btn = page.locator('[data-metric="risk"]');
+  await btn.click(); await page.waitForTimeout(200);
+  const ins = await page.textContent('#insights');
+  const m = ins.match(/eng yuqori hudud: (.+?) \((\d+)%\)/);
+  assert.ok(m, `xulosada hudud yo'q: ${ins}`);
+  const label = await page.getAttribute(`#tilemap .tile[data-region="${m[1]}"]`, 'aria-label');
+  assert.ok(label.startsWith(`${m[1]}: ${m[2]}%`), `xarita: "${label}", xulosa: ${m[1]} ${m[2]}%`);
+  assert.match(await btn.textContent(), /xavfli yoki shubhali/i, 'tugma nomi ta\'rifni aytmaydi');
+  await page.close();
+});
+
 // ---------- H2: kirillcha iqtiboslar asl matnda ----------
 const KIRILL_RISK = "Кореяга иш! Виза 100% кафолатланган. Ҳужжатлар учун олдиндан 500$ тўлов қиласиз, паспортингизни бизга топширасиз. Тез ёзинг, жойлар чекланган!";
 async function checkText(page, text) {

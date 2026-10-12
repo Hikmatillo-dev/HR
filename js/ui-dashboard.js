@@ -151,7 +151,8 @@
       metrics[region] = {
         n: list.length,
         count: list.length,
-        risk: list.length ? pct(count(list, d => d.a.level === 'high'), list.length) : null,
+        // Hero va avtomatik xulosalar bilan bir xil ta'rif: "xavfli yoki shubhali" = yuqori + o'rtacha xavf
+        risk: list.length ? pct(count(list, d => d.a.level !== 'low'), list.length) : null,
         disc: list.length ? pct(count(list, d => d.a.discrimination.length), list.length) : null,
         salary: paid.length ? round1(avg(paid.map(midSalary))) : null
       };
