@@ -57,6 +57,17 @@ test("Fayllararo takror: e'lon bitta qoladi, lekin u chiqqan barcha kanallar ro'
   assert.deepEqual(items.find(i => i.text !== scam).channels, ['Kanal B']);
 });
 
+// M1 (bug-hunt): bitta juda uzun xabar importni soniyalab qotirardi; Telegram xabari 4096 belgidan oshmaydi
+test("6000 belgidan uzun xabar tahlilsiz o'tkazib yuboriladi (stats.tooLong), import tez qoladi", () => {
+  const content = JSON.stringify({ name: 'k', messages: [
+    { id: 1, type: 'message', date: '2026-10-01T10:00:00', text: 'Ish kerak, maosh ' + '7'.repeat(20000) },
+    { id: 2, type: 'message', date: '2026-10-01T10:00:00', text: "Sotuvchi kerak, Toshkent. Oylik 4 mln so'm." }] });
+  const t0 = performance.now();
+  const { items, stats } = importFiles([{ name: 'result.json', content }]);
+  assert.ok(performance.now() - t0 < 500, `${Math.round(performance.now() - t0)} ms`);
+  assert.equal(items.length, 1); assert.equal(stats.tooLong, 1); assert.equal(stats.messages, 2);
+});
+
 test("Bir xil e'lon boshqa telefon raqami bilan — takror deb hisoblanadi", () => {
   const msg = (id, phone) => ({ id, type: 'message', date: '2026-10-01T10:00:00', text: `Kassir kerak, Toshkent. Maosh 4 mln so'm. Tel ${phone}` });
   const content = JSON.stringify({ name: 'k', messages: [msg(1, '+998 90 111 22 33'), msg(2, '+998 91 444 55 66')] });

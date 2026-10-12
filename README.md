@@ -23,8 +23,8 @@ Zamonaviy kasblar bozori, hududlar va maoshlar tahlili hamda ish e'lonlarini fir
 npm install
 npm start          # http://localhost:3000 (.env dagi AI kaliti bo'lsa, AI ham yoqiladi)
 npm run demo:local # http://127.0.0.1:3000 — oflayn demo, kalit kerak emas, AI tugmasi o'chiq
-npm test           # 177 ta unit test + aniqlik o'lchovi (v1, v2, v3) va sifat chegaralari
-npm run test:ui    # 50 ta brauzer testi (Playwright): mobil, klaviatura, kontrast
+npm test           # 179 ta unit test + aniqlik o'lchovi (v1, v2, v3) va sifat chegaralari
+npm run test:ui    # 51 ta brauzer testi (Playwright): mobil, klaviatura, kontrast
 npm run preflight  # topshirishdan oldin: kalitlar, taqiqlangan fayllar, hujjatlar va barcha testlar
 ```
 
@@ -216,15 +216,15 @@ npm run bot                   # .env dagi token avtomatik o'qiladi
 
 ### 5. Testlar
 ```bash
-npm test                 # 15 ta test fayli (177 ta unit test) + tests/run.mjs (aniqlik va sifat chegaralari)
-npm run test:ui          # 50 ta brauzer testi (Playwright o'rnatilmagan bo'lsa o'tkazib yuboriladi)
+npm test                 # 15 ta test fayli (179 ta unit test) + tests/run.mjs (aniqlik va sifat chegaralari)
+npm run test:ui          # 51 ta brauzer testi (Playwright o'rnatilmagan bo'lsa o'tkazib yuboriladi)
 npm run check:evidence   # README va docs dagi raqamlar repozitoriy dalillariga mosligi (testlarni ham sanaydi)
 npm run preflight        # topshirish oldidan: .env/data/qoralama git'da yo'qligi, kalitlar (fayllar va git tarixi), hujjatlar, testlar
 ```
 `npm run preflight -- --no-tests` testlarsiz tez ishlaydi; `-- --final` screenshot va video yo'qligini ham xato deb hisoblaydi. Topilgan kalitning o'zi chiqarilmaydi, faqat turi, joyi va uzunligi yoziladi.
 | Test fayli | Nimani tekshiradi | Soni |
 |---|---|---|
-| `tests/importer.test.mjs` | Telegram JSON, CSV, TXT o'qilishi; firibgar e'lonlar ham olinishi; takrorlar; buzilgan va HTML eksport; sintetik namuna belgisi; vakansiya so'zisiz firibgar xabarlar ham olinishi; fayllararo takrorda kanallar ro'yxati | 12 |
+| `tests/importer.test.mjs` | Telegram JSON, CSV, TXT o'qilishi; firibgar e'lonlar ham olinishi; takrorlar; buzilgan va HTML eksport; sintetik namuna belgisi; vakansiya so'zisiz firibgar xabarlar ham olinishi; fayllararo takrorda kanallar ro'yxati; juda uzun xabar o'tkazib yuborilishi | 13 |
 | `tests/redact.test.mjs` | Telefon (UZ, RU), karta, JSHSHIR, pasport (lotin va kirill seriya), email, `t.me` (taklif havolasi ham), `@username` yashirilishi; STIR saqlanishi; validator; v3 qoralamasi | 15 |
 | `tests/redact-parity.test.mjs` | `js/pii.js` va `tools/telegram_export.py` bir xil yashirishi (Python bo'lmasa o'tkazib yuboriladi) | 11 |
 | `tests/ai.test.mjs` | Claude yo'li mock API bilan: buzilgan JSON, sxema, ortiqcha maydon, refusal, 401, 429, 500+retry, timeout, kalitsiz rejim, prompt injection, to'qilgan iqtibos | 14 |
@@ -235,12 +235,12 @@ npm run preflight        # topshirish oldidan: .env/data/qoralama git'da yo'qlig
 | `tests/config.test.mjs` | Config va `analyzer.js` kurslari bir xilligi, `.env` orqali almashtirish, rasmiy manbalar formati | 6 |
 | `tests/rules.test.mjs` | Har bir qoida umumiy naqshni topishi va noto'g'ri signal bermasligi (lotin, kirill, rus) | 22 |
 | `tests/quote-map.test.mjs` | Kirill e'londa lotincha analyzer iqtibosi asl kirill fragmentga bog'lanishi; topilmasa yoki harfning yarmiga tushsa — belgilanmaydi; lotin va rus belgilari o'zgarmasligi | 8 |
-| `tests/validate.test.mjs` | Bo'sh va mazmunsiz matn bloklanishi; loyihadagi barcha real va namunaviy e'lonlar o'tishi | 8 |
+| `tests/validate.test.mjs` | Bo'sh, mazmunsiz va juda uzun (6000+ belgi) matn bloklanishi; loyihadagi barcha real va namunaviy e'lonlar o'tishi | 9 |
 | `tests/demo-examples.test.mjs` | Bosh sahifadagi sintetik misollar va ularning iqtiboslari analizator natijasiga mosligi | 7 |
 | `tests/demo-local.test.mjs` | `npm run demo:local`: faqat `127.0.0.1`, muhitdagi AI kalitlari berilmaydi, `/api/ai` → 503, `.env` va server fayllari ochilmaydi, loglarda kalit yo'q | 5 |
 | `tests/preflight.test.mjs` | Vaqtinchalik git repolarda: `.env`, `data/`, qoralama va `result.json` commit qilinsa, soxta Anthropic/Gemini/Telegram kalitlari faylda, git tarixida yoki yangi faylda bo'lsa, `.gitignore` to'liq bo'lmasa preflight xato beradi va kalitni chiqarmaydi | 10 |
 | `tests/run.mjs` | v1, v2, v3 aniqligi, format tekshiruvi, sifat chegaralari | 10 chegara |
-| `tests/ui.e2e.mjs` | Brauzerda: 320–1366px ekranlarda gorizontal scroll yo'qligi, menyu, klaviatura, `aria-live`, validatsiya, hero va CTA, CSV formula himoyasi, kanallar reytingi, chop etish, `demo:local` da AI tugmasi o'chiqligi, kirill e'londa asl iqtiboslar belgilanishi va shikoyatda asl fragment, natijaning ekran o'quvchiga e'lon qilinishi, baza qatorini klaviatura bilan ochish, landshaft telefonda mobil menyu, xarita va xulosalardagi xavf ulushi bir xil ta'rifda, sintetik namuna "real" deb ko'rsatilmasligi, qayta joylangan firibgar e'lon ikkala kanal reytingida, "Asosiy tarkibga o'tish" havolasi (Tab → Enter → tekshiruv), 390 va 768px da asosiy amallar ≥ 44px, yorug' va qorong'i rejimda WCAG AA kontrast | 50 |
+| `tests/ui.e2e.mjs` | Brauzerda: 320–1366px ekranlarda gorizontal scroll yo'qligi, menyu, klaviatura, `aria-live`, validatsiya, hero va CTA, CSV formula himoyasi, kanallar reytingi, chop etish, `demo:local` da AI tugmasi o'chiqligi, kirill e'londa asl iqtiboslar belgilanishi va shikoyatda asl fragment, natijaning ekran o'quvchiga e'lon qilinishi, baza qatorini klaviatura bilan ochish, landshaft telefonda mobil menyu, xarita va xulosalardagi xavf ulushi bir xil ta'rifda, sintetik namuna "real" deb ko'rsatilmasligi, qayta joylangan firibgar e'lon ikkala kanal reytingida, "Asosiy tarkibga o'tish" havolasi (Tab → Enter → tekshiruv), 390 va 768px da asosiy amallar ≥ 44px, yorug' va qorong'i rejimda WCAG AA kontrast | 51 |
 
 ## Tuzilishi
 

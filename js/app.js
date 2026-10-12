@@ -75,7 +75,7 @@
         ${kpi(c.disc, '⚖️ Kamsituvchi')}
       </div>
       ${redactedSummary(real.redacted) ? `<p class="muted" style="margin:8px 0 0;font-size:.82rem">🔒 Shaxsiy ma'lumot yashirildi: ${esc(redactedSummary(real.redacted))}. Brauzerda faqat yashirilgan matn saqlanadi.</p>` : ''}
-      <p class="muted" style="margin:8px 0 0;font-size:.82rem">${s.notVacancy} ta xabar vakansiyaga o'xshamagani yoki juda qisqaligi uchun tahlilga kiritilmadi (reklama, salomlashish va h.k.).</p>`;
+      <p class="muted" style="margin:8px 0 0;font-size:.82rem">${s.notVacancy} ta xabar vakansiyaga o'xshamagani yoki juda qisqaligi uchun tahlilga kiritilmadi (reklama, salomlashish va h.k.).${s.tooLong ? ` ${s.tooLong} ta xabar juda uzun (${window.IQImporter.MAX_LENGTH} belgidan ko'p) va tahlil qilinmadi.` : ''}</p>`;
   }
 
   function render() {

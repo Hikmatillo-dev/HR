@@ -12,6 +12,7 @@
     'керак', 'маош', 'иш(га|чи|лар)?(?![\\p{L}])', 'ойига', 'даромад', 'тажриба'
   ].join('|'), 'iu');
   const MIN_LENGTH = 40;
+  const MAX_LENGTH = 6000; // Telegram xabari 4096 belgidan oshmaydi; undan uzuni tahlil qilinmaydi (sahifani qotirmasligi uchun)
   const WEAK_SIGNALS = new Set(['invest', 'link', 'abroad', 'urgency', 'vague', 'salary']);
 
   function messageText(m) {
@@ -78,19 +79,21 @@
    * stats.vacancyLike  — vakansiyaga o'xshash xabarlar
    * stats.duplicates   — takroriy (bir xil matn qayta joylangan) e'lonlar
    * stats.unique       — tahlilga kiradigan noyob vakansiyalar
+   * stats.tooLong    — 6000 belgidan uzun (tahlil qilinmagan) xabarlar
    * stats.syntheticFiles — "synthetic": true deb belgilangan (sintetik) fayllar nomi
    */
   function importFiles(files, fingerprint) {
     fingerprint = fingerprint || (global.IshQalqon && global.IshQalqon.fingerprint);
     if (!fingerprint) throw new Error('analyzer.js yuklanmagan');
     const seen = new Map(), items = []; // kalit → e'lon
-    const stats = { files: files.length, messages: 0, notVacancy: 0, vacancyLike: 0, duplicates: 0, unique: 0, syntheticFiles: [] };
+    const stats = { files: files.length, messages: 0, notVacancy: 0, tooLong: 0, vacancyLike: 0, duplicates: 0, unique: 0, syntheticFiles: [] };
     for (const f of files) {
       const records = rawRecords(f.name, f.content);
       if (records.synthetic) stats.syntheticFiles.push(f.name);
       for (const r of records) {
         if (!r.text) continue;
         stats.messages++;
+        if (r.text.length > MAX_LENGTH) { stats.tooLong++; continue; }
         // Vakansiya so'zi bo'lmasa ham, kuchli firibgarlik belgisi bor xabar olinadi: "SMS kodni yuboring, 1 soatda 500 000 so'm
         // topasiz" kabi e'lonlar "kerak/ish/maosh" demaydi. Zaif belgining o'zi (referal, havola, xorij, shoshiltirish) yetmaydi —
         // kanal reklamasi ("do'stlaringizni taklif qiling") va salomlashish tashlanadi.
@@ -114,5 +117,5 @@
     return { items, stats };
   }
 
-  global.IQImporter = { importFiles, parseCsv, VACANCY_RE, MIN_LENGTH };
+  global.IQImporter = { importFiles, parseCsv, VACANCY_RE, MIN_LENGTH, MAX_LENGTH };
 })(typeof window !== 'undefined' ? window : globalThis);

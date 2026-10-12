@@ -557,6 +557,19 @@ await test("Kanallar reytingi: boshqa kanaldan takrorlangan firibgar e'lon ikkal
   await page.close();
 });
 
+// M1 (bug-hunt): juda uzun matn sahifani qotirmaydi — tez va aniq xabar
+await test("Juda uzun matn (20 000 raqam): 'Tekshirish' 1.5 soniyadan tez, baho yo'q, 'juda uzun' xabari", async () => {
+  const { page, errors } = await open({ demo: false });
+  await page.fill('#input', 'Ish kerak, Toshkent ' + '1'.repeat(20000));
+  const t0 = Date.now(); await page.click('#btnCheck'); await page.waitForSelector('#result .invalid-msg', { timeout: 60000 });
+  const ms = Date.now() - t0;
+  assert.ok(ms < 1500, `${ms} ms`);
+  assert.match(await page.textContent('#result .invalid-msg'), /juda uzun/);
+  assert.equal(await page.locator('#result .gauge').count(), 0);
+  assert.deepEqual(errors, []);
+  await page.close();
+});
+
 // ---------- H2: kirillcha iqtiboslar asl matnda ----------
 const KIRILL_RISK = "Кореяга иш! Виза 100% кафолатланган. Ҳужжатлар учун олдиндан 500$ тўлов қиласиз, паспортингизни бизга топширасиз. Тез ёзинг, жойлар чекланган!";
 async function checkText(page, text) {

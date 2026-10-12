@@ -8,7 +8,7 @@ import '../js/demo-examples.js';
 
 globalThis.window = globalThis;
 await import('../js/sample-data.js');
-const { check, MIN_CHARS, MESSAGE } = globalThis.IQValidate;
+const { check, MIN_CHARS, MAX_CHARS, MESSAGE } = globalThis.IQValidate;
 
 let passed = 0;
 function test(name, fn) {
@@ -46,6 +46,17 @@ test("Chegarada: 19 belgi bloklanadi, 20 belgi o'tadi; chetdagi bo'shliqlar hiso
   assert.equal(check('Kassir kerak Toshkt').ok, false); // 19
   assert.equal(check('Kassir kerak Toshken').ok, true); // 20
   assert.equal(check('     Kassir kerak Toshkt     ').ok, false);
+});
+
+// M1 (bug-hunt): juda uzun matn tahlilni (va sahifani) soniyalab qotirardi — chegara AI bilan bir xil: 6000 belgi
+test("Juda uzun matn (6000 belgidan ko'p) bloklanadi va aniq xabar beriladi; 6000 belgi — o'tadi", () => {
+  assert.equal(MAX_CHARS, 6000);
+  const ok = 'Sotuvchi kerak, Toshkent. ' + 'a'.repeat(6000 - 26);
+  assert.equal(ok.length, 6000);
+  assert.deepEqual(check(ok), { ok: true });
+  const r = check('Ish kerak, Toshkent ' + '1'.repeat(20000));
+  assert.equal(r.ok, false); assert.equal(r.reason, 'long');
+  assert.match(r.message, /juda uzun/); assert.match(r.message, /6000/);
 });
 
 const sets = {
