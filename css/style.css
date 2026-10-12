@@ -120,7 +120,8 @@ nav a:hover { background: var(--surface-2); color: var(--text); }
   #btnCheck, #btnClear, #btnUpload, #btnUploadEmpty, #btnSampleUpload, #btnCareersUpload, .demo-next, .mode-switch button { min-height: 44px; }
   #menuBtn, #themeBtn { min-width: 44px; min-height: 44px; }
   .filters select, .filters input[type="search"], #vakansiyalar select, #vakansiyalar input[type="search"] { min-height: 44px; }
-  .topbar nav { top: 100%; }
+  /* Past ekranda (telefon landshaft) menyu ekranga sig'adi va o'zi ichida aylanadi */
+  .topbar nav { top: 100%; max-height: calc(100vh - 60px); max-height: calc(100dvh - 60px); overflow-y: auto; overscroll-behavior: contain; }
   /* Qatordagi mayda tugmalar (misollar) 44px li tugma yonida cho'zilib ketmasin */
   .checker .btns { align-items: center; }
 }

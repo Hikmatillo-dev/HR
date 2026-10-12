@@ -481,6 +481,25 @@ await test("Baza jadvali: qator Tab bilan fokus oladi (ko'rinadigan ramka), Ente
   await page.close();
 });
 
+// M7 (bug-hunt): past ekranda (telefon landshaft) mobil menyuning hamma havolasiga yetib boriladi
+for (const [width, height] of [[844, 390], [390, 844]]) {
+  await test(`Mobil menyu ${width}×${height}: menyu ekranga sig'adi yoki ichida aylanadi, oxirgi havola 'Loyiha' ochiladi`, async () => {
+    const page = await browser.newPage({ viewport: { width, height } });
+    await page.goto(PAGE); await page.waitForTimeout(300);
+    await page.click('#menuBtn'); await page.waitForTimeout(150);
+    const nav = await page.locator('#mainNav').boundingBox();
+    assert.ok(nav.y + nav.height <= height + 1, `menyu ekrandan chiqib ketdi: pastki chegara ${Math.round(nav.y + nav.height)} > ${height}`);
+    const last = page.locator('#mainNav a[href="#haqida"]');
+    await last.scrollIntoViewIfNeeded();
+    const box = await last.boundingBox();
+    assert.ok(box.y >= 0 && box.y + box.height <= height + 1, `'Loyiha' ko'rinmaydi: ${Math.round(box.y)}..${Math.round(box.y + box.height)}`);
+    await last.click(); await page.waitForTimeout(900);
+    assert.equal(await page.evaluate(() => location.hash), '#haqida');
+    assert.equal(await page.getAttribute('#menuBtn', 'aria-expanded'), 'false');
+    await page.close();
+  });
+}
+
 // ---------- H2: kirillcha iqtiboslar asl matnda ----------
 const KIRILL_RISK = "Кореяга иш! Виза 100% кафолатланган. Ҳужжатлар учун олдиндан 500$ тўлов қиласиз, паспортингизни бизга топширасиз. Тез ёзинг, жойлар чекланган!";
 async function checkText(page, text) {

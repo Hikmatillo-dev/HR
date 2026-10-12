@@ -24,7 +24,7 @@ npm install
 npm start          # http://localhost:3000 (.env dagi AI kaliti bo'lsa, AI ham yoqiladi)
 npm run demo:local # http://127.0.0.1:3000 — oflayn demo, kalit kerak emas, AI tugmasi o'chiq
 npm test           # 172 ta unit test + aniqlik o'lchovi (v1, v2, v3) va sifat chegaralari
-npm run test:ui    # 45 ta brauzer testi (Playwright): mobil, klaviatura, kontrast
+npm run test:ui    # 47 ta brauzer testi (Playwright): mobil, klaviatura, kontrast
 npm run preflight  # topshirishdan oldin: kalitlar, taqiqlangan fayllar, hujjatlar va barcha testlar
 ```
 
@@ -217,7 +217,7 @@ npm run bot                   # .env dagi token avtomatik o'qiladi
 ### 5. Testlar
 ```bash
 npm test                 # 15 ta test fayli (172 ta unit test) + tests/run.mjs (aniqlik va sifat chegaralari)
-npm run test:ui          # 45 ta brauzer testi (Playwright o'rnatilmagan bo'lsa o'tkazib yuboriladi)
+npm run test:ui          # 47 ta brauzer testi (Playwright o'rnatilmagan bo'lsa o'tkazib yuboriladi)
 npm run check:evidence   # README va docs dagi raqamlar repozitoriy dalillariga mosligi (testlarni ham sanaydi)
 npm run preflight        # topshirish oldidan: .env/data/qoralama git'da yo'qligi, kalitlar (fayllar va git tarixi), hujjatlar, testlar
 ```
@@ -240,7 +240,7 @@ npm run preflight        # topshirish oldidan: .env/data/qoralama git'da yo'qlig
 | `tests/demo-local.test.mjs` | `npm run demo:local`: faqat `127.0.0.1`, muhitdagi AI kalitlari berilmaydi, `/api/ai` → 503, `.env` va server fayllari ochilmaydi, loglarda kalit yo'q | 5 |
 | `tests/preflight.test.mjs` | Vaqtinchalik git repolarda: `.env`, `data/`, qoralama va `result.json` commit qilinsa, soxta Anthropic/Gemini/Telegram kalitlari faylda, git tarixida yoki yangi faylda bo'lsa, `.gitignore` to'liq bo'lmasa preflight xato beradi va kalitni chiqarmaydi | 10 |
 | `tests/run.mjs` | v1, v2, v3 aniqligi, format tekshiruvi, sifat chegaralari | 10 chegara |
-| `tests/ui.e2e.mjs` | Brauzerda: 320–1366px ekranlarda gorizontal scroll yo'qligi, menyu, klaviatura, `aria-live`, validatsiya, hero va CTA, CSV formula himoyasi, kanallar reytingi, chop etish, `demo:local` da AI tugmasi o'chiqligi, kirill e'londa asl iqtiboslar belgilanishi va shikoyatda asl fragment, natijaning ekran o'quvchiga e'lon qilinishi, baza qatorini klaviatura bilan ochish, "Asosiy tarkibga o'tish" havolasi (Tab → Enter → tekshiruv), 390 va 768px da asosiy amallar ≥ 44px, yorug' va qorong'i rejimda WCAG AA kontrast | 45 |
+| `tests/ui.e2e.mjs` | Brauzerda: 320–1366px ekranlarda gorizontal scroll yo'qligi, menyu, klaviatura, `aria-live`, validatsiya, hero va CTA, CSV formula himoyasi, kanallar reytingi, chop etish, `demo:local` da AI tugmasi o'chiqligi, kirill e'londa asl iqtiboslar belgilanishi va shikoyatda asl fragment, natijaning ekran o'quvchiga e'lon qilinishi, baza qatorini klaviatura bilan ochish, landshaft telefonda mobil menyu, "Asosiy tarkibga o'tish" havolasi (Tab → Enter → tekshiruv), 390 va 768px da asosiy amallar ≥ 44px, yorug' va qorong'i rejimda WCAG AA kontrast | 47 |
 
 ## Tuzilishi
 
