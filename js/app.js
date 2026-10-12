@@ -65,7 +65,7 @@
     const s = real.stats, c = levelCounts(data);
     const kpi = (v, l) => `<div class="kpi"><b>${v}</b><span>${l}</span></div>`;
     box.hidden = false;
-    box.innerHTML = `<b>📥 Import hisoboti</b> · ${esc(real.name)}${real.savedAt ? ` · ${esc(new Date(real.savedAt).toLocaleString('uz-UZ'))}` : ''}
+    box.innerHTML = `<b>📥 Import hisoboti</b>${real.synthetic ? ' · <b>⚠️ SINTETIK namuna</b>' : ''} · ${esc(real.name)}${real.savedAt ? ` · ${esc(new Date(real.savedAt).toLocaleString('uz-UZ'))}` : ''}
       <div class="kpis">
         ${kpi(s.messages, "Fayldagi xabarlar")}
         ${kpi(s.vacancyLike, "Vakansiyaga o'xshash")}
@@ -88,6 +88,8 @@
     $('#demoBadge').hidden = !demo;
     $('#btnClearReal').hidden = !(real && real.source === 'storage') || demo;
     document.body.classList.toggle('sample-mode', !demo && !!real && real.source === 'sample');
+    // Bosh sahifa raqamlari nomi manbaga qarab: real namuna / sintetik namuna / foydalanuvchi yuklagan eksport
+    document.body.dataset.source = demo || !real ? '' : real.source === 'sample' ? 'sample' : real.synthetic ? 'synthetic' : 'upload';
 
     if (empty) {
       $('#dataNote').textContent = '';
@@ -103,13 +105,17 @@
       ? `⚠️ <b>Demo rejim:</b> ${data.length} ta <b>sintetik</b> e'lon. Bu raqamlar haqiqiy bozorni aks ettirmaydi va faqat interfeysni ko'rsatish uchun.`
       : real.source === 'sample'
         ? `📌 <b>Real namuna:</b> ${real.channels} ta Telegram kanalidan qo'lda tekshirilgan ${data.length} ta haqiqiy e'lon (telefon va shaxsiy ma'lumotlar yashirilgan). Namuna kichik — o'z kanalingiz eksportini yuklasangiz, tahlil shu ma'lumotda qayta quriladi.`
-        : `✅ <b>Real ma'lumot:</b> ${esc(real.name)} — ${data.length} ta noyob e'lon. ${real.source === 'storage' ? "Ma'lumot faqat shu brauzerda saqlangan, serverga yuborilmagan." : ''}`;
+        : real.synthetic
+          ? `⚠️ <b>Sintetik namunaviy eksport:</b> ${esc(real.name)} — ${data.length} ta e'lon. Bu loyiha uchun yozilgan namuna, real kanal emas: raqamlar haqiqiy bozorni aks ettirmaydi.`
+          : `✅ <b>Yuklangan ma'lumot:</b> ${esc(real.name)} — ${data.length} ta noyob e'lon. ${real.source === 'storage' ? "Ma'lumot faqat shu brauzerda saqlangan, serverga yuborilmagan." : ''}`;
     renderImportReport(demo ? null : real, data);
     // Bosh sahifa raqamlari faqat real ma'lumotdan — manbasi aniq yoziladi (demo raqamlari u yerga chiqmaydi)
     if (!demo) {
       $('#heroSource').textContent = real.source === 'sample'
         ? `Manba: real namuna — ${real.channels} ta Telegram kanalidan qo'lda tekshirilgan ${data.length} ta e'lon. Namuna kichik; o'z eksportingizni yuklasangiz, raqamlar yangilanadi.`
-        : `Manba: siz yuklagan Telegram eksporti (${data.length} ta noyob e'lon).`;
+        : real.synthetic
+          ? `Manba: SINTETIK namunaviy eksport (${data.length} ta e'lon) — real kanal emas.`
+          : `Manba: siz yuklagan Telegram eksporti (${data.length} ta noyob e'lon).`;
     }
     IQ.renderDashboard(data);
   }
@@ -125,7 +131,7 @@
       const { stats } = imported;
       if (!imported.items.length) throw new Error(`${stats.messages} ta xabar o'qildi, lekin vakansiyaga o'xshash e'lon topilmadi`);
       const { items, totals } = redactItems(imported.items);
-      const real = { items, stats, redacted: totals, name: files.map(f => f.name).join(', '), savedAt: Date.now() };
+      const real = { items, stats, redacted: totals, name: files.map(f => f.name).join(', '), savedAt: Date.now(), synthetic: stats.syntheticFiles.length > 0 };
       // Faqat shu brauzerda saqlanadi; hajm katta bo'lsa saqlanmaydi, lekin tahlil ishlayveradi
       let saved = false;
       try { localStorage.setItem(STORE_KEY, JSON.stringify(real)); saved = true; } catch (err) { /* hajm yoki xususiy rejim */ }

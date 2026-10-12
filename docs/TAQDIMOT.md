@@ -19,7 +19,7 @@ Format: 5 daqiqa nutq + 5 daqiqa jonli demo + hakamlar savollari. Har bir raqam 
 "Har bir e'lon 15 ta firibgarlik qoidasi va real bo'lmagan maosh tekshiruvi, 5 turdagi kamsitish va shaffoflik indeksi bo'yicha baholanadi. Firibgarlik xavfi va kamsitish alohida ko'rsatiladi. Kamsituvchi e'lon 'past xavf' degani bilan yashirinib qolmaydi. Odam savdosi belgisi alohida chiqadi. Har bir baho sababi va e'lon matnidagi aniq iqtibos bilan beriladi. Tizim hukm chiqarmaydi, sababni ko'rsatadi."
 
 **3:30–4:20 — Texnologiya, test va maxfiylik.**
-"Asosiy tahlil brauzerda, internetsiz ishlaydi; yuklangan fayl serverga ketmaydi, telefon va karta raqamlari saqlashdan oldin yashiriladi. AI — Claude yoki Gemini — ixtiyoriy chuqur tahlil qatlami, uning iqtiboslari e'lon matnidan tekshiriladi. `npm test` da 172 ta unit test va aniqlik o'lchovi bor, `npm run test:ui` da 48 ta brauzer testi: telefon ekrani, klaviatura, qorong'i rejim, kontrast."
+"Asosiy tahlil brauzerda, internetsiz ishlaydi; yuklangan fayl serverga ketmaydi, telefon va karta raqamlari saqlashdan oldin yashiriladi. AI — Claude yoki Gemini — ixtiyoriy chuqur tahlil qatlami, uning iqtiboslari e'lon matnidan tekshiriladi. `npm test` da 173 ta unit test va aniqlik o'lchovi bor, `npm run test:ui` da 49 ta brauzer testi: telefon ekrani, klaviatura, qorong'i rejim, kontrast."
 
 **4:20–5:00 — Halol cheklov va keyingi qadam.**
 "Real e'lonlarda qoidalar o'zgartirilmasdan olingan natija: aniqlik 70.6%, xavfli e'lonni topish 16.7%. Xatolarni tahlil qilib qoidalarni tuzatdik: 91.2% va 75.0%, halol e'lonni xavfli deyish 0.0%. Lekin bu optimistik, chunki qoidalar shu e'lonlarga qarab tuzatilgan. Keyingi qadam: yangi kanallardan v4 to'plami bilan mustaqil o'lchash."
@@ -54,7 +54,7 @@ abc
 ```
 Kutilgan natija: baho chiqmaydi, "E'lon matni juda qisqa yoki mazmunsiz. Kamida 20 belgi va harfli so'z kiriting." degan xabar chiqadi.
 
-**2:35–3:35 — Telegram eksport.** Menyuda **Bozor tahlili** → **📂 Telegram eksportini yuklash** → `namuna/telegram-export-namuna.json`. Ayting: "Bu **sintetik namunaviy fayl**, real kanal emas." Import hisoboti: 41 ta xabar, 6 ta takror, 34 ta noyob e'lon. Bosh sahifadagi manba yozuvi "siz yuklagan Telegram eksporti" ga o'zgaradi. Agar o'zingizning real eksportingiz bo'lsa, uni yuklang (`docs/JARAYON.md`, 8-bo'lim).
+**2:35–3:35 — Telegram eksport.** Menyuda **Bozor tahlili** → **📂 Telegram eksportini yuklash** → `namuna/telegram-export-namuna.json`. Ayting: "Bu **sintetik namunaviy fayl**, real kanal emas." Import hisoboti: 41 ta xabar, 6 ta takror, 34 ta noyob e'lon. Sayt faylni o'zi sintetik deb taniydi: import hisobotida "⚠️ SINTETIK namuna", bosh sahifada "sintetik namunadagi e'lon" va "Manba: SINTETIK namunaviy eksport — real kanal emas" yoziladi. O'zingizning eksportingiz yuklansa, "siz yuklagan Telegram eksporti" deyiladi. Agar o'zingizning real eksportingiz bo'lsa, uni yuklang (`docs/JARAYON.md`, 8-bo'lim).
 
 **3:35–4:15 — Kasblar, hudud, kanallar.** Hududlar xaritasidagi katakni bosing: ro'yxat filtrlanadi. **Zamonaviy kasblar**: kichik namunada "Ma'lumot yetarli emas" chiqadi. Grafikni ko'rsatish uchun **Demo** ni bosing va "DEMO" belgisini ko'rsating. **Kanallar**: A–F reyting. Keyin **Real ma'lumot** ga qayting va **🗑️ Saqlangan ma'lumotni o'chirish** ni bosing.
 

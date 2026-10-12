@@ -46,6 +46,8 @@
       const chats = data.messages ? [data] : ((data.chats && data.chats.list) || []);
       if (!chats.length) throw new Error(`${name}: ichida xabarlar topilmadi (Telegram Desktop → Export chat history → JSON kerak)`);
       const out = [];
+      // Loyiha namunasi o'zini "synthetic": true deb belgilaydi — sayt uni real ma'lumot deb ko'rsatmasligi uchun
+      out.synthetic = data.synthetic === true;
       for (const chat of chats) {
         for (const m of chat.messages || []) {
           if (m.type !== 'message') continue;
@@ -75,14 +77,17 @@
    * stats.vacancyLike  — vakansiyaga o'xshash xabarlar
    * stats.duplicates   — takroriy (bir xil matn qayta joylangan) e'lonlar
    * stats.unique       — tahlilga kiradigan noyob vakansiyalar
+   * stats.syntheticFiles — "synthetic": true deb belgilangan (sintetik) fayllar nomi
    */
   function importFiles(files, fingerprint) {
     fingerprint = fingerprint || (global.IshQalqon && global.IshQalqon.fingerprint);
     if (!fingerprint) throw new Error('analyzer.js yuklanmagan');
     const seen = new Set(), items = [];
-    const stats = { files: files.length, messages: 0, notVacancy: 0, vacancyLike: 0, duplicates: 0, unique: 0 };
+    const stats = { files: files.length, messages: 0, notVacancy: 0, vacancyLike: 0, duplicates: 0, unique: 0, syntheticFiles: [] };
     for (const f of files) {
-      for (const r of rawRecords(f.name, f.content)) {
+      const records = rawRecords(f.name, f.content);
+      if (records.synthetic) stats.syntheticFiles.push(f.name);
+      for (const r of records) {
         if (!r.text) continue;
         stats.messages++;
         if (r.text.length < MIN_LENGTH || !VACANCY_RE.test(r.text)) { stats.notVacancy++; continue; }

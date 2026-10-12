@@ -25,6 +25,13 @@ test("Namunaviy Telegram eksporti: firibgar e'lonlar ham olinadi, reklama tashla
   assert.ok(items.some(i => /Кореяга иш/.test(i.text)), "kirill e'lon olinishi kerak");
 });
 
+test("Sintetik belgisi: namuna faylidagi \"synthetic\": true hisobotga o'tadi; oddiy eksport — sintetik emas", () => {
+  const content = readFileSync(new URL('../namuna/telegram-export-namuna.json', import.meta.url), 'utf8');
+  assert.deepEqual(importFiles([{ name: 'telegram-export-namuna.json', content }]).stats.syntheticFiles, ['telegram-export-namuna.json']);
+  const plain = JSON.stringify({ name: 'k', messages: [{ id: 1, type: 'message', date: '2026-10-01', text: "Sotuvchi kerak, Toshkent. Oylik 4 mln so'm." }] });
+  assert.deepEqual(importFiles([{ name: 'result.json', content: plain }]).stats.syntheticFiles, []);
+});
+
 test("Bir xil e'lon boshqa telefon raqami bilan — takror deb hisoblanadi", () => {
   const msg = (id, phone) => ({ id, type: 'message', date: '2026-10-01T10:00:00', text: `Kassir kerak, Toshkent. Maosh 4 mln so'm. Tel ${phone}` });
   const content = JSON.stringify({ name: 'k', messages: [msg(1, '+998 90 111 22 33'), msg(2, '+998 91 444 55 66')] });

@@ -56,7 +56,7 @@ Topshirish va himoya uchun aynan 5 ta screenshot. Ular hali olinmagan. Har birin
 | **Viewport** | 1366 × 900 |
 | **Rejim** | yorug' (light) |
 | **Qanday kelish** | Menyu → **Bozor tahlili** → **📂 Telegram eksportini yuklash** → `namuna/telegram-export-namuna.json` (sintetik fayl). Import hisoboti ko'rinadigan qilib aylantiring. Rasmdan keyin **🗑️ Saqlangan ma'lumotni o'chirish**. |
-| **Ko'rinishi shart** | "📥 Import hisoboti · telegram-export-namuna.json" (sintetik fayl nomi); 41 ta xabar, 6 ta takror (olib tashlandi), 34 ta noyob e'lon; xavf taqsimoti; "🔒 Shaxsiy ma'lumot yashirildi: 17 telefon raqami. Brauzerda faqat yashirilgan matn saqlanadi." |
+| **Ko'rinishi shart** | "📥 Import hisoboti · ⚠️ SINTETIK namuna · telegram-export-namuna.json" (sintetik fayl); 41 ta xabar, 6 ta takror (olib tashlandi), 34 ta noyob e'lon; xavf taqsimoti; "🔒 Shaxsiy ma'lumot yashirildi: 17 telefon raqami. Brauzerda faqat yashirilgan matn saqlanadi." |
 | **Ma'lumot** | **Sintetik** namunaviy eksport (real kanal emas). Fayl nomi rasmda ko'rinib turadi. |
 | **Caption** | "Sintetik namunaviy Telegram eksporti: 41 ta xabar o'qildi, 6 ta takror olib tashlandi, 34 ta e'lon tahlil qilindi; 17 ta telefon raqami saqlashdan oldin yashirildi. Fayl serverga yuborilmaydi." |
 | **PII** | Telefonlar niqoblangan. Sahifa pastidagi e'lonlar ro'yxatida ham ochiq raqam yo'qligini tekshiring. |

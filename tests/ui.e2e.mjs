@@ -514,6 +514,29 @@ await test("Xarita: xavf metrikasi 'xavfli yoki shubhali' (yuqori + o'rtacha) �
   await page.close();
 });
 
+// M5 (bug-hunt): sintetik namunaviy eksport bosh sahifada "real e'lon" deb ko'rsatilmaydi
+await test("Sintetik namuna yuklanganda: hero, manba va izohda 'sintetik', 'real e'lon' yo'q; oddiy eksport — 'yuklangan'", async () => {
+  const { page } = await open({ demo: false });
+  await page.setInputFiles('#fileInput', path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../namuna/telegram-export-namuna.json'));
+  await page.waitForTimeout(600);
+  const hero = await page.textContent('#heroStats'), src = await page.textContent('#heroSource'), note = await page.textContent('#dataNote');
+  assert.doesNotMatch(hero, /real/i, `hero: ${hero}`);
+  assert.match(hero, /sintetik/i, `hero: ${hero}`);
+  assert.match(src, /sintetik/i, `manba: ${src}`); assert.match(src, /real kanal emas/, `manba: ${src}`);
+  assert.match(note, /sintetik/i, `izoh: ${note}`); assert.doesNotMatch(note, /Real ma'lumot/, `izoh: ${note}`);
+  assert.match(await page.textContent('#importReport'), /SINTETIK/);
+  await page.reload(); await page.waitForTimeout(500);
+  assert.match(await page.textContent('#heroSource'), /sintetik/i, "qayta yuklanganda sintetik belgisi yo'qoldi");
+  await page.setInputFiles('#fileInput', { name: 'result.json', mimeType: 'application/json', buffer: Buffer.from(SMALL_EXPORT) });
+  await page.waitForTimeout(600);
+  const hero2 = await page.textContent('#heroStats');
+  assert.doesNotMatch(hero2, /real|sintetik/i, `oddiy eksport hero: ${hero2}`);
+  assert.match(hero2, /yuklangan/, hero2);
+  assert.match(await page.textContent('#heroSource'), /siz yuklagan Telegram eksporti/);
+  await page.evaluate(() => localStorage.clear());
+  await page.close();
+});
+
 // ---------- H2: kirillcha iqtiboslar asl matnda ----------
 const KIRILL_RISK = "Кореяга иш! Виза 100% кафолатланган. Ҳужжатлар учун олдиндан 500$ тўлов қиласиз, паспортингизни бизга топширасиз. Тез ёзинг, жойлар чекланган!";
 async function checkText(page, text) {

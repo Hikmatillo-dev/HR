@@ -71,9 +71,10 @@
     const transp = Math.round(avg(DATA.map(d => d.a.transparency.score)));
     const dupes = count(DATA, d => d.dupes > 1);
 
-    // Bosh sahifa faqat real ma'lumotni ko'rsatadi: demo raqamlari u yerga chiqmaydi
+    // Bosh sahifa demo raqamlarini ko'rsatmaydi; nomi manbaga mos: real namuna, sintetik namuna yoki yuklangan eksport
+    const heroLabel = { sample: "tahlil qilingan real e'lon", synthetic: "sintetik namunadagi e'lon", upload: "yuklangan e'lon tahlil qilindi" }[document.body.dataset.source] || "tahlil qilingan e'lon";
     if (!document.body.classList.contains('demo-mode')) $('#heroStats').innerHTML = `
-      <div><b>${total}</b>tahlil qilingan real e'lon</div>
+      <div><b>${total}</b>${heroLabel}</div>
       <div><b>${pct(high + medium, total)}%</b>xavfli yoki shubhali</div>
       <div><b>${pct(disc, total)}%</b>kamsituvchi talab bilan</div>
       <div><b>${transp}/100</b>o'rtacha shaffoflik</div>`;

@@ -1,5 +1,7 @@
 {
  "name": "Namuna ish kanali",
+ "synthetic": true,
+ "synthetic_note": "IshQalqon uchun yozilgan SINTETIK namuna: real Telegram kanali emas, telefon raqamlari o'ylab topilgan.",
  "type": "public_channel",
  "id": 1,
  "messages": [
