@@ -194,4 +194,32 @@ test("Topshiriq firibgarligi, 'kodni ayting', 'pasportingiz biz bilan qoladi', x
   hasNot('Dubayga administrator, erkak va ayollar', 'disc:gender');
 });
 
+// H1 (bug-hunt audit): "viza/hujjat/ishga kirish uchun + summa" kabi to'lov talablari "past xavf" olardi
+const level = text => analyze(text).level;
+test("Oldindan to'lovning turli yozilishi: '<narsa> uchun/narxi + summa', 'komissiya … oldindan' — yuqori xavf", () => {
+  const risky = [
+    "Viza uchun 1000$. Koreyaga ishga odam kerak, zavod.", "Ishga kirish uchun 500 000 so'm to'lang.", "Hujjat uchun 300$ to'lov.",
+    "Hujjat rasmiylashtirish narxi 700$.", "Tibbiy ko'rik 100$ o'zingizdan.", "Komissiya 20% oldindan.",
+    // ro'yxatda yo'q, lekin xuddi shu naqsh: qoida bitta jumlaga moslanmaganini tekshiradi
+    "Anketa to'ldirish uchun 50 000 so'm.", "Ishga joylashtirish narxi: 1 500 000 so'm", "Shartnoma uchun 400$, Polshaga ish.",
+    "Виза учун 1000$, Кореяга иш.", "Ҳужжат расмийлаштириш нархи 700$.", "Oldindan 30% komissiya olinadi, Germaniyaga ish."
+  ];
+  const wrong = risky.filter(t => !flags(t).has('prepay') || level(t) !== 'high').map(t => `${t} → ${level(t)} [${[...flags(t)].join(',')}]`);
+  assert.deepEqual(wrong, []);
+});
+
+test("Halol nazorat: maosh, ish beruvchi to'laydigan xarajatlar, 'bepul', savdo komissiyasi — oldindan to'lov emas", () => {
+  const honest = [
+    "Ish haqi 1 500 000 so'm, rasmiy ish.", "Kurs narxi kompaniya tomonidan qoplanadi.", "Tibbiy ko'rik ish beruvchi hisobidan.",
+    "Viza xarajatlari ish beruvchi tomonidan to'lanadi.", "Ishga qabul qilish bepul.", "Oylik 800–1200 USD.",
+    // tuzoqlar: kalit so'z bor, lekin to'lov talabi yo'q
+    "Testdan o'tganlar 5 mln so'm oylik oladi.", "Ingliz tili kurslari o'qituvchisi kerak, oylik 5 mln so'm.",
+    "Viza va chipta (1200$) ish beruvchi hisobidan.", "Hujjatlar uchun 2 mln so'm kompensatsiya beriladi.",
+    "Sotuvchi kerak: oylik 4 mln + savdodan 5% komissiya.", "Viza uchun hech qanday to'lov olinmaydi, maosh 1500$.",
+    "Maosh dollarda, valyuta kursi 12 600 so'm.", "Hujjatsiz ishlamaymiz, rasmiy ish: oylik 1200$.", "IELTS kurs narxi 1.5 mln so'm, o'qituvchi kerak."
+  ];
+  const wrong = honest.filter(t => flags(t).has('prepay') || level(t) === 'high').map(t => `${t} → ${level(t)} [${[...flags(t)].join(',')}]`);
+  assert.deepEqual(wrong, []);
+});
+
 console.log(`\n${passed} ta qoida testi o'tdi${process.exitCode ? ', xatolar bor' : ''}\n`);

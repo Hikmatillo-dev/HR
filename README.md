@@ -23,7 +23,7 @@ Zamonaviy kasblar bozori, hududlar va maoshlar tahlili hamda ish e'lonlarini fir
 npm install
 npm start          # http://localhost:3000 (.env dagi AI kaliti bo'lsa, AI ham yoqiladi)
 npm run demo:local # http://127.0.0.1:3000 — oflayn demo, kalit kerak emas, AI tugmasi o'chiq
-npm test           # 162 ta unit test + aniqlik o'lchovi (v1, v2, v3) va sifat chegaralari
+npm test           # 164 ta unit test + aniqlik o'lchovi (v1, v2, v3) va sifat chegaralari
 npm run test:ui    # 37 ta brauzer testi (Playwright): mobil, klaviatura, kontrast
 npm run preflight  # topshirishdan oldin: kalitlar, taqiqlangan fayllar, hujjatlar va barcha testlar
 ```
@@ -216,7 +216,7 @@ npm run bot                   # .env dagi token avtomatik o'qiladi
 
 ### 5. Testlar
 ```bash
-npm test                 # 14 ta test fayli (162 ta unit test) + tests/run.mjs (aniqlik va sifat chegaralari)
+npm test                 # 14 ta test fayli (164 ta unit test) + tests/run.mjs (aniqlik va sifat chegaralari)
 npm run test:ui          # 37 ta brauzer testi (Playwright o'rnatilmagan bo'lsa o'tkazib yuboriladi)
 npm run check:evidence   # README va docs dagi raqamlar repozitoriy dalillariga mosligi (testlarni ham sanaydi)
 npm run preflight        # topshirish oldidan: .env/data/qoralama git'da yo'qligi, kalitlar (fayllar va git tarixi), hujjatlar, testlar
@@ -233,7 +233,7 @@ npm run preflight        # topshirish oldidan: .env/data/qoralama git'da yo'qlig
 | `tests/bot.test.mjs` | Bot: 4 buyruq, HTML escape, bo'laklash, disclaimer, `/stats` va xeshlangan `user_id`, AI limitlari, guruh qoidalari, soxta Telegram server bilan to'liq oqim | 21 |
 | `tests/server-security.test.mjs` | `/api/ai`: Content-Type (415), Origin (403), faqat `127.0.0.1`, kunlik va IP limiti, `X-Forwarded-For`, loglarda kalit va PII yo'qligi | 14 |
 | `tests/config.test.mjs` | Config va `analyzer.js` kurslari bir xilligi, `.env` orqali almashtirish, rasmiy manbalar formati | 6 |
-| `tests/rules.test.mjs` | Har bir qoida umumiy naqshni topishi va noto'g'ri signal bermasligi (lotin, kirill, rus) | 20 |
+| `tests/rules.test.mjs` | Har bir qoida umumiy naqshni topishi va noto'g'ri signal bermasligi (lotin, kirill, rus) | 22 |
 | `tests/validate.test.mjs` | Bo'sh va mazmunsiz matn bloklanishi; loyihadagi barcha real va namunaviy e'lonlar o'tishi | 8 |
 | `tests/demo-examples.test.mjs` | Bosh sahifadagi sintetik misollar va ularning iqtiboslari analizator natijasiga mosligi | 7 |
 | `tests/demo-local.test.mjs` | `npm run demo:local`: faqat `127.0.0.1`, muhitdagi AI kalitlari berilmaydi, `/api/ai` → 503, `.env` va server fayllari ochilmaydi, loglarda kalit yo'q | 5 |

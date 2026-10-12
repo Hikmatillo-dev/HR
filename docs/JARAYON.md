@@ -123,7 +123,7 @@ Ish tartibi: har bir vazifa uchun AI avval reja yozadi, muallif tasdiqlaydi, key
 
 ## 6. Testlar va sifat
 
-- `npm test`: 14 ta test fayli (162 ta unit test) va `tests/run.mjs` (v1, v2, v3 aniqligi, 10 ta sifat chegarasi). Taxminan 17 soniya.
+- `npm test`: 14 ta test fayli (164 ta unit test) va `tests/run.mjs` (v1, v2, v3 aniqligi, 10 ta sifat chegarasi). Taxminan 17 soniya.
 - `npm run test:ui`: 37 ta brauzer testi. Ular 320, 390, 768, 844, 1280 va 1366px kengliklarni, ☰ menyuni, Tab bilan boshqarishni, `aria-live` va yorug' hamda qorong'i rejimda WCAG AA kontrastni tekshiradi. Shuningdek "harakatni kamaytirish" sozlamasi, CSV himoyasi, kanallar reytingi `npm run demo:local` da AI tugmasi o'chiqligi, "Asosiy tarkibga o'tish" havolasi va 390/768px da asosiy amallarning kamida 44px ekani tekshiriladi.
 - **CI:** GitHub Actions har bir push'da `npm test` ni Node 22 da ishga tushiradi.
 - **Gate:** v3 natijasi boshlang'ich natijadan pasaysa yoki v2 natijasi 5 punktdan ko'p tushsa, `npm test` xato beradi. Shuning uchun qoidalarni tuzatish real e'lonlardagi natijani yashirincha yomonlashtira olmaydi.
