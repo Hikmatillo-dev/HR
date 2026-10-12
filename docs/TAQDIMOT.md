@@ -120,5 +120,5 @@ Kutilgan natija: baho chiqmaydi, "E'lon matni juda qisqa yoki mazmunsiz. Kamida 
 | Internet yo'q | `npm run demo:local` (kalitsiz, faqat `127.0.0.1`) yoki `index.html` — qoidaviy tahlil, import, grafiklar ishlaydi. AI qadamini o'tkazib yuborib, "AI ixtiyoriy qatlam" deb ayting |
 | API kalit yo'q yoki limit tugagan | Tugma o'chiq va sababi yoziladi. Qoidaviy natijani ko'rsating; AI testlari mock API bilan bor (`tests/ai.test.mjs`, `tests/ai-gemini.test.mjs`) |
 | Server ishga tushmaydi | `index.html` ni brauzerda to'g'ridan-to'g'ri oching: AI'dan boshqa hamma narsa ishlaydi |
-| Kompyuter yoki brauzer ishlamaydi | Oflayn demo video (`docs/VIDEO_DEMO.md`), `docs/SCREENSHOTS.md` dagi 5 ta screenshot. Ular olinmaguncha: `docs/demo.gif` va eski skrinshotlar — yangi bosh sahifadan oldin olingan, buni ayting |
+| Kompyuter yoki brauzer ishlamaydi | Oflayn demo video `docs/video/ishqalqon-demo-offline.mp4` (110 s, `docs/VIDEO_DEMO.md`), `docs/SCREENSHOTS.md` dagi 5 ta screenshot va `docs/demo.gif` |
 | Savolga dalil kerak | `npm test` va `npm run test:ui` ni jonli ishga tushirish; `git log --oneline` |

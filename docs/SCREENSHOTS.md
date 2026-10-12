@@ -1,8 +1,8 @@
 # Screenshot manifesti (5 ta)
 
-Topshirish va himoya uchun aynan 5 ta screenshot. Ular hali olinmagan. Har birini shu yerdagi ko'rsatma bo'yicha oling va ko'rsatilgan nom bilan `docs/screenshots/` ga qo'ying. `npm run preflight` qaysilari yetishmayotganini aytadi, `npm run preflight -- --final` esa yetishmasa xato beradi.
+Topshirish va himoya uchun aynan 5 ta screenshot. Ular olingan (2026-10-12, Chromium, Playwright; ko'rsatmadagi o'lcham va holatda) va `docs/screenshots/` da turibdi. Qayta olish kerak bo'lsa, shu yerdagi ko'rsatma bo'yicha oling. `npm run preflight` qaysilari yetishmayotganini aytadi, `npm run preflight -- --final` esa yetishmasa xato beradi.
 
-**Eskirgan rasmlar.** `docs/screenshots/` dagi hozirgi 1-bosh-sahifa.png, 2-tekshiruv.png, 3-bozor-tahlili.png, 4-telefon.png, 5-aniqlik.png va `docs/demo.gif` yangi bosh sahifadan (`3e5da80`) **oldin** olingan. Quyidagi 5 tasi olingach, README dagi havolalarni yangi nomlarga almashtiring va eski fayllarni o'chiring.
+**Eski rasmlar** (yangi bosh sahifadan oldin olingan 1-bosh-sahifa.png … 5-aniqlik.png) o'chirildi; README yangi 5 ta screenshotni va videodan olingan yangi `docs/demo.gif` ni ko'rsatadi.
 
 **Umumiy tayyorgarlik (hammasi uchun):**
 - `npm run demo:local` → http://127.0.0.1:3000 (AI kalitsiz; internet shart emas). Yoki `index.html` ni to'g'ridan-to'g'ri oching.
@@ -34,7 +34,7 @@ Topshirish va himoya uchun aynan 5 ta screenshot. Ular hali olinmagan. Har birin
 | | |
 |---|---|
 | **Fayl** | `docs/screenshots/02-tekshiruv-xavfli.png` |
-| **Viewport** | 1366 × 900 |
+| **Viewport** | kenglik 1366; tekshiruv bo'limi va natija kartasi to'liq (uzun rasm) |
 | **Rejim** | yorug' (light) |
 | **Qanday kelish** | "Vakansiyani tekshirish" → maydonga quyidagi **sintetik** matnni qo'ying → **Tekshirish**. Natija kartasining yuqori qismi va sabablar ko'rinadigan qilib aylantiring. |
 | **Ko'rinishi shart** | "Firibgarlik xavfi: yuqori"; "🚨 Odam savdosi belgisi"; kamsitish alohida (yosh, jins); sabablar ro'yxati (oldindan to'lov, pasportni topshirish, "100% kafolatlangan" viza, xorij, shoshiltirish), har biri e'lon matnidagi iqtibos bilan. |

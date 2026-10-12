@@ -54,6 +54,8 @@ Koreyaga ish! Zavodga ishchilar kerak, oylik 2500$. Viza 100% kafolatlangan. Huj
 - **GNOME** (Ubuntu va boshqalar): **Print Screen** → yuqoridagi kamera/video belgisi → hudud yoki ekran → yozish; yoki **Ctrl+Shift+Alt+R**. Fayl: Videos → Screencasts (WebM). MP4 ga o'tkazish: `ffmpeg -i yozuv.webm -c:v libx264 -crf 23 -pix_fmt yuv420p ishqalqon-demo-offline.mp4`.
 - **macOS**: **Cmd+Shift+5** → "Record Entire Screen" yoki "Record Selected Portion" → Record. Fayl `.mov`; MP4 uchun: `ffmpeg -i yozuv.mov -c:v libx264 -crf 23 -pix_fmt yuv420p ishqalqon-demo-offline.mp4`.
 
+**Tayyor versiya.** `docs/video/ishqalqon-demo-offline.mp4` (110 soniya, 1280×720, H.264, ~6 MB) shu ssenariy bo'yicha `npm run demo:local` serverida avtomatik yozib olingan (Playwright, ekrandagi izohlar bilan). Unda terminal va Wi-Fi o'chiq belgisi yo'q; kerak bo'lsa yuqoridagi tartibda o'zingiz qayta yozing.
+
 ## 4. Yozgandan keyin
 
 1. Videoni oxirigacha ko'ring. Ochiq telefon raqami, shaxsiy ism, boshqa tab yoki bildirishnoma ko'rinmasin.

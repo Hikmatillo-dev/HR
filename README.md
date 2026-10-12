@@ -40,21 +40,21 @@ npm run preflight  # topshirishdan oldin: kalitlar, taqiqlangan fayllar, hujjatl
 
 To'liq ro'yxat: [Cheklovlar](#cheklovlar). Qanday qurilgani va qarorlar: [`docs/JARAYON.md`](docs/JARAYON.md). Taqdimot va savol-javoblar: [`docs/TAQDIMOT.md`](docs/TAQDIMOT.md).
 
-<p><img src="docs/demo.gif" alt="19 soniyalik demo: jonli misol, kirillcha Koreya firibgarligini tekshirish (yuqori xavf, odam savdosi belgisi, 2 ta kamsitish), kanallar reytingi" width="760"></p>
+<p><img src="docs/demo.gif" alt="30 soniyalik demo: bosh sahifa va sintetik jonli misol, xavfli e'lonni tekshirish — firibgarlik xavfi yuqori, odam savdosi belgisi, iqtiboslar belgilangan" width="760"></p>
 
 <p>
-  <img src="docs/screenshots/2-tekshiruv.png" alt="Kirillcha firibgar e'lon tekshiruvi: firibgarlik xavfi yuqori, odam savdosi belgisi, 2 ta kamsitish" width="640">
-  <img src="docs/screenshots/4-telefon.png" alt="Telefonda: firibgarlik xavfi past, lekin 3 ta kamsituvchi talab" width="220">
+  <img src="docs/screenshots/01-hero-1366-light.png" alt="Bosh sahifa: Zamonaviy kasblar bozoriga xavfsiz kiring, 3 ta qiymat, real namuna raqamlari va manbasi, sintetik jonli misol" width="640">
+  <img src="docs/screenshots/05-mobil-390-dark.png" alt="Telefonda (390px), qorong'i rejim: kirillcha xavfli e'lon — firibgarlik xavfi yuqori, 2 ta kamsitish, odam savdosi belgisi" width="200">
 </p>
 
 <details><summary>Boshqa skrinshotlar</summary>
 
-![Bosh sahifa](docs/screenshots/1-bosh-sahifa.png)
-![Bozor tahlili: 34 ta real e'lon](docs/screenshots/3-bozor-tahlili.png)
-![Tizim aniqligi: boshlang'ich va hozirgi natija](docs/screenshots/5-aniqlik.png)
+![Kirillcha sintetik e'lon tekshiruvi: sabablar va asl kirill matnda belgilangan iqtiboslar](docs/screenshots/02-tekshiruv-xavfli.png)
+![Sintetik namunaviy eksport importi: 41 xabar, 6 takror, 17 telefon yashirildi](docs/screenshots/03-import-hisoboti.png)
+![Demo rejimi (600 ta sintetik e'lon): hududlar, kasblar, ko'nikmalar, kanallar reytingi](docs/screenshots/04-bozor-kasblar.png)
 </details>
 
-Eslatma: bu skrinshotlar va GIF yangi bosh sahifa matnidan oldin olingan. Yangi 5 ta screenshot ro'yxati va olish tartibi: [`docs/SCREENSHOTS.md`](docs/SCREENSHOTS.md). Oflayn demo video: [`docs/VIDEO_DEMO.md`](docs/VIDEO_DEMO.md).
+Screenshotlar ro'yxati, ma'lumot turi va caption'lari: [`docs/SCREENSHOTS.md`](docs/SCREENSHOTS.md). 110 soniyalik oflayn demo video: [`docs/VIDEO_DEMO.md`](docs/VIDEO_DEMO.md).
 
 ## Muammo
 
