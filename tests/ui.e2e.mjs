@@ -460,6 +460,27 @@ await test("Natija ekran o'quvchiga e'lon qilinadi: 'Tekshirish' va misol tugmas
   await page.close();
 });
 
+// M9 (bug-hunt): vakansiyalar bazasidagi qatorni klaviatura bilan ochish
+await test("Baza jadvali: qator Tab bilan fokus oladi (ko'rinadigan ramka), Enter va Space bilan tekshiruvga ochiladi", async () => {
+  const { page, errors } = await open();
+  const row = page.locator('#rows tr.click').first();
+  assert.equal(await row.getAttribute('tabindex'), '0', 'qator fokuslanmaydi');
+  await page.focus('#btnMore'); await page.keyboard.press('Shift+Tab');
+  let guard = 0; while (!(await page.evaluate(() => document.activeElement.matches('#rows tr.click'))) && guard++ < 40) await page.keyboard.press('Shift+Tab');
+  assert.ok(await page.evaluate(() => document.activeElement.matches('#rows tr.click')), "Tab bilan qatorga yetib bo'lmadi");
+  const ring = await page.evaluate(() => { const c = getComputedStyle(document.activeElement); return c.outlineStyle !== 'none' && parseFloat(c.outlineWidth) >= 2; });
+  assert.ok(ring, "fokus ramkasi ko'rinmaydi");
+  const text = await page.evaluate(() => document.activeElement.querySelector('td.text').textContent);
+  await page.keyboard.press('Enter'); await page.waitForTimeout(300);
+  assert.equal(await page.inputValue('#input'), text, 'Enter qatorni ochmadi');
+  assert.equal(await page.evaluate(() => document.activeElement.id), 'tekshir', "fokus tekshiruv bo'limiga o'tmadi");
+  await page.click('#btnClear');
+  await page.locator('#rows tr.click').nth(1).focus(); await page.keyboard.press('Space'); await page.waitForTimeout(300);
+  assert.ok((await page.inputValue('#input')).length > 20, 'Space qatorni ochmadi');
+  assert.deepEqual(errors, []);
+  await page.close();
+});
+
 // ---------- H2: kirillcha iqtiboslar asl matnda ----------
 const KIRILL_RISK = "Кореяга иш! Виза 100% кафолатланган. Ҳужжатлар учун олдиндан 500$ тўлов қиласиз, паспортингизни бизга топширасиз. Тез ёзинг, жойлар чекланган!";
 async function checkText(page, text) {

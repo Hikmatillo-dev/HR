@@ -371,7 +371,7 @@
       (!q || (d.text + ' ' + (d.channel || '') + ' ' + d.a.profession).toLowerCase().includes(q))
     ).sort((x, y) => (y.date || '').localeCompare(x.date || '') || y.a.score - x.a.score);
     $('#rows').innerHTML = list.slice(0, limit).map(d => `
-      <tr class="click" data-id="${esc(d.id)}">
+      <tr class="click" data-id="${esc(d.id)}" tabindex="0" title="E'lonni tekshirish (Enter)">
         <td>${esc(d.date || '')}</td><td>${esc(d.channel || '')}</td>
         <td class="text"><div>${esc(d.text)}</div></td>
         <td>${esc(d.a.region)}</td><td>${esc(d.a.profession)}</td>
@@ -439,11 +439,18 @@
 
   ['#fSearch', '#fLevel', '#fRegion', '#fCategory', '#fDisc'].forEach(s => $(s).addEventListener('input', () => { limit = 25; renderRows(); if (s === '#fRegion') renderMap(); }));
   $('#btnMore').addEventListener('click', () => { limit += 25; renderRows(); });
-  $('#rows').addEventListener('click', e => {
-    const tr = e.target.closest('tr.click'); if (!tr) return;
+  // Qator sichqoncha bilan ham, klaviatura bilan ham (Tab → Enter yoki Space) tekshiruvga ochiladi
+  function openRow(tr) {
     const d = DATA.find(x => String(x.id) === tr.dataset.id); if (!d) return;
     IQ.check(d.text);
+    $('#tekshir').focus({ preventScroll: true });
     $('#tekshir').scrollIntoView();
+  }
+  $('#rows').addEventListener('click', e => { const tr = e.target.closest('tr.click'); if (tr) openRow(tr); });
+  $('#rows').addEventListener('keydown', e => {
+    const tr = e.target.closest('tr.click');
+    if (!tr || e.target !== tr || (e.key !== 'Enter' && e.key !== ' ')) return;
+    e.preventDefault(); openRow(tr);
   });
   $('#mapCtrl').addEventListener('click', e => {
     const b = e.target.closest('button'); if (!b) return;

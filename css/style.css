@@ -373,6 +373,8 @@ button:disabled { opacity: .55; cursor: not-allowed; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 button.tile { font: inherit; font-size: .74rem; text-align: left; width: 100%; }
 button.tile:focus-visible { outline: 3px solid var(--text); outline-offset: 2px; }
+/* Baza jadvali qatori klaviatura bilan ochiladi: ramka jadval ichida chiziladi (kesilib qolmasligi uchun) */
+#rows tr.click:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
 button.tile:hover { filter: brightness(.95); }
 :focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 /* Faol tugmalar: yorug' rejimda oq matn bilan ≥ 4.5:1 bo'lishi uchun to'qroq ko'k */
