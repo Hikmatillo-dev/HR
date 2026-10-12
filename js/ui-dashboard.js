@@ -343,7 +343,9 @@
   }
 
   function renderChannels() {
-    const groups = by(DATA, d => d.channel || "Noma'lum");
+    // E'lon chiqqan har bir kanal hisoblanadi (importda takror bitta e'lon bo'lsa ham)
+    const groups = {};
+    DATA.forEach(d => (d.channels && d.channels.length ? d.channels : [d.channel || "Noma'lum"]).forEach(ch => { (groups[ch] = groups[ch] || []).push(d); }));
     const rows = Object.entries(groups).map(([ch, l]) => {
       const highOnly = pct(count(l, d => d.a.level === 'high'), l.length);
       const medium = pct(count(l, d => d.a.level === 'medium'), l.length);
@@ -414,7 +416,8 @@
     // Takroriy e'lonlarni aniqlash (bir xil matn bir necha kanalda yoki qayta-qayta)
     const fp = {};
     data.forEach(d => { d.fp = d.fp || A.fingerprint(d.text); fp[d.fp] = (fp[d.fp] || 0) + 1; });
-    data.forEach(d => { d.dupes = fp[d.fp]; });
+    // Takroriy: bir xil matn ro'yxatda bir necha marta yoki import paytida bir necha kanalda uchragan
+    data.forEach(d => { d.dupes = Math.max(fp[d.fp], (d.channels || []).length); });
     DATA = data;
     limit = 25;
     fillSelect($('#fRegion'), A.REGION_NAMES.concat(["Noma'lum"]).filter(r => DATA.some(d => d.a.region === r)), 'Barcha hududlar');

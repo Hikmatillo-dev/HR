@@ -46,6 +46,17 @@ test("Vakansiya so'zi yo'q, lekin firibgarlik belgisi bor xabarlar olinadi; oddi
   assert.equal(stats.notVacancy, 2);
 });
 
+// M6 (bug-hunt): boshqa kanalda qayta joylangan e'lon takror sifatida olib tashlanadi, lekin o'sha kanal ham yoziladi
+test("Fayllararo takror: e'lon bitta qoladi, lekin u chiqqan barcha kanallar ro'yxati saqlanadi (bir kanal ichidagi takror — bir marta)", () => {
+  const exp = (name, texts) => ({ name: name + '.json', content: JSON.stringify({ name, messages: texts.map((text, i) => ({ id: i + 1, type: 'message', date: '2026-10-01T10:00:00', text })) }) });
+  const scam = "Koreyaga ish! Hujjat uchun to'lov 500$. Viza 100% kafolat.";
+  const { items, stats } = importFiles([exp('Kanal A', [scam, scam]), exp('Kanal B', ["Sotuvchi kerak, Toshkent. Oylik 4 mln so'm.", scam])]);
+  assert.equal(items.length, 2);
+  assert.equal(stats.duplicates, 2);
+  assert.deepEqual(items.find(i => i.text === scam).channels, ['Kanal A', 'Kanal B']);
+  assert.deepEqual(items.find(i => i.text !== scam).channels, ['Kanal B']);
+});
+
 test("Bir xil e'lon boshqa telefon raqami bilan — takror deb hisoblanadi", () => {
   const msg = (id, phone) => ({ id, type: 'message', date: '2026-10-01T10:00:00', text: `Kassir kerak, Toshkent. Maosh 4 mln so'm. Tel ${phone}` });
   const content = JSON.stringify({ name: 'k', messages: [msg(1, '+998 90 111 22 33'), msg(2, '+998 91 444 55 66')] });

@@ -72,7 +72,7 @@
 
   /**
    * files: [{ name, content }]
-   * Natija: { items: [{id, text, date, channel}], stats }
+   * Natija: { items: [{id, text, date, channel, channels}], stats } — channels: e'lon chiqqan barcha kanallar
    * stats.messages     — fayllardagi barcha matnli xabarlar
    * stats.notVacancy   — qisqa yoki vakansiyaga o'xshamagan xabarlar (reklama, e'lon emas)
    * stats.vacancyLike  — vakansiyaga o'xshash xabarlar
@@ -83,7 +83,7 @@
   function importFiles(files, fingerprint) {
     fingerprint = fingerprint || (global.IshQalqon && global.IshQalqon.fingerprint);
     if (!fingerprint) throw new Error('analyzer.js yuklanmagan');
-    const seen = new Set(), items = [];
+    const seen = new Map(), items = []; // kalit → e'lon
     const stats = { files: files.length, messages: 0, notVacancy: 0, vacancyLike: 0, duplicates: 0, unique: 0, syntheticFiles: [] };
     for (const f of files) {
       const records = rawRecords(f.name, f.content);
@@ -101,9 +101,13 @@
         if (r.text.length < MIN_LENGTH || (!VACANCY_RE.test(r.text) && !risky())) { stats.notVacancy++; continue; }
         stats.vacancyLike++;
         const key = fingerprint(r.text);
-        if (seen.has(key)) { stats.duplicates++; continue; }
-        seen.add(key);
-        items.push({ id: items.length + 1, text: r.text, date: r.date, channel: r.channel });
+        // Takror bitta e'lon bo'lib qoladi (bozor statistikasi noyob e'lonlarda), lekin u chiqqan har bir kanal yoziladi:
+        // firibgar e'lonni qayta joylagan kanal reytingda "toza" ko'rinmasligi uchun
+        const prev = seen.get(key);
+        if (prev) { stats.duplicates++; if (!prev.channels.includes(r.channel)) prev.channels.push(r.channel); continue; }
+        const item = { id: items.length + 1, text: r.text, date: r.date, channel: r.channel, channels: [r.channel] };
+        seen.set(key, item);
+        items.push(item);
       }
     }
     stats.unique = items.length;

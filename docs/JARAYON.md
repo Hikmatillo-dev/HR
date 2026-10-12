@@ -20,7 +20,7 @@ Bu hujjat loyiha qanday qurilganini, qaysi texnologiya nima uchun tanlanganini v
 | **JavaScript** (brauzer va Node.js) | Bitta til bilan sayt, server, bot va testlar; tahlil yadrosi hamma joyda bir xil | `js/analyzer.js`, `server.mjs`, `bot.mjs` |
 | **Git** | Har bir o'zgarish alohida commit; boshlang'ich natija qaysi commitda olinganini isbotlash | `git log`, `tests/results/v3-baseline.json` dagi commit va SHA-256 xeshlar |
 | **Node testlari** (`node:assert`, framework'siz) | Tez (`npm test` ~17 soniya), dependency'siz | `tests/*.test.mjs`, `tests/run.mjs` |
-| **Playwright** | Haqiqiy brauzerda mobil ko'rinish, klaviatura, kontrast va eksportni tekshirish | `tests/ui.e2e.mjs` (49 ta brauzer testi). Loyiha dependency'si emas: o'rnatilmagan bo'lsa test o'tkazib yuboriladi |
+| **Playwright** | Haqiqiy brauzerda mobil ko'rinish, klaviatura, kontrast va eksportni tekshirish | `tests/ui.e2e.mjs` (50 ta brauzer testi). Loyiha dependency'si emas: o'rnatilmagan bo'lsa test o'tkazib yuboriladi |
 | **Chart.js 4.4.1** | Xarita, dinamika va kasblar grafigi; lokal nusxa, oflayn ishlaydi | `vendor/chart.umd.js` |
 | **GitHub Actions** | Har bir push'da `npm test` | `.github/workflows/test.yml` (brauzer testlari CI'da yo'q, lokal ishga tushiriladi) |
 | **Python** (ixtiyoriy) | Eksportni doimiy faylga aylantirish skripti; JS bilan bir xil yashirish | `tools/telegram_export.py`, `tests/redact-parity.test.mjs` |
@@ -123,8 +123,8 @@ Ish tartibi: har bir vazifa uchun AI avval reja yozadi, muallif tasdiqlaydi, key
 
 ## 6. Testlar va sifat
 
-- `npm test`: 15 ta test fayli (176 ta unit test) va `tests/run.mjs` (v1, v2, v3 aniqligi, 10 ta sifat chegarasi). Taxminan 17 soniya.
-- `npm run test:ui`: 49 ta brauzer testi. Ular 320, 390, 768, 844, 1280 va 1366px kengliklarni, ☰ menyuni, Tab bilan boshqarishni, `aria-live` va yorug' hamda qorong'i rejimda WCAG AA kontrastni tekshiradi. Shuningdek "harakatni kamaytirish" sozlamasi, CSV himoyasi, kanallar reytingi `npm run demo:local` da AI tugmasi o'chiqligi, "Asosiy tarkibga o'tish" havolasi va 390/768px da asosiy amallarning kamida 44px ekani tekshiriladi.
+- `npm test`: 15 ta test fayli (177 ta unit test) va `tests/run.mjs` (v1, v2, v3 aniqligi, 10 ta sifat chegarasi). Taxminan 17 soniya.
+- `npm run test:ui`: 50 ta brauzer testi. Ular 320, 390, 768, 844, 1280 va 1366px kengliklarni, ☰ menyuni, Tab bilan boshqarishni, `aria-live` va yorug' hamda qorong'i rejimda WCAG AA kontrastni tekshiradi. Shuningdek "harakatni kamaytirish" sozlamasi, CSV himoyasi, kanallar reytingi `npm run demo:local` da AI tugmasi o'chiqligi, "Asosiy tarkibga o'tish" havolasi va 390/768px da asosiy amallarning kamida 44px ekani tekshiriladi.
 - **CI:** GitHub Actions har bir push'da `npm test` ni Node 22 da ishga tushiradi.
 - **Gate:** v3 natijasi boshlang'ich natijadan pasaysa yoki v2 natijasi 5 punktdan ko'p tushsa, `npm test` xato beradi. Shuning uchun qoidalarni tuzatish real e'lonlardagi natijani yashirincha yomonlashtira olmaydi.
 - **Dalillar mosligi:** `npm run check:evidence` README, `docs/JARAYON.md` va `docs/TAQDIMOT.md` dagi test sonlari, aniqlik foizlari, real e'lonlar soni, commitlar va AI/bot holatini repozitoriy bilan solishtiradi. Tez qismi (`--static`) `npm test` ichida ishlaydi.

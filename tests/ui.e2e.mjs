@@ -537,6 +537,26 @@ await test("Sintetik namuna yuklanganda: hero, manba va izohda 'sintetik', 'real
   await page.close();
 });
 
+// M6 (bug-hunt): firibgar e'lonni qayta joylagan kanal reytingda "toza" ko'rinmaydi
+await test("Kanallar reytingi: boshqa kanaldan takrorlangan firibgar e'lon ikkala kanalda ham hisoblanadi", async () => {
+  const { page } = await open({ demo: false });
+  const scam = "Koreyaga ish! Hujjat uchun to'lov 500$. Viza 100% kafolat.";
+  await page.setInputFiles('#fileInput', [
+    { name: 'a.json', mimeType: 'application/json', buffer: Buffer.from(exportOf('Birinchi kanal', [scam, "Haydovchi kerak, Samarqand. Oylik 6 mln so'm."])) },
+    { name: 'b.json', mimeType: 'application/json', buffer: Buffer.from(exportOf('Qayta joylagan kanal', [scam, "Sotuvchi kerak, Toshkent. Oylik 4 mln so'm."])) }
+  ]);
+  await page.waitForTimeout(700);
+  const row = page.locator('#channelRows tr', { hasText: 'Qayta joylagan kanal' });
+  const cells = await row.locator('td').allTextContents();
+  assert.equal(cells[2].trim(), '2', `e'lonlar soni: ${cells.join(' | ')}`);
+  assert.match(cells[3], /50%/, `xavfli ulush: ${cells.join(' | ')}`);
+  assert.notEqual(cells[0].trim(), 'A', 'qayta joylagan kanal A olmasligi kerak');
+  assert.match(cells[6], /1/, `takroriy ustun: ${cells.join(' | ')}`);
+  assert.equal((await page.textContent('#kpis .kpi b')).trim(), '3', "bozor statistikasi noyob e'lonlarda qoladi (3 ta)");
+  await page.evaluate(() => localStorage.clear());
+  await page.close();
+});
+
 // ---------- H2: kirillcha iqtiboslar asl matnda ----------
 const KIRILL_RISK = "Кореяга иш! Виза 100% кафолатланган. Ҳужжатлар учун олдиндан 500$ тўлов қиласиз, паспортингизни бизга топширасиз. Тез ёзинг, жойлар чекланган!";
 async function checkText(page, text) {
