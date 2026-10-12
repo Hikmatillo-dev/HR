@@ -95,12 +95,19 @@
     updateAiButton();
   }
 
+  // Iqtibos asl e'londan olinadi (kirill e'londa lotincha transliteratsiya emas); topilmasa — iqtibossiz
+  const quoteOf = (text, match) => {
+    const f = window.IQQuote && window.IQQuote.locate(text, match);
+    return f ? f.replace(/\s+/g, ' ').trim() : null;
+  };
+  const withQuote = (text, match, fmt) => { const q = quoteOf(text, match); return q ? fmt(q) : ''; };
+
   function summary() {
-    const { a } = last;
+    const { text, a } = last;
     const lines = [
       `🛡️ IshQalqon tahlili: ${IQ.DOT[a.level]} ${A.LEVEL_TEXT[a.level]} (${a.score}/100), shaffoflik ${a.transparency.score}/100`,
-      ...a.scam.map(r => `⚠️ ${r.label}`),
-      ...a.discrimination.map(d => `⚖️ Kamsitish: ${d.label}`),
+      ...a.scam.map(r => `⚠️ ${r.label}${withQuote(text, r.match, q => `: "${q}"`)}`),
+      ...a.discrimination.map(d => `⚖️ Kamsitish: ${d.label}${withQuote(text, d.match, q => `: "${q}"`)}`),
       "Eslatma: ish uchun hech qachon oldindan pul to'lamang."
     ];
     return lines.join('\n');
@@ -113,8 +120,8 @@
       'Hurmatli kanal administratori / mas\'ul tashkilot!',
       '',
       `${today} kuni Telegram'da quyidagi vakansiya e'loniga duch keldim. Unda firibgarlik va/yoki kamsitish belgilari bor:`,
-      ...a.scam.map(r => `- ${r.label} ("${r.match}")`),
-      ...a.discrimination.map(d => `- Kamsituvchi talab: ${d.label} ("${d.match}")`),
+      ...a.scam.map(r => `- ${r.label}${withQuote(text, r.match, q => ` ("${q}")`)}`),
+      ...a.discrimination.map(d => `- Kamsituvchi talab: ${d.label}${withQuote(text, d.match, q => ` ("${q}")`)}`),
       '',
       "E'lon matni:",
       '"""', text.trim(), '"""',

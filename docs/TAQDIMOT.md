@@ -19,7 +19,7 @@ Format: 5 daqiqa nutq + 5 daqiqa jonli demo + hakamlar savollari. Har bir raqam 
 "Har bir e'lon 15 ta firibgarlik qoidasi va real bo'lmagan maosh tekshiruvi, 5 turdagi kamsitish va shaffoflik indeksi bo'yicha baholanadi. Firibgarlik xavfi va kamsitish alohida ko'rsatiladi. Kamsituvchi e'lon 'past xavf' degani bilan yashirinib qolmaydi. Odam savdosi belgisi alohida chiqadi. Har bir baho sababi va e'lon matnidagi aniq iqtibos bilan beriladi. Tizim hukm chiqarmaydi, sababni ko'rsatadi."
 
 **3:30–4:20 — Texnologiya, test va maxfiylik.**
-"Asosiy tahlil brauzerda, internetsiz ishlaydi; yuklangan fayl serverga ketmaydi, telefon va karta raqamlari saqlashdan oldin yashiriladi. AI — Claude yoki Gemini — ixtiyoriy chuqur tahlil qatlami, uning iqtiboslari e'lon matnidan tekshiriladi. `npm test` da 164 ta unit test va aniqlik o'lchovi bor, `npm run test:ui` da 37 ta brauzer testi: telefon ekrani, klaviatura, qorong'i rejim, kontrast."
+"Asosiy tahlil brauzerda, internetsiz ishlaydi; yuklangan fayl serverga ketmaydi, telefon va karta raqamlari saqlashdan oldin yashiriladi. AI — Claude yoki Gemini — ixtiyoriy chuqur tahlil qatlami, uning iqtiboslari e'lon matnidan tekshiriladi. `npm test` da 172 ta unit test va aniqlik o'lchovi bor, `npm run test:ui` da 42 ta brauzer testi: telefon ekrani, klaviatura, qorong'i rejim, kontrast."
 
 **4:20–5:00 — Halol cheklov va keyingi qadam.**
 "Real e'lonlarda qoidalar o'zgartirilmasdan olingan natija: aniqlik 70.6%, xavfli e'lonni topish 16.7%. Xatolarni tahlil qilib qoidalarni tuzatdik: 91.2% va 75.0%, halol e'lonni xavfli deyish 0.0%. Lekin bu optimistik, chunki qoidalar shu e'lonlarga qarab tuzatilgan. Keyingi qadam: yangi kanallardan v4 to'plami bilan mustaqil o'lchash."

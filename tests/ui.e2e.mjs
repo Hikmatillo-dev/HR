@@ -421,6 +421,71 @@ for (const scheme of ['light', 'dark']) {
   });
 }
 
+// ---------- H2: kirillcha iqtiboslar asl matnda ----------
+const KIRILL_RISK = "Кореяга иш! Виза 100% кафолатланган. Ҳужжатлар учун олдиндан 500$ тўлов қиласиз, паспортингизни бизга топширасиз. Тез ёзинг, жойлар чекланган!";
+async function checkText(page, text) {
+  await page.evaluate(() => { window.__copied = []; IQ.copy = t => window.__copied.push(t); });
+  if (text.startsWith('example:')) await page.click(`[data-example="${text.slice(8)}"]`); else { await page.fill('#input', text); await page.click('#btnCheck'); }
+  await page.waitForTimeout(200);
+  return page.$$eval('#result .src-text mark', m => m.map(x => x.textContent));
+}
+for (const [width, scheme] of [[1366, 'light'], [390, 'dark']]) {
+  await test(`Kirill e'lon ${width}px ${scheme}: kamida 4 ta sabab asl kirill matnda belgilanadi (lotin transliteratsiya emas)`, async () => {
+    const { page, errors } = await open({ demo: false, width, scheme });
+    const m = await checkText(page, KIRILL_RISK);
+    assert.ok(m.length >= 4, `belgilar: ${JSON.stringify(m)}`);
+    for (const x of m) { assert.ok(KIRILL_RISK.includes(x), `"${x}" asl matnda yo'q`); assert.match(x, /[а-яёўқғҳ]/i, `"${x}" kirillcha emas`); }
+    for (const x of ['олдиндан 500$', 'паспортингизни бизга топшир', 'Виза 100%', 'Корея']) assert.ok(m.includes(x), `"${x}" belgilanmagan: ${JSON.stringify(m)}`);
+    assert.ok(await page.locator('#result .reasons li').count() >= 5, "sabablar ro'yxati to'liq emas");
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), width);
+    assert.deepEqual(errors, []);
+    await page.close();
+  });
+}
+
+await test("Kirill e'lon: shikoyat va 'Natijani nusxalash' matnida asl kirill fragment, lotincha transliteratsiya yo'q", async () => {
+  const { page } = await open({ demo: false });
+  await checkText(page, KIRILL_RISK);
+  await page.click('#btnShare'); await page.click('#btnReport');
+  const [share, complaint] = await page.evaluate(() => window.__copied);
+  for (const f of ['олдиндан 500$', 'паспортингизни бизга топшир', 'Виза 100%']) {
+    assert.ok(complaint.includes(`("${f}")`), `shikoyatda "${f}" yo'q:\n${complaint}`);
+    assert.ok(share.includes(f), `nusxada "${f}" yo'q:\n${share}`);
+  }
+  for (const latin of ['oldindan 500$', 'pasportingizni', 'viza 100%', 'joylar cheklangan']) {
+    assert.ok(!complaint.toLowerCase().includes(latin), `shikoyatda lotincha "${latin}"`);
+    assert.ok(!share.toLowerCase().includes(latin), `nusxada lotincha "${latin}"`);
+  }
+  await page.close();
+});
+
+await test("Fallback: asl matnda yo'q hisoblangan iqtibos (maosh '31.5 mln so'm') — sabab ko'rinadi, lekin hech narsa noto'g'ri belgilanmaydi", async () => {
+  const { page } = await open({ demo: false });
+  const m = await checkText(page, 'example:cyrl');
+  const text = await page.inputValue('#input');
+  assert.ok(m.length >= 4, JSON.stringify(m));
+  for (const x of m) assert.ok(text.includes(x), `"${x}" asl matnda yo'q`);
+  assert.match(await page.textContent('#result .reasons'), /haddan tashqari yuqori maosh/);
+  await page.click('#btnReport');
+  const complaint = (await page.evaluate(() => window.__copied))[0];
+  assert.match(complaint, /- Tajribasiz ish uchun haddan tashqari yuqori maosh\n/, "fallback: sabab iqtibossiz bo'lishi kerak");
+  assert.ok(!complaint.includes("31.5 mln so'm"), complaint);
+  await page.close();
+});
+
+await test("Lotin va rus e'lonlari: belgilangan iqtiboslar avvalgidek; shikoyatda asl fragment", async () => {
+  const { page } = await open({ demo: false });
+  const lat = "Koreyaga ish! Viza 100% kafolatlangan. Hujjatlar uchun oldindan 500$ to'lov qilasiz, pasportingizni bizga topshirasiz. Joylar cheklangan!";
+  assert.deepEqual(await checkText(page, lat), ['Koreya', 'Viza 100%', 'oldindan 500$', 'pasportingizni bizga topshir', 'Joylar cheklangan']);
+  const ru = 'Работа в Корее! Виза 100% гарантия. Оплата за оформление документов 500$ заранее. Паспорт оставляете у работодателя. Срочно, места ограничены!';
+  assert.deepEqual(await checkText(page, ru), ['100% гарант', 'Оплата за оформлени', 'Паспорт оставл', 'Срочно']);
+  await page.click('#btnReport');
+  const complaint = (await page.evaluate(() => window.__copied))[0];
+  for (const f of ['Оплата за оформлени', 'Паспорт оставл', '100% гарант', 'Срочно']) assert.ok(complaint.includes(`("${f}")`), `"${f}" yo'q:\n${complaint}`);
+  assert.deepEqual(await checkText(page, 'example:disc'), ['faqat qizlar', '20-27 yosh', "ko'rinishi chiroyli", 'turmushga chiqmagan']);
+  await page.close();
+});
+
 // ---------- P0-5: klaviatura va sensorli ekran ----------
 // Bo'lim sarlavhasi yopishqoq yuqori panel ostida qolmay, ekran tepasida turganini kutadi
 async function waitSectionTop(page, id, label) {

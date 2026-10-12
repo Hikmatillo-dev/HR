@@ -63,11 +63,15 @@
       }).join('');
       let re;
       try { re = new RegExp(pattern, 'giu'); } catch (e) { continue; }
-      let m;
+      let m, found = false;
       while ((m = re.exec(text))) {
         ranges.push([m.index, m.index + m[0].length, cls]);
+        found = true;
         if (!m[0].length) re.lastIndex++;
       }
+      // Kirill e'lon: analyzer iqtibosi lotincha bo'lishi mumkin — asl kirill fragment js/quote-map.js orqali topiladi.
+      // U ham topilmasa, hech narsa belgilanmaydi (sabab ro'yxatda baribir ko'rinadi)
+      if (!found && window.IQQuote) window.IQQuote.locateAll(text, phrase).forEach(r => ranges.push([r.start, r.end, cls]));
     }
     ranges.sort((a, b) => a[0] - b[0]);
     let out = '', pos = 0;

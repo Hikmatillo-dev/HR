@@ -23,8 +23,8 @@ Zamonaviy kasblar bozori, hududlar va maoshlar tahlili hamda ish e'lonlarini fir
 npm install
 npm start          # http://localhost:3000 (.env dagi AI kaliti bo'lsa, AI ham yoqiladi)
 npm run demo:local # http://127.0.0.1:3000 — oflayn demo, kalit kerak emas, AI tugmasi o'chiq
-npm test           # 164 ta unit test + aniqlik o'lchovi (v1, v2, v3) va sifat chegaralari
-npm run test:ui    # 37 ta brauzer testi (Playwright): mobil, klaviatura, kontrast
+npm test           # 172 ta unit test + aniqlik o'lchovi (v1, v2, v3) va sifat chegaralari
+npm run test:ui    # 42 ta brauzer testi (Playwright): mobil, klaviatura, kontrast
 npm run preflight  # topshirishdan oldin: kalitlar, taqiqlangan fayllar, hujjatlar va barcha testlar
 ```
 
@@ -216,8 +216,8 @@ npm run bot                   # .env dagi token avtomatik o'qiladi
 
 ### 5. Testlar
 ```bash
-npm test                 # 14 ta test fayli (164 ta unit test) + tests/run.mjs (aniqlik va sifat chegaralari)
-npm run test:ui          # 37 ta brauzer testi (Playwright o'rnatilmagan bo'lsa o'tkazib yuboriladi)
+npm test                 # 15 ta test fayli (172 ta unit test) + tests/run.mjs (aniqlik va sifat chegaralari)
+npm run test:ui          # 42 ta brauzer testi (Playwright o'rnatilmagan bo'lsa o'tkazib yuboriladi)
 npm run check:evidence   # README va docs dagi raqamlar repozitoriy dalillariga mosligi (testlarni ham sanaydi)
 npm run preflight        # topshirish oldidan: .env/data/qoralama git'da yo'qligi, kalitlar (fayllar va git tarixi), hujjatlar, testlar
 ```
@@ -234,12 +234,13 @@ npm run preflight        # topshirish oldidan: .env/data/qoralama git'da yo'qlig
 | `tests/server-security.test.mjs` | `/api/ai`: Content-Type (415), Origin (403), faqat `127.0.0.1`, kunlik va IP limiti, `X-Forwarded-For`, loglarda kalit va PII yo'qligi | 14 |
 | `tests/config.test.mjs` | Config va `analyzer.js` kurslari bir xilligi, `.env` orqali almashtirish, rasmiy manbalar formati | 6 |
 | `tests/rules.test.mjs` | Har bir qoida umumiy naqshni topishi va noto'g'ri signal bermasligi (lotin, kirill, rus) | 22 |
+| `tests/quote-map.test.mjs` | Kirill e'londa lotincha analyzer iqtibosi asl kirill fragmentga bog'lanishi; topilmasa yoki harfning yarmiga tushsa — belgilanmaydi; lotin va rus belgilari o'zgarmasligi | 8 |
 | `tests/validate.test.mjs` | Bo'sh va mazmunsiz matn bloklanishi; loyihadagi barcha real va namunaviy e'lonlar o'tishi | 8 |
 | `tests/demo-examples.test.mjs` | Bosh sahifadagi sintetik misollar va ularning iqtiboslari analizator natijasiga mosligi | 7 |
 | `tests/demo-local.test.mjs` | `npm run demo:local`: faqat `127.0.0.1`, muhitdagi AI kalitlari berilmaydi, `/api/ai` → 503, `.env` va server fayllari ochilmaydi, loglarda kalit yo'q | 5 |
 | `tests/preflight.test.mjs` | Vaqtinchalik git repolarda: `.env`, `data/`, qoralama va `result.json` commit qilinsa, soxta Anthropic/Gemini/Telegram kalitlari faylda, git tarixida yoki yangi faylda bo'lsa, `.gitignore` to'liq bo'lmasa preflight xato beradi va kalitni chiqarmaydi | 10 |
 | `tests/run.mjs` | v1, v2, v3 aniqligi, format tekshiruvi, sifat chegaralari | 10 chegara |
-| `tests/ui.e2e.mjs` | Brauzerda: 320–1366px ekranlarda gorizontal scroll yo'qligi, menyu, klaviatura, `aria-live`, validatsiya, hero va CTA, CSV formula himoyasi, kanallar reytingi, chop etish, `demo:local` da AI tugmasi o'chiqligi, "Asosiy tarkibga o'tish" havolasi (Tab → Enter → tekshiruv), 390 va 768px da asosiy amallar ≥ 44px, yorug' va qorong'i rejimda WCAG AA kontrast | 37 |
+| `tests/ui.e2e.mjs` | Brauzerda: 320–1366px ekranlarda gorizontal scroll yo'qligi, menyu, klaviatura, `aria-live`, validatsiya, hero va CTA, CSV formula himoyasi, kanallar reytingi, chop etish, `demo:local` da AI tugmasi o'chiqligi, kirill e'londa asl iqtiboslar belgilanishi va shikoyatda asl fragment, "Asosiy tarkibga o'tish" havolasi (Tab → Enter → tekshiruv), 390 va 768px da asosiy amallar ≥ 44px, yorug' va qorong'i rejimda WCAG AA kontrast | 42 |
 
 ## Tuzilishi
 
@@ -248,6 +249,7 @@ index.html, css/, assets/   sahifa, dizayn, logotip
 vendor/chart.umd.js         Chart.js 4.4.1 (lokal nusxa, internet kerak emas)
 js/analyzer.js              TAHLIL YADROSI: qoidalar, maosh, hudud, kasb, shaffoflik, odam savdosi
 js/validate-posting.js      bo'sh va mazmunsiz matnni tahlildan oldin to'xtatish
+js/quote-map.js             analyzer iqtibosini asl (kirill) matndagi fragmentga bog'lash
 js/importer.js              Telegram JSON / CSV / TXT importi va takrorlarni aniqlash
 js/pii.js                   shaxsiy ma'lumotni topish va yashirish (yagona manba)
 js/evaluate.js              aniqlik metrikalari (brauzer va testlar uchun bitta modul)
