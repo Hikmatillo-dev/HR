@@ -378,7 +378,7 @@ for (const [width, scheme] of [[390, 'light'], [390, 'dark'], [1280, 'light']]) 
   });
 }
 
-const CONTRAST_SELECTORS = ['.skip-link', '.lvl-high', '.lvl-medium', '.lvl-low', '.lvl-disc', '#demoBadge', '.tag.high', '.tag.low', '.tag.disc', '.badge-warn',
+const CONTRAST_SELECTORS = ['.skip-link', '.live-verdict', '.live-verdict a', '.lvl-high', '.lvl-medium', '.lvl-low', '.lvl-disc', '#demoBadge', '.tag.high', '.tag.low', '.tag.disc', '.badge-warn',
   '.kpi span', '.data-note', '.muted', '.hint', '.reasons small', 'mark', '.grade', '.tile', '.mode-switch button[aria-pressed="true"]',
   'nav a', 'button.primary', '.map-ctrl button.on', '.src-text',
   '.hero h1', '.hero h1 span', '.hero-lead', '.hero-values b', '.hero-values span', '.hero-cta a', '.hero-source', '.hero-stats div',
@@ -567,6 +567,36 @@ await test("Juda uzun matn (20 000 raqam): 'Tekshirish' 1.5 soniyadan tez, baho 
   assert.match(await page.textContent('#result .invalid-msg'), /juda uzun/);
   assert.equal(await page.locator('#result .gauge').count(), 0);
   assert.deepEqual(errors, []);
+  await page.close();
+});
+
+// "Tekshirish" tugmasisiz: matn kiritilishi bilan natija ko'rinadi (telefonda natija pastda qolib ketmaydi)
+await test("390px: matn joylanganda (Ctrl+V) tugmasiz natija chiqadi, sahifa natijaga o'zi aylanadi; maydon tagida qisqa xulosa", async () => {
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, permissions: ['clipboard-read', 'clipboard-write'] });
+  const page = await ctx.newPage(); await page.goto(PAGE); await page.waitForTimeout(300);
+  await page.evaluate(() => navigator.clipboard.writeText("Koreyaga ish! Viza 100% kafolatlangan. Hujjatlar uchun oldindan 500$ to'lov qilasiz."));
+  await page.click('#input'); await page.keyboard.press('Control+V'); await page.waitForTimeout(1500);
+  assert.equal(await page.locator('#result .lvl').count(), 1, 'natija chiqmadi');
+  const inView = await page.evaluate(() => { const r = document.querySelector('#result .lvl').getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight; });
+  assert.ok(inView, "natija ekranda ko'rinmaydi");
+  assert.match(await page.textContent('#liveVerdict'), /Firibgarlik xavfi: yuqori/);
+  assert.equal(await page.isVisible('#liveVerdict'), true);
+  await ctx.close();
+});
+
+await test("Yozish paytida: maydon tagida qisqa xulosa darhol ko'rinadi, sahifa sakramaydi; qisqa matnda xulosa yo'q; havola natijaga olib boradi", async () => {
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  await page.goto(PAGE); await page.waitForTimeout(300);
+  await page.click('#input'); const y0 = await page.evaluate(() => scrollY);
+  await page.keyboard.type("Ofis menejeri kerak. Faqat qizlar, yoshi 20-25. Toshkent, 5 mln.", { delay: 5 }); await page.waitForTimeout(500);
+  assert.equal(await page.evaluate(() => scrollY), y0, 'yozish paytida sahifa aylanib ketdi');
+  const box = await page.locator('#liveVerdict').boundingBox();
+  assert.ok(box && box.y + box.height <= 844, "xulosa ekranda ko'rinmaydi");
+  assert.match(await page.textContent('#liveVerdict'), /Firibgarlik xavfi: past.*kamsitish: 2 ta/s);
+  await page.click('#liveVerdict a'); await page.waitForTimeout(1200);
+  assert.ok(await page.evaluate(() => { const r = document.querySelector('#result .lvl').getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight; }), "havola natijaga olib bormadi");
+  await page.fill('#input', 'abc'); await page.waitForTimeout(400);
+  assert.equal(await page.isVisible('#liveVerdict'), false, "qisqa matnda xulosa qolib ketdi");
   await page.close();
 });
 

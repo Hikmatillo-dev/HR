@@ -374,6 +374,12 @@ button:disabled { opacity: .55; cursor: not-allowed; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 button.tile { font: inherit; font-size: .74rem; text-align: left; width: 100%; }
 button.tile:focus-visible { outline: 3px solid var(--text); outline-offset: 2px; }
+/* Matn maydoni tagidagi qisqa jonli xulosa (natija tugmasiz chiqadi) */
+.live-verdict { margin: 8px 0 0; padding: 8px 12px; border-radius: 10px; background: var(--surface-2); color: var(--text); font-size: .92rem; border-left: 4px solid var(--border); }
+.live-verdict.lvl-high { border-left-color: var(--critical); }
+.live-verdict.lvl-medium { border-left-color: var(--warning); }
+.live-verdict.lvl-low { border-left-color: var(--good); }
+.live-verdict a { color: var(--primary-ink, var(--primary)); font-weight: 600; white-space: nowrap; }
 /* Baza jadvali qatori klaviatura bilan ochiladi: ramka jadval ichida chiziladi (kesilib qolmasligi uchun) */
 #rows tr.click:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
 button.tile:hover { filter: brightness(.95); }

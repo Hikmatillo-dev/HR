@@ -19,6 +19,16 @@
   }
 
   // explicit: foydalanuvchi "Tekshirish" ni bosdi (yozish paytidagi avtomatik yangilanish emas)
+  // Matn maydoni tagidagi qisqa xulosa: natija ekrandan pastda (telefonda) bo'lsa ham, tugmasiz darhol ko'rinadi
+  function setLiveVerdict(a, verdict) {
+    const p = $('#liveVerdict');
+    if (!a) { p.hidden = true; p.textContent = ''; return; }
+    const reasons = a.scam.length + a.discrimination.length;
+    p.className = `live-verdict lvl-${a.level}`;
+    p.innerHTML = `<b>${esc(verdict)}</b> · ${reasons} ta sabab${a.discrimination.length ? `, kamsitish: ${a.discrimination.length} ta` : ''} · <a href="#result">Natijani ko'rish ↓</a>`;
+    p.hidden = false;
+  }
+
   // announce: natija ekran o'quvchiga e'lon qilinadi ("Tekshirish" yoki misol tugmasi; yozish paytida emas)
   function render(text, explicit, announce = explicit) {
     const box = $('#result');
@@ -26,11 +36,13 @@
     // Yozish paytida (avtomatik yangilanish) xato ko'rsatilmaydi: u har pauzada ekran o'quvchiga qayta e'lon qilinardi
     const valid = window.IQValidate.check(text);
     if (!valid.ok && !explicit) {
+      setLiveVerdict(null);
       box.className = 'result empty';
       box.innerHTML = 'Natija shu yerda chiqadi.<br>Matn yozilishi bilan tahlil avtomatik yangilanadi.';
       last = null; return;
     }
     if (!valid.ok) {
+      setLiveVerdict(null);
       box.className = 'result empty invalid';
       box.innerHTML = `<p class="invalid-msg" role="alert">⚠️ ${esc(valid.message)}</p>`;
       last = null; return;
@@ -95,6 +107,7 @@
       <p class="ai-status" id="aiStatus" role="status"></p>
       <div id="aiOut" aria-live="polite"></div>`;
     updateAiButton();
+    setLiveVerdict(a, verdict);
     if (announce) {
       const reasons = a.scam.length + a.discrimination.length;
       IQ.announce(`Natija: ${verdict.replace(/^\S+\s/, '')}. Xavf bali ${a.score} dan 100. ${reasons} ta sabab${a.discrimination.length ? `, shundan kamsitish: ${a.discrimination.length} ta` : ''}${a.trafficking ? ". Odam savdosi belgisi bor" : ''}.`);
@@ -210,7 +223,16 @@
   // Kutib turgan avtomatik yangilanish bekor qilinadi: aks holda u "Tekshirish" natijasi yoki xabari ustidan yozib yuboradi
   let timer;
   IQ.check = text => { clearTimeout(timer); $('#input').value = text; render(text, false, Boolean(text)); };
-  $('#input').addEventListener('input', e => { clearTimeout(timer); timer = setTimeout(() => render(e.target.value), 250); });
+  // Matn joylanganda (Ctrl+V / "Вставить") telefonda sahifa natijaga o'zi aylanadi; yozish paytida sakramaydi
+  const narrow = () => window.matchMedia && matchMedia('(max-width: 980px)').matches;
+  $('#input').addEventListener('input', e => {
+    clearTimeout(timer);
+    const pasted = e.inputType === 'insertFromPaste' || e.inputType === 'insertFromDrop';
+    timer = setTimeout(() => {
+      render(e.target.value);
+      if (pasted && narrow() && last) $('#result').scrollIntoView({ block: 'start' });
+    }, 250);
+  });
   $('#btnCheck').addEventListener('click', () => { clearTimeout(timer); render($('#input').value, true); });
   $('#btnClear').addEventListener('click', () => IQ.check(''));
   IQ.$$('[data-example]').forEach(b => b.addEventListener('click', () => IQ.check(EXAMPLES[b.dataset.example])));
